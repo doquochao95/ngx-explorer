@@ -1,0 +1,12 @@
+<div class="nxe-view-switcher">
+    <button
+        (click)="setView(avialableView.Icon)"><i
+            class="icon-th-large"
+            [ngClass]="{'enable': selected_Type === 'Icon'}"
+            aria-hidden="true"></i></button>
+    <button
+        (click)="setView(avialableView.List)"><i
+            class="icon-menu"
+            [ngClass]="{'enable': selected_Type === 'List'}"
+            aria-hidden="true"></i></button>
+</div>
