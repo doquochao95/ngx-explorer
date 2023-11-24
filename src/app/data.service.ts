@@ -38,20 +38,26 @@ export class ExampleDataService implements IDataService<ExampleNode> {
 
     download(node: ExampleNode): Observable<any> {
         const file = MOCK_FILES.find(f => f.id === node.id);
-
-        const myblob = new Blob([file.content], {
-            type: 'text/plain'
-        });
-        const objectUrl = window.URL.createObjectURL(myblob);
-        const a: HTMLAnchorElement = document.createElement('a') as HTMLAnchorElement;
-
-        a.href = objectUrl;
-        a.download = file.name;
-        document.body.appendChild(a);
-        a.click();
-
-        document.body.removeChild(a);
-        URL.revokeObjectURL(objectUrl);
+        file.content = file.content.split(',')[1]
+        let byteCharacters = atob(file.content);
+        let byteArrays = [];
+        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+            let slice = byteCharacters.slice(offset, offset + 512);
+            let byteNumbers = new Array(slice.length);
+            for (var i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+            let byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+        let result = new Blob(byteArrays);
+        const blob = new Blob([result]);
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = file.name;
+        document.body.appendChild(link);
+        link.click();
         return of(null);
     }
 
@@ -62,9 +68,8 @@ export class ExampleDataService implements IDataService<ExampleNode> {
             const file = files.item(i);
             const obs = new Observable((observer: Subscriber<any>): void => {
                 const reader = new FileReader();
-
+                reader.readAsDataURL(file);
                 const id = ++this.id;
-
                 reader.onload = () => {
                     const nodePath = node ? MOCK_FOLDERS.find(f => f.id === node.id).path : '';
                     const newFile = { id, name: file.name, path: nodePath + '/' + file.name, content: reader.result as string };
@@ -72,11 +77,9 @@ export class ExampleDataService implements IDataService<ExampleNode> {
                     observer.next(reader.result);
                     observer.complete();
                 };
-                reader.readAsText(file);
             });
             results.push(obs);
         }
-
         return forkJoin(results);
     }
 
