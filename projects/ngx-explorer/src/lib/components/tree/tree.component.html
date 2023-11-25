@@ -11,7 +11,7 @@
 
             <div class="item" (click)="node.expanded ? collapse(node): expand(node)">
                 <div class="folder-icon"><i class="icon-folder" aria-hidden="true"></i></div>
-                <div class="grow" [innerText]="getName(node.data)"></div>
+                <div class="grow" [innerText]="node.data?.name"></div>
                 <!-- <div class="ellipsis-icon"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></div> -->
                 <div class="highlighter"></div>
             </div>

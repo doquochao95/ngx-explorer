@@ -3,7 +3,7 @@ import { ExplorerService } from '../../services/explorer.service';
 import { filter } from 'rxjs/operators';
 import { HelperService } from '../../services/helper.service';
 import { Subscription } from 'rxjs';
-import { INode } from '../../shared/types';
+import { INode, ItemModel } from '../../shared/types';
 
 interface TreeNode extends INode {
     children: TreeNode[];
@@ -38,10 +38,6 @@ export class TreeComponent implements OnDestroy {
         let nodes: INode;
         this.sub.add(this.explorerService.tree.pipe(filter(x => !!x)).subscribe(x => nodes = x));
         this.treeNodes = this.buildTree(nodes).children;
-    }
-
-    getName(node: INode) {
-        return this.helperService.getName(node);
     }
 
     ngOnDestroy(): void {

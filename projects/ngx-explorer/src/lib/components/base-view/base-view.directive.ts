@@ -1,6 +1,6 @@
 import { Directive, Inject, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { FileTypeIconClass, INode } from '../../shared/types';
+import { FileTypeIconClass, INode, ItemModel } from '../../shared/types';
 import { FILTER_STRING } from '../../injection-tokens/tokens';
 import { ExplorerService } from '../../services/explorer.service';
 import { HelperService } from '../../services/helper.service';
@@ -34,11 +34,7 @@ export class BaseView implements OnDestroy {
         if (!filter) {
             return this.items;
         }
-        return this.items.filter(i => this.helperService.getName(i.data).toLowerCase().includes(filter.toLowerCase()));
-    }
-
-    getDisplayName(data: any) {
-        return this.helperService.getName(data);
+        return this.items.filter(i => i.data?.name.toLowerCase().includes(filter.toLowerCase()));
     }
     getIconClass(data: any) {
         let format: string = this.helperService.getFormat(data);

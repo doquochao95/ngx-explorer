@@ -1,9 +1,8 @@
-import { Component, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { INode } from '../../shared/types';
 import { ExplorerService } from '../../services/explorer.service';
-import { HelperService } from '../../services/helper.service';
-import { ConfigProvider } from '../../services/config.provider';
+import { DefaultConfig } from '../../shared/default-config';
 
 interface Breadcrumb {
     node: INode;
@@ -17,15 +16,18 @@ interface Breadcrumb {
     encapsulation: ViewEncapsulation.None,
 })
 export class BreadcrumbsComponent implements OnDestroy {
+
     public breadcrumbs: Breadcrumb[] = [];
     private sub = new Subscription();
 
-    constructor(private explorerService: ExplorerService, private helperService: HelperService, private config: ConfigProvider) {
+    constructor(private explorerService: ExplorerService, private config: DefaultConfig) {
         this.sub.add(this.explorerService.breadcrumbs.subscribe(n => this.buildBreadcrumbs(n)));
     }
 
     private buildBreadcrumbs(nodes: INode[]) {
-        this.breadcrumbs = nodes.map(n => ({ name: this.helperService.getName(n.data) || this.config.config.homeNodeName, node: n }));
+        this.breadcrumbs = nodes.map(n =>
+            ({ name: n.data?.name || this.config.globalOptions.homeNodeName, node: n })
+        );
     }
 
     public click(crumb: Breadcrumb) {

@@ -2,7 +2,7 @@
     <div class="nxe-menu-bar-left">
         <button class="nxe-menu-bar-button" (click)="createFolder()"><i class="icon-folder" aria-hidden="true"></i>New Folder</button>
         <button class="nxe-menu-bar-button" (click)="refresh()"><i class="icon-arrows-cw" aria-hidden="true"></i> Refresh</button>
-        <button class="nxe-menu-bar-button" (click)="openUploader()"><i class="icon-upload" aria-hidden="true"></i> Upload</button>
+        <button class="nxe-menu-bar-button" [hidden]="!canUpload" (click)="openUploader()"><i class="icon-upload" aria-hidden="true"></i> Upload</button>
         <button class="nxe-menu-bar-button" [hidden]="!canDownload" (click)="download()"><i class="icon-download" aria-hidden="true"></i> Download</button>
         <button class="nxe-menu-bar-button" [hidden]="!canRename" (click)="rename()"><i class="icon-edit" aria-hidden="true"></i> Rename</button>
         <button class="nxe-menu-bar-button" [hidden]="!canDelete" (click)="remove()"><i class="icon-trash-empty" aria-hidden="true"></i> Delete</button>
@@ -11,5 +11,5 @@
     <div class="nxe-menu-bar-right">
         <nxe-view-switcher></nxe-view-switcher>
     </div>
-    <input style="display: none" type="file" multiple (change)="handleFiles($event)" #uploader>
+    <input style="display: none" type="file" multiple (change)="handleFiles($event)" data-max-size="500" #uploader>
 </div>

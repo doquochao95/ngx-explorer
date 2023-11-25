@@ -1,28 +1,28 @@
 import { forkJoin, Observable, of, Subscriber } from 'rxjs';
-import { IDataService, NodeContent } from 'ngx-explorer';
+import { IDataService, ItemModel, NodeContent, Utils } from 'ngx-explorer';
 
-let MOCK_FOLDERS = [
-    { id: 1, name: 'Music', path: 'music' },
-    { id: 2, name: 'Movies', path: 'movies' },
-    { id: 3, name: 'Books', path: 'books' },
-    { id: 4, name: 'Games', path: 'games' },
-    { id: 5, name: 'Rock', path: 'music/rock' },
-    { id: 6, name: 'Jazz', path: 'music/jazz' },
-    { id: 7, name: 'Classical', path: 'music/classical' },
-    { id: 15, name: 'Aerosmith', path: 'music/rock/aerosmith' },
-    { id: 16, name: 'AC/DC', path: 'music/rock/acdc' },
-    { id: 17, name: 'Led Zeppelin', path: 'music/rock/ledzeppelin' },
-    { id: 18, name: 'The Beatles', path: 'music/rock/thebeatles' },
+let MOCK_FOLDERS: ItemModel[] = [
+    { id: 1, name: 'Music', path: 'music', type: "Folder", size: '', last_Modified: '20231124', content: '' },
+    { id: 2, name: 'Movies', path: 'movies', type: "Folder", size: '', last_Modified: '20231124', content: '' },
+    { id: 3, name: 'Books', path: 'books', type: "Folder", size: '', last_Modified: '20231124', content: '' },
+    { id: 4, name: 'Games', path: 'games', type: "Folder", size: '', last_Modified: '20231124', content: '' },
+    { id: 5, name: 'Rock', path: 'music/rock', type: "Folder", size: '', last_Modified: '20231124', content: '' },
+    { id: 6, name: 'Jazz', path: 'music/jazz', type: "Folder", size: '', last_Modified: '20231124', content: '' },
+    { id: 7, name: 'Classical', path: 'music/classical', type: "Folder", size: '', last_Modified: '20231124', content: '' },
+    { id: 15, name: 'Aerosmith', path: 'music/rock/aerosmith', type: "Folder", size: '', last_Modified: '20231124', content: '' },
+    { id: 16, name: 'AC/DC', path: 'music/rock/acdc', type: "Folder", size: '', last_Modified: '20231124', content: '' },
+    { id: 17, name: 'Led Zeppelin', path: 'music/rock/ledzeppelin', type: "Folder", size: '', last_Modified: '20231124', content: '' },
+    { id: 18, name: 'The Beatles', path: 'music/rock/thebeatles', type: "Folder", size: '', last_Modified: '20231124', content: '' },
 ];
 
-let MOCK_FILES = [
-    { id: 428, name: 'notes.txt', path: '', content: 'hi, this is an example' },
-    { id: 4281, name: '2.txt', path: '', content: 'hi, this is an example' },
-    { id: 28, name: 'Thriller.txt', path: 'music/rock/thebeatles/thriller', content: 'hi, this is an example' },
-    { id: 29, name: 'Back in the U.S.S.R.txt', path: 'music/rock/thebeatles', content: 'hi, this is an example' },
-    { id: 30, name: 'All You Need Is Love.txt', path: 'music/rock/thebeatles', content: 'hi, this is an example' },
-    { id: 31, name: 'Hey Jude.txt', path: 'music/rock/ledzeppelin/heyjude', content: 'hi, this is an example' },
-    { id: 32, name: 'Rock And Roll All Nite.txt', path: 'music/rock/ledzeppelin/rockandrollallnight', content: 'hi, this is an example' },
+let MOCK_FILES: ItemModel[] = [
+    { id: 428, name: 'notes.txt', path: '', content: 'hi, this is an example', type: "Folder", size: '', last_Modified: '20231124' },
+    { id: 4281, name: '2.txt', path: '', content: 'hi, this is an example', type: "Folder", size: '', last_Modified: '20231124' },
+    { id: 28, name: 'Thriller.txt', path: 'music/rock/thebeatles/thriller', content: 'hi, this is an example', type: "Folder", size: '', last_Modified: '20231124' },
+    { id: 29, name: 'Back in the U.S.S.R.txt', path: 'music/rock/thebeatles', content: 'hi, this is an example', type: "Folder", size: '', last_Modified: '20231124' },
+    { id: 30, name: 'All You Need Is Love.txt', path: 'music/rock/thebeatles', content: 'hi, this is an example', type: "Folder", size: '', last_Modified: '20231124' },
+    { id: 31, name: 'Hey Jude.txt', path: 'music/rock/ledzeppelin/heyjude', content: 'hi, this is an example', type: "Folder", size: '', last_Modified: '20231124' },
+    { id: 32, name: 'Rock And Roll All Nite.txt', path: 'music/rock/ledzeppelin/rockandrollallnight', content: 'hi, this is an example', type: "Folder", size: '', last_Modified: '20231124' },
 ];
 
 interface ExampleNode {
@@ -72,7 +72,7 @@ export class ExampleDataService implements IDataService<ExampleNode> {
                 const id = ++this.id;
                 reader.onload = () => {
                     const nodePath = node ? MOCK_FOLDERS.find(f => f.id === node.id).path : '';
-                    const newFile = { id, name: file.name, path: nodePath + '/' + file.name, content: reader.result as string };
+                    const newFile: ItemModel = { id, name: file.name, path: nodePath + '/' + file.name, content: reader.result as string, type: file.type, size: Utils.formatBytes(file.size), last_Modified: '20231124' };
                     MOCK_FILES.push(newFile);
                     observer.next(reader.result);
                     observer.complete();
@@ -107,7 +107,7 @@ export class ExampleDataService implements IDataService<ExampleNode> {
     createNode(node: ExampleNode, name: string): Observable<any> {
         const path = (node?.path ? node.path + '/' : '') + name.replace(/[\W_]+/g, ' ');
         const id = ++this.folderId;
-        const newFolder = { path, id, name };
+        const newFolder : ItemModel = { path, id, name, content: '' , type: 'Folder', size: '', last_Modified: '20231124'  };
         MOCK_FOLDERS.push(newFolder);
         return of(newFolder);
     }

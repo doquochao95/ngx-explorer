@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 
 export type NodeContent<T> = { leafs: T[], nodes: T[] };
+export type NgExplorerOption= Partial<ExplorerOption>;
 
 export interface Dictionary<T> {
     [Key: string]: T;
@@ -9,11 +10,19 @@ export interface Dictionary<T> {
 export interface INode {
     id: number;
     parentId: number;
-    data: any;
+    data: ItemModel;
     isLeaf: boolean;
     children: INode[];
 }
-
+export interface ItemModel {
+    id: number;
+    name: string;
+    path: string;
+    content: string
+    type: string;
+    size: string;
+    last_Modified: string;
+}
 export interface IDataService<T> {
     getNodeChildren(node: T): Observable<NodeContent<T>>;
     createNode(parentNode: T, name: string): Observable<any>;
@@ -26,7 +35,7 @@ export interface IDataService<T> {
 }
 
 export interface IHelperService {
-    getName<T>(data: T): string;
+    getFormat(data: any): string
 }
 
 export enum AvialableView {
@@ -43,8 +52,10 @@ export enum FileTypeIconClass {
     Video = 'icon-file-video',
     Document = 'icon-doc'
 }
-export interface NgeExplorerConfig {
+
+export interface ExplorerOption {
     homeNodeName: string;
     autoRefresh: boolean;
+    readOnly :boolean;
     autoRefreshInterval: number;
 }

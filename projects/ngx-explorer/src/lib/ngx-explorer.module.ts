@@ -10,40 +10,33 @@ import { ViewSwitcherComponent } from './components/view-switcher/view-switcher.
 import { TreeComponent } from './components/tree/tree.component';
 import { FilterComponent } from './components/filter/filter.component';
 import { DragDropDirective } from './directives/drag-drop.directive';
-import { Config } from './shared/default-config';
 
 @NgModule({
-  declarations: [
-    IconsComponent,
-    ExplorerComponent,
-    MenuBarComponent,
-    BreadcrumbsComponent,
-    ListComponent,
-    SecondMenuBarComponent,
-    ViewSwitcherComponent,
-    TreeComponent,
-    FilterComponent,
-    DragDropDirective,
-  ],
-  imports: [
-    CommonModule
-  ],
-  exports: [
-    IconsComponent,
-    ExplorerComponent,
-    MenuBarComponent,
-    BreadcrumbsComponent,
-    ListComponent,
-    SecondMenuBarComponent,
-    ViewSwitcherComponent,
-    TreeComponent,
-    FilterComponent
-  ],
-  providers: [
-    {
-      provide: Config,
-      useValue: Config
-    }
-  ]
+    declarations: [
+        IconsComponent,
+        ExplorerComponent,
+        MenuBarComponent,
+        BreadcrumbsComponent,
+        ListComponent,
+        SecondMenuBarComponent,
+        ViewSwitcherComponent,
+        TreeComponent,
+        FilterComponent,
+        DragDropDirective,
+    ],
+    imports: [
+        CommonModule
+    ],
+    exports: [
+        IconsComponent,
+        ExplorerComponent,
+        MenuBarComponent,
+        BreadcrumbsComponent,
+        ListComponent,
+        SecondMenuBarComponent,
+        ViewSwitcherComponent,
+        TreeComponent,
+        FilterComponent
+    ]
 })
 export class NgxExplorerModule { }
