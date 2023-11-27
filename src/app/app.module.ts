@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { NgxExplorerModule, DataService } from 'ngx-explorer';
 import { ExampleDataService } from './data.service';
-
 @NgModule({
     declarations: [
         AppComponent,

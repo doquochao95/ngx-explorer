@@ -1,38 +1,46 @@
 @import "../vars.scss";
 
 .nxe-menu-bar {
-    display: flex;
-
-    .nxe-menu-bar-left {
-        flex-grow: 1;
-        padding: 10px;
+    padding: 5px;
+    .vertical-divider {
+        border-right: 1px solid #ccc;
+        height: 100%;
+        box-sizing: border-box;
     }
 
     .nxe-menu-bar-button {
         cursor: pointer;
-        padding: 5px 5px;
         border-radius: 5px;
         background: transparent;
         border: 0;
         font-family: inherit;
-        font-size: inherit;
+        font-size: x-large;
         font-weight: inherit;
-        margin-right: 20px;
-
-        .icon-folder {
-            color: $folder-bg;
-        }
-
-        // .nxe-arrows-cw {
-        //     color: #008000
+        transition-duration: 0.3s;
+        margin: 5px 10px 5px 10px;
+        // .icon-folder {
+        //     color: $warning;
         // }
 
-        .icon-trash-empty {
-            color: $negative-red;
+        // .icon-arrows-cw {
+        //     color: $primary;
+        // }
+        .icon-home::before {
+            scale: 1.5 !important;
+        }
+        .icon-arrows-cw::before {
+            scale: 0.8 !important;
         }
 
+        // .icon-folder-empty {
+        //     color: $warning;
+        // }
+        // .icon-trash-empty {
+        //     color: $danger;
+        // }
+
         &:hover {
-            background-color: #d7edff;
+            transform: scale(1.3);
         }
     }
 }

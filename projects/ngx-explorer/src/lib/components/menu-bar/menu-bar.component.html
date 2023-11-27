@@ -1,15 +1,37 @@
 <div class="nxe-menu-bar">
-    <div class="nxe-menu-bar-left">
-        <button class="nxe-menu-bar-button" (click)="createFolder()"><i class="icon-folder" aria-hidden="true"></i>New Folder</button>
-        <button class="nxe-menu-bar-button" (click)="refresh()"><i class="icon-arrows-cw" aria-hidden="true"></i> Refresh</button>
-        <button class="nxe-menu-bar-button" [hidden]="!canUpload" (click)="openUploader()"><i class="icon-upload" aria-hidden="true"></i> Upload</button>
-        <button class="nxe-menu-bar-button" [hidden]="!canDownload" (click)="download()"><i class="icon-download" aria-hidden="true"></i> Download</button>
-        <button class="nxe-menu-bar-button" [hidden]="!canRename" (click)="rename()"><i class="icon-edit" aria-hidden="true"></i> Rename</button>
-        <button class="nxe-menu-bar-button" [hidden]="!canDelete" (click)="remove()"><i class="icon-trash-empty" aria-hidden="true"></i> Delete</button>
-    </div>
-
-    <div class="nxe-menu-bar-right">
-        <nxe-view-switcher></nxe-view-switcher>
+    <div class="d-flex">
+        <button class="nxe-menu-bar-button" type="button" tooltip="Home" placement="bottom" ><i class="icon-home" aria-hidden="true"></i></button>
+        <div >
+            <div class="vertical-divider"></div>
+        </div>
+        <button class="nxe-menu-bar-button" type="button" tooltip="New Folder" placement="bottom" (click)="openModal(template)"><i class="icon-folder-empty" aria-hidden="true"></i></button>
+        <button class="nxe-menu-bar-button" type="button" tooltip="Refresh" placement="bottom" (click)="refresh()"><i class="icon-arrows-cw" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" tooltip="Upload" placement="bottom" [hidden]="!canUpload" (click)="openUploader()"><i class="icon-upload" aria-hidden="true"></i></button>
+        <button class="nxe-menu-bar-button" type="button" tooltip="Download" placement="bottom" [hidden]="!canDownload" (click)="download()"><i class="icon-download" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" tooltip="Rename" placement="bottom" [hidden]="!canRename" (click)="openModal(template,true)"><i class="icon-edit" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" tooltip="Delete" placement="bottom" [hidden]="!canDelete" (click)="openConfirmDialog()"><i class="icon-trash-empty" aria-hidden="true"></i> </button>
+        <div class="flex-fill">
+            <nxe-view-switcher ></nxe-view-switcher>
+        </div>
     </div>
     <input style="display: none" type="file" multiple (change)="handleFiles($event)" data-max-size="500" #uploader>
 </div>
+<ng-template #template>
+    <div class="modal-header">
+        <h5 class="modal-title">{{modalTitle}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancel()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <input class="form-control" type="text" #inputFolderName (keyup)="onChange()" placeholder="New Folder">
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancel()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="confirm(inputFolderName.value)" [disabled]="!inputFolderName.value">{{currentState}}</button>
+    </div>
+</ng-template>

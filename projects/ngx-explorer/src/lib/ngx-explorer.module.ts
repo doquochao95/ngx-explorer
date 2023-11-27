@@ -10,6 +10,9 @@ import { ViewSwitcherComponent } from './components/view-switcher/view-switcher.
 import { TreeComponent } from './components/tree/tree.component';
 import { FilterComponent } from './components/filter/filter.component';
 import { DragDropDirective } from './directives/drag-drop.directive';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { ConfirmComponent } from './components/confirm/confirm.component';
 
 @NgModule({
     declarations: [
@@ -25,7 +28,9 @@ import { DragDropDirective } from './directives/drag-drop.directive';
         DragDropDirective,
     ],
     imports: [
-        CommonModule
+        CommonModule,
+        TooltipModule.forRoot(),
+        ModalModule.forRoot()
     ],
     exports: [
         IconsComponent,
@@ -36,7 +41,7 @@ import { DragDropDirective } from './directives/drag-drop.directive';
         SecondMenuBarComponent,
         ViewSwitcherComponent,
         TreeComponent,
-        FilterComponent
+        FilterComponent,
     ]
 })
 export class NgxExplorerModule { }

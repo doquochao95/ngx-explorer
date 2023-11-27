@@ -1,9 +1,10 @@
-import { Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, OnDestroy, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { INode } from '../../shared/types';
 import { ExplorerService } from '../../services/explorer.service';
-import { HelperService } from '../../services/helper.service';
 import { DefaultConfig } from '../../shared/default-config';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { ConfirmComponent } from '../confirm/confirm.component';
 
 @Component({
     selector: 'nxe-menu-bar',
@@ -14,20 +15,24 @@ import { DefaultConfig } from '../../shared/default-config';
 export class MenuBarComponent implements OnDestroy {
     @ViewChild('uploader', { static: true }) uploader: ElementRef;
 
+    modalRef?: BsModalRef;
     canUpload = true;
     canDownload = false;
     canDelete = false;
     canRename = false;
+    modalTitle: string = 'Enter folder name'
+    currentState: string = 'Create'
+    itemType: string = 'Folder'
 
     private sub = new Subscription();
-    private selection: INode[] = [];
 
     constructor(
         private explorerService: ExplorerService,
-        public config: DefaultConfig) {
+        public config: DefaultConfig,
+        private modalService: BsModalService
+    ) {
         this.sub.add(this.explorerService.selectedNodes.subscribe(n => {
-            this.selection = n;
-            this.canDownload = n.filter(x => x.isLeaf).length === 1;
+            this.canDownload = n.length > 0 && n.every(x => x.isLeaf);
             this.canDelete = n.length > 0;
             this.canRename = n.length === 1;
             if (config.globalOptions.readOnly) {
@@ -38,31 +43,8 @@ export class MenuBarComponent implements OnDestroy {
         }));
     }
 
-    createFolder() {
-        const name = prompt('Enter new folder name');
-        if (name) {
-            this.explorerService.createNode(name);
-        }
-    }
-
     refresh() {
         this.explorerService.refresh();
-    }
-
-    rename() {
-        if (this.selection.length === 1) {
-            const oldName = this.selection[0].data?.name;
-            const newName = prompt('Enter new name', oldName);
-            if (newName) {
-                this.explorerService.rename(newName);
-            }
-        }
-    }
-
-    remove() {
-        if (confirm('Are you sure you want to delete the selected files?')) {
-            this.explorerService.remove();
-        }
     }
 
     openUploader() {
@@ -86,4 +68,27 @@ export class MenuBarComponent implements OnDestroy {
         this.sub.unsubscribe();
     }
 
+    openModal(template: TemplateRef<any>, isRename?: boolean) {
+        this.modalTitle = isRename ? 'Enter new folder name' : 'Enter folder name'
+        this.currentState = isRename ? 'Rename' : 'Create'
+        this.modalRef = this.modalService.show(template, { class: 'modal-md modal-dialog-centered' });
+    }
+
+    confirm(value: string): void {
+        this.currentState == 'Create' ? this.explorerService.createNode(value.trim()) : this.explorerService.rename(value.trim());
+        this.modalRef?.hide();
+    }
+
+    cancel(): void {
+        this.modalRef?.hide();
+    }
+    onChange() {
+    }
+    openConfirmDialog() {
+        this.modalRef = this.modalService.show(ConfirmComponent, { initialState: { message: 'Are you sure you want to delete the selected files?' }, class: 'modal-dialog-centered' });
+        this.modalRef.content.onClose.subscribe((result: boolean) => {
+            if (result)
+                this.explorerService.remove();
+        })
+    }
 }

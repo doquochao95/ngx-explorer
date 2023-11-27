@@ -1,0 +1,26 @@
+
+.icon-cancel:before { content: '\e800'; } /* '' */
+.icon-doc:before { content: '\e801'; } /* '' */
+.icon-home:before { content: '\e802'; } /* '' */
+.icon-arrows-cw:before { content: '\e803'; } /* '' */
+.icon-upload:before { content: '\e804'; } /* '' */
+.icon-download:before { content: '\e805'; } /* '' */
+.icon-edit:before { content: '\e806'; } /* '' */
+.icon-trash-empty:before { content: '\e807'; } /* '' */
+.icon-menu:before { content: '\e808'; } /* '' */
+.icon-th-large:before { content: '\e809'; } /* '' */
+.icon-folder:before { content: '\e80a'; } /* '' */
+.icon-folder-open:before { content: '\e80b'; } /* '' */
+.icon-copy:before { content: '\f0c5'; } /* '' */
+.icon-paste:before { content: '\f0ea'; } /* '' */
+.icon-doc-text:before { content: '\f0f6'; } /* '' */
+.icon-angle-right:before { content: '\f105'; } /* '' */
+.icon-angle-down:before { content: '\f107'; } /* '' */
+.icon-folder-empty:before { content: '\f114'; } /* '' */
+.icon-file-pdf:before { content: '\f1c1'; } /* '' */
+.icon-file-word:before { content: '\f1c2'; } /* '' */
+.icon-file-excel:before { content: '\f1c3'; } /* '' */
+.icon-file-powerpoint:before { content: '\f1c4'; } /* '' */
+.icon-file-image:before { content: '\f1c5'; } /* '' */
+.icon-file-archive:before { content: '\f1c6'; } /* '' */
+.icon-file-video:before { content: '\f1c8'; } /* '' */

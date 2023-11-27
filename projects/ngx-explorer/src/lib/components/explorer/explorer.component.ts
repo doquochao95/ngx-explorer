@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnDestroy, OnInit, ViewEncapsulation, AfterViewInit } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit, ViewEncapsulation, AfterViewInit, AfterContentInit } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { AvialableView } from '../../shared/types';
 import { CURRENT_VIEW } from '../../injection-tokens/tokens';
@@ -12,7 +12,7 @@ import { ExplorerService } from '../../services/explorer.service';
     styleUrls: ['./explorer.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class ExplorerComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ExplorerComponent implements OnInit, AfterContentInit, OnDestroy {
 
     private _readOnly: boolean;
     private _autoRefresh: boolean;
@@ -50,7 +50,7 @@ export class ExplorerComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnDestroy() {
         this.sub.unsubscribe();
     }
-    ngAfterViewInit() {
+    ngAfterContentInit() {
         this.explorerService.refresh()
     }
 }

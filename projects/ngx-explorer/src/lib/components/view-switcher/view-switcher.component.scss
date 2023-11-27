@@ -4,19 +4,26 @@
     button {
         cursor: pointer;
         padding: 5px 5px;
-        border-radius: 5px;
         background: transparent;
         border: 0;
         font-family: inherit;
-        font-size: inherit;
+        font-size: x-large;
         font-weight: inherit;
+        transition-duration: 0.3s;
 
         &:hover {
-            background-color: #d7edff;
+            transform: scale(1.2);
+
         }
+    }
+    .icon-th-large::before {
+        scale: 0.8 !important;
+    }
+    .icon-menu::before {
+        scale: 0.8 !important;
     }
     .enable{
         border: 1px solid;
-        border-radius: 3px;
+        border-radius: 5px;
     }
 }

@@ -5,7 +5,9 @@
         "@angular/common": ">= 16.0.0",
         "@angular/core": ">= 16.0.0",
         "@angular/cdk": ">=16.0.0",
-        "rxjs": ">= 6.5.0"
+        "rxjs": ">= 6.5.0",
+        "bootstrap": "4.6.2",
+        "ngx-bootstrap": "11.0.2"
     },
     "dependencies": {
         "tslib": "^2.0.0"
