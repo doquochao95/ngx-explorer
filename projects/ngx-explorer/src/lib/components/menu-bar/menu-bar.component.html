@@ -1,15 +1,15 @@
 <div class="nxe-menu-bar">
     <div class="d-flex">
-        <button class="nxe-menu-bar-button" type="button" tooltip="Home" placement="bottom" ><i class="icon-home" aria-hidden="true"></i></button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Home" placement="bottom" ><i class="icon-home" aria-hidden="true"></i></button>
         <div >
             <div class="vertical-divider"></div>
         </div>
-        <button class="nxe-menu-bar-button" type="button" tooltip="New Folder" placement="bottom" (click)="openModal(template)"><i class="icon-folder-empty" aria-hidden="true"></i></button>
-        <button class="nxe-menu-bar-button" type="button" tooltip="Refresh" placement="bottom" (click)="refresh()"><i class="icon-arrows-cw" aria-hidden="true"></i> </button>
-        <button class="nxe-menu-bar-button" type="button" tooltip="Upload" placement="bottom" [hidden]="!canUpload" (click)="openUploader()"><i class="icon-upload" aria-hidden="true"></i></button>
-        <button class="nxe-menu-bar-button" type="button" tooltip="Download" placement="bottom" [hidden]="!canDownload" (click)="download()"><i class="icon-download" aria-hidden="true"></i> </button>
-        <button class="nxe-menu-bar-button" type="button" tooltip="Rename" placement="bottom" [hidden]="!canRename" (click)="openModal(template,true)"><i class="icon-edit" aria-hidden="true"></i> </button>
-        <button class="nxe-menu-bar-button" type="button" tooltip="Delete" placement="bottom" [hidden]="!canDelete" (click)="openConfirmDialog()"><i class="icon-trash-empty" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="New Folder" placement="bottom" (click)="openModal(template)"><i class="icon-folder-empty" aria-hidden="true"></i></button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Refresh" placement="bottom" (click)="refresh()"><i class="icon-arrows-cw" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Upload" placement="bottom" [hidden]="!canUpload" (click)="openUploader()"><i class="icon-upload" aria-hidden="true"></i></button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Download" placement="bottom" [hidden]="!canDownload" (click)="download()"><i class="icon-download" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Rename" placement="bottom" [hidden]="!canRename" (click)="openModal(template,true)"><i class="icon-edit" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Delete" placement="bottom" [hidden]="!canDelete" (click)="openConfirmDialog()"><i class="icon-trash-empty" aria-hidden="true"></i> </button>
         <div class="flex-fill">
             <nxe-view-switcher ></nxe-view-switcher>
         </div>

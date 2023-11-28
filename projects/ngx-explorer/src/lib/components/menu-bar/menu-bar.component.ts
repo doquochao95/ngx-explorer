@@ -1,6 +1,5 @@
 import { Component, ElementRef, OnDestroy, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { INode } from '../../shared/types';
 import { ExplorerService } from '../../services/explorer.service';
 import { DefaultConfig } from '../../shared/default-config';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
