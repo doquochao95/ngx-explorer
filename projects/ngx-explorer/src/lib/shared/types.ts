@@ -43,6 +43,7 @@ export enum AvialableView {
     Icon = 'Icon',
 }
 export enum FileTypeIconClass {
+    Folder = 'icon-folder',
     Pdf = 'icon-file-pdf',
     Word = 'icon-file-word',
     Excel = 'icon-file-excel',

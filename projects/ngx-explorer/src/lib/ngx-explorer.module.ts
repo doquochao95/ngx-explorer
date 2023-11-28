@@ -12,7 +12,7 @@ import { FilterComponent } from './components/filter/filter.component';
 import { DragDropDirective } from './directives/drag-drop.directive';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import { ConfirmComponent } from './components/confirm/confirm.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
     declarations: [
@@ -29,6 +29,7 @@ import { ConfirmComponent } from './components/confirm/confirm.component';
     ],
     imports: [
         CommonModule,
+        BrowserAnimationsModule,
         TooltipModule.forRoot(),
         ModalModule.forRoot()
     ],

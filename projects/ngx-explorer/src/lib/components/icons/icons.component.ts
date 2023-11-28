@@ -4,6 +4,7 @@ import { FILTER_STRING } from '../../injection-tokens/tokens';
 import { ExplorerService } from '../../services/explorer.service';
 import { HelperService } from '../../services/helper.service';
 import { BaseView } from '../base-view/base-view.directive';
+import { FileTypeIconClass } from '../../shared/types';
 
 @Component({
     selector: 'nxe-icons',
@@ -13,17 +14,7 @@ import { BaseView } from '../base-view/base-view.directive';
 })
 export class IconsComponent extends BaseView {
 
-    public readonly icons = {
-        folder: 'icon-folder',
-        doc: 'icon-doc',
-        pdf:'icon-file-pdf',
-        word:'icon-file-word',
-        excel:'icon-file-excel',
-        powerpoint:'icon-file-powerpoint',
-        image:'icon-file-image',
-        archive:'icon-file-archive',
-        video:'icon-file-video',
-    };
+    icon = FileTypeIconClass.Folder
 
     constructor(explorerService: ExplorerService, helperService: HelperService, @Inject(FILTER_STRING) filter: BehaviorSubject<string>) {
         super(explorerService, helperService, filter);

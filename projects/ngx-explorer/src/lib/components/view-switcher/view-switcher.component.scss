@@ -9,11 +9,10 @@
         font-family: inherit;
         font-size: x-large;
         font-weight: inherit;
-        transition-duration: 0.3s;
+        transition-duration: 0.5s;
 
-        &:hover {
-            transform: scale(1.2);
-
+        &:target  {
+            transform: scale(1.5);
         }
     }
     .icon-th-large::before {

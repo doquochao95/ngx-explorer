@@ -46,6 +46,7 @@
 
                 &:hover {
                     cursor: pointer;
+                    background-color: #e5f1fc;
                 }
 
                 .nxe-icons-icon {
@@ -67,7 +68,7 @@
                 }
 
                 &.nxe-icon-selected {
-                    background-color: #f1f9ff;
+                    background-color: #cae7ff;
                     border: 1px solid #94cfff;
 
                     .nxe-icons-icon {
