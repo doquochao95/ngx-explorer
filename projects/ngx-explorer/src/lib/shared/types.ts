@@ -22,6 +22,7 @@ export interface ItemModel {
     type: string;
     size: string;
     last_Modified: string;
+    isFolder: boolean;
 }
 export interface IDataService<T> {
     getNodeChildren(node: T): Observable<NodeContent<T>>;
