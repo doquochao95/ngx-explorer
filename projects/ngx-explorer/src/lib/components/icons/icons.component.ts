@@ -5,6 +5,7 @@ import { ExplorerService } from '../../services/explorer.service';
 import { HelperService } from '../../services/helper.service';
 import { BaseView } from '../base-view/base-view.directive';
 import { FileTypeIconClass } from '../../shared/types';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
     selector: 'nxe-icons',
@@ -16,8 +17,12 @@ export class IconsComponent extends BaseView {
 
     icon = FileTypeIconClass.Folder
 
-    constructor(explorerService: ExplorerService, helperService: HelperService, @Inject(FILTER_STRING) filter: BehaviorSubject<string>) {
+    constructor(
+        explorerService: ExplorerService,
+        helperService: HelperService,
+        public _sanitizer: DomSanitizer,
+        @Inject(FILTER_STRING) filter: BehaviorSubject<string>
+    ) {
         super(explorerService, helperService, filter);
     }
-
 }

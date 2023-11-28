@@ -4,7 +4,10 @@
     <div class="nxe-icons-container">
         <div class="nxe-icons-wrapper" *ngFor="let item of filteredItems" (dblclick)="open($event, item)" (click)="select($event, item)">
             <div class="nxe-icons-wrapper-inner" [ngClass]="{'nxe-icon-selected':isSelected(item)}" [delay]="1000"  container="body" [tooltip]="item.data?.name" placement="bottom">
-                <div class="nxe-icons-icon">
+                <div class="nxe-icons-icon" *ngIf="item.data.type.indexOf('Image') != -1">
+                    <img [src]="_sanitizer.bypassSecurityTrustUrl(item.data.content)"/>
+                </div>
+                <div class="nxe-icons-icon" *ngIf="item.data.type.indexOf('Image') == -1">
                     <i [className]="item.isLeaf ? getIconClass(item.data) : icon"></i>
                 </div>
                 <div class="nxe-icon-text">{{ item.data?.name }}</div>
