@@ -28,18 +28,25 @@ export class TreeComponent implements OnDestroy {
         }));
     }
 
-    expand(node: INode) {
-        this.addExpandedNode(node.id);
-        this.explorerService.expandNode(node.id);
+    onClick(node: any) {
+        if (!node.expanded) {
+            this.addExpandedNode(node.id);
+            this.explorerService.expandNode(node.id);
+        }
+        else {
+            this.removeExpandedNode(node.id);
+            let nodes: INode;
+            this.sub.add(this.explorerService.tree.pipe(filter(x => !!x)).subscribe(x => nodes = x));
+            this.treeNodes = this.buildTree(nodes).children;
+        }
     }
-
-    collapse(node: INode) {
-        this.removeExpandedNode(node.id);
-        let nodes: INode;
-        this.sub.add(this.explorerService.tree.pipe(filter(x => !!x)).subscribe(x => nodes = x));
-        this.treeNodes = this.buildTree(nodes).children;
+    onDbClick(node: any) {
+        if (!node.expanded) {
+            this.addExpandedNode(node.id);
+            this.explorerService.expandNode(node.id);
+        }
+        this.explorerService.openNode(node.id);
     }
-
     ngOnDestroy(): void {
         this.sub.unsubscribe();
     }

@@ -13,6 +13,7 @@ import { DragDropDirective } from './directives/drag-drop.directive';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ClickEventDirective } from './directives/click-event.directive';
 
 @NgModule({
     declarations: [
@@ -26,6 +27,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         TreeComponent,
         FilterComponent,
         DragDropDirective,
+        ClickEventDirective
     ],
     imports: [
         CommonModule,

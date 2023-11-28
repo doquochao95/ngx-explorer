@@ -6,16 +6,17 @@
 <ng-template #tree let-nodes="nodes">
     <ul *ngIf="nodes && nodes.length > 0">
         <li *ngFor="let node of nodes">
-            <div class="chevron" *ngIf="!node.expanded" (click)="expand(node)"><i class="icon-angle-right" aria-hidden="true"></i></div>
-            <div class="chevron" *ngIf="node.expanded" (click)="collapse(node)"><i class="icon-angle-down" aria-hidden="true"></i></div>
+            <div class="chevron" *ngIf="!node.expanded" (click.single)="onClick(node)"><i class="icon-angle-right" aria-hidden="true"></i></div>
+            <div class="chevron" *ngIf="node.expanded" (click.single)="onClick(node)"><i class="icon-angle-down" aria-hidden="true"></i></div>
 
-            <div class="item" *ngIf="!node.expanded" (click)="node.expanded ? collapse(node): expand(node)">
+            <div class="item disable-text-selection" *ngIf="!node.expanded" (click.double)="onDbClick(node)" (click.single)="onClick(node)">
                 <div class="folder-icon"><i class="icon-folder" aria-hidden="true"></i></div>
                 <div class="grow" [innerText]="node.data?.name"></div>
                 <!-- <div class="ellipsis-icon"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></div> -->
                 <div class="highlighter"></div>
             </div>
-            <div class="item" *ngIf="node.expanded" (click)="node.expanded ? collapse(node): expand(node)">
+
+            <div class="item disable-text-selection" *ngIf="node.expanded" (click.double)="onDbClick(node)" (click.single)="onClick(node)">
                 <div class="folder-icon"><i class="icon-folder-open" aria-hidden="true"></i></div>
                 <div class="grow" [innerText]="node.data?.name"></div>
                 <!-- <div class="ellipsis-icon"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></div> -->

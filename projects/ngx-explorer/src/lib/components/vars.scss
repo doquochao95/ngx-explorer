@@ -2,3 +2,11 @@ $warning: #ffc107;
 $success: #28a745;
 $primary: #20a8d8;
 $danger: #dc3545;
+.disable-text-selection {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}

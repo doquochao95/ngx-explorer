@@ -90,4 +90,7 @@ export class MenuBarComponent implements OnDestroy {
                 this.explorerService.remove();
         })
     }
+    goHome(){
+        this.explorerService.openNode(1)
+    }
 }
