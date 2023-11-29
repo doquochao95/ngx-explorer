@@ -9,11 +9,7 @@
         font-family: inherit;
         font-size: x-large;
         font-weight: inherit;
-        transition-duration: 0.5s;
-
-        &:target  {
-            transform: scale(1.5);
-        }
+        transition-duration: 0.3s;
     }
     .icon-th-large::before {
         scale: 0.8 !important;
@@ -21,8 +17,7 @@
     .icon-menu::before {
         scale: 0.8 !important;
     }
-    .enable{
-        border: 1px solid;
-        border-radius: 5px;
+    .enable {
+        scale: 1.5 !important;
     }
 }

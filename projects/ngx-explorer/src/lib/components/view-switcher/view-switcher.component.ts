@@ -24,8 +24,8 @@ import { animate, keyframes, style, transition, trigger } from '@angular/animati
     encapsulation: ViewEncapsulation.None
 })
 export class ViewSwitcherComponent {
-    iconClicked = null;
-    detailClicked = null;
+    iconClicked = false;
+    detailClicked = false;
 
     public readonly avialableView = AvialableView;
     selected_Type: string = 'Icon'
