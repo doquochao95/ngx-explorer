@@ -25,13 +25,16 @@
     </div>
     <div class="modal-body">
         <div class="row">
-            <div class="col-12">
-                <input class="form-control" type="text" #inputFolderName (keyup)="onChange()" placeholder="New Folder">
+            <div class="col">
+                <input class="form-control" type="text"  [(ngModel)]="name" (keyup)="onChange()">
+            </div>
+            <div class="col-auto align-self-end pl-0" *ngIf="selection.length > 0 && currentState == 'Rename' && selection[0].isFile">
+                <label class="mb-0">{{format}}</label>
             </div>
         </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancel()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="confirm(inputFolderName.value)" [disabled]="!inputFolderName.value">{{currentState}}</button>
+        <button type="button" class="btn btn-primary" (click)="confirm()" [disabled]="!name">{{currentState}}</button>
     </div>
 </ng-template>

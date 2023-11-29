@@ -2,13 +2,13 @@ import { INode, Dictionary } from './types';
 
 export class Utils {
     private static id = 0;
-    static createNode(parentId = 0, isLeaf = false, data?: any): INode {
+    static createNode(parentId = 0, isFile = false, data?: any): INode {
         const id = ++this.id;
         return {
             id,
             parentId,
             data,
-            isLeaf,
+            isFile,
             children: []
         };
     }

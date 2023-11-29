@@ -75,7 +75,7 @@ export class ExplorerService {
         }
 
         const node = nodes[0];
-        if (node.isLeaf) {
+        if (node.isFile) {
             this.dataService.renameLeaf(node.data, name).subscribe(() => {
                 this.refresh();
             });
@@ -93,8 +93,8 @@ export class ExplorerService {
         }
 
         const targets = selection.map(node => this.flatPointers[node.id]);
-        const nodes = targets.filter(t => !t.isLeaf).map(data => data.data);
-        const leafs = targets.filter(t => t.isLeaf).map(data => data.data);
+        const nodes = targets.filter(t => !t.isFile).map(data => data.data);
+        const leafs = targets.filter(t => t.isFile).map(data => data.data);
 
         const sub1 = nodes.length ? this.dataService.deleteNodes(nodes) : of([]);
         const sub2 = leafs.length ? this.dataService.deleteLeafs(leafs) : of([]);
@@ -120,7 +120,7 @@ export class ExplorerService {
 
     private getNodeChildren(id: number) {
         const parent = this.flatPointers[id];
-        if (parent.isLeaf) {
+        if (parent.isFile) {
             throw new Error('Cannot open leaf node');
         }
 
@@ -145,8 +145,8 @@ export class ExplorerService {
                 });
 
                 parent.children.sort((a, b) => a.data.name.localeCompare(b.data.name));
-                const nodeChildren = parent.children.filter(c => !c.isLeaf);
-                const leafChildren = parent.children.filter(c => c.isLeaf);
+                const nodeChildren = parent.children.filter(c => !c.isFile);
+                const leafChildren = parent.children.filter(c => c.isFile);
                 parent.children = nodeChildren.concat(leafChildren);
 
                 this.tree$.next(this.internalTree);

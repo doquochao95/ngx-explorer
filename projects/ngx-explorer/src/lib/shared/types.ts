@@ -11,7 +11,7 @@ export interface INode {
     id: number;
     parentId: number;
     data: ItemModel;
-    isLeaf: boolean;
+    isFile: boolean;
     children: INode[];
 }
 export interface ItemModel {

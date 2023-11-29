@@ -196,6 +196,13 @@
   dependencies:
     tslib "^2.3.0"
 
+"@angular/forms@~16.2.9":
+  version "16.2.12"
+  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-16.2.12.tgz#a533ad61a65080281e709ca68840a1da9f189afc"
+  integrity sha512-1Eao89hlBgLR3v8tU91vccn21BBKL06WWxl7zLpQmG6Hun+2jrThgOE4Pf3os4fkkbH4Apj0tWL2fNIWe/blbw==
+  dependencies:
+    tslib "^2.3.0"
+
 "@angular/platform-browser-dynamic@~16.2.9":
   version "16.2.12"
   resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-16.2.12.tgz#14488188c06013eb4153ac6e0603975f8b679f70"
@@ -6247,7 +6254,7 @@ ng-packagr@^16.2.3:
   optionalDependencies:
     esbuild "^0.19.0"
 
-ngx-bootstrap@^11.0.2:
+ngx-bootstrap@11.0.2:
   version "11.0.2"
   resolved "https://registry.yarnpkg.com/ngx-bootstrap/-/ngx-bootstrap-11.0.2.tgz#ed1d0e254ef16ba8245cd9a3450404dc81aabef6"
   integrity sha512-McvQ72XB6692Jus47jahWWwjpSCa6EtHMIqoyMewKCEHMv0ybDgVnOAdEsWKvwfulowHn7Y/jDjeiURwYJG9cQ==

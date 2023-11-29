@@ -1,6 +1,6 @@
 import { Directive, Inject, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { FileTypeIconClass, INode, ItemModel } from '../../shared/types';
+import { FileTypeIconClass, INode } from '../../shared/types';
 import { FILTER_STRING } from '../../injection-tokens/tokens';
 import { ExplorerService } from '../../services/explorer.service';
 import { HelperService } from '../../services/helper.service';
@@ -71,7 +71,7 @@ export class BaseView implements OnDestroy {
     }
 
     open(event: MouseEvent, item: INode) {
-        if (!item.isLeaf) {
+        if (!item.isFile) {
             const metaKeyPressed = event.metaKey || event.ctrlKey || event.shiftKey;
             if (!metaKeyPressed) {
                 this.explorerService.openNode(item.id);

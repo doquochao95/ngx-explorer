@@ -14,6 +14,7 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ClickEventDirective } from './directives/click-event.directive';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
     declarations: [
@@ -31,6 +32,7 @@ import { ClickEventDirective } from './directives/click-event.directive';
     ],
     imports: [
         CommonModule,
+        FormsModule,
         BrowserAnimationsModule,
         TooltipModule.forRoot(),
         ModalModule.forRoot()

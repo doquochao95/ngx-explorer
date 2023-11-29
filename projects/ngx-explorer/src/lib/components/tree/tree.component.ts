@@ -56,14 +56,14 @@ export class TreeComponent implements OnDestroy {
             id: node.id,
             parentId: node.parentId,
             data: node.data,
-            isLeaf: node.isLeaf,
+            isFile: node.isFile,
             children: [],
             expanded: false
         } as TreeNode;
 
         treeNode.expanded = this.expandedIds.indexOf(node.id) > -1;
         if (treeNode.expanded) {
-            treeNode.children = node.children.filter(x => !x.isLeaf).map(x => this.buildTree(x));
+            treeNode.children = node.children.filter(x => !x.isFile).map(x => this.buildTree(x));
         }
         return treeNode;
     }
