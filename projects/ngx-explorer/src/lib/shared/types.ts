@@ -20,8 +20,8 @@ export interface ItemModel {
     path: string;
     content: string
     type: string;
-    size: string;
-    last_Modified: string;
+    size: number;
+    last_Modified: Date;
     isFolder: boolean;
 }
 export interface IDataService<T> {

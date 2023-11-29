@@ -15,6 +15,9 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ClickEventDirective } from './directives/click-event.directive';
 import { FormsModule } from '@angular/forms';
+import { FileSizePipe } from './pipes/file-size.pipe';
+import { DateTypePipe } from './pipes/date-type.pipe';
+import { FileTypePipe } from './pipes/file-type.pipe';
 
 @NgModule({
     declarations: [
@@ -28,7 +31,10 @@ import { FormsModule } from '@angular/forms';
         TreeComponent,
         FilterComponent,
         DragDropDirective,
-        ClickEventDirective
+        ClickEventDirective,
+        FileSizePipe,
+        DateTypePipe,
+        FileTypePipe
     ],
     imports: [
         CommonModule,

@@ -1,28 +1,28 @@
 import { forkJoin, Observable, of, Subscriber } from 'rxjs';
-import { IDataService, ItemModel, NodeContent, Utils } from 'ngx-explorer';
+import { IDataService, ItemModel, NodeContent } from 'ngx-explorer';
 
 let MOCK_FOLDERS: ItemModel[] = [
-    { id: 1, name: 'Music', path: 'music', type: "Folder", size: '', last_Modified: '2023/11/28 09:24:57', content: '', isFolder: true },
-    { id: 2, name: 'Movies', path: 'movies', type: "Folder", size: '', last_Modified: '2023/11/28 09:24:57', content: '', isFolder: true },
-    { id: 3, name: 'Books', path: 'books', type: "Folder", size: '', last_Modified: '2023/11/28 09:24:57', content: '', isFolder: true },
-    { id: 4, name: 'Games', path: 'games', type: "Folder", size: '', last_Modified: '2023/11/28 09:24:57', content: '', isFolder: true },
-    { id: 5, name: 'Rock', path: 'music/rock', type: "Folder", size: '', last_Modified: '2023/11/28 09:24:57', content: '', isFolder: true },
-    { id: 6, name: 'Jazz', path: 'music/jazz', type: "Folder", size: '', last_Modified: '2023/11/28 09:24:57', content: '', isFolder: true },
-    { id: 7, name: 'Classical', path: 'music/classical', type: "Folder", size: '', last_Modified: '2023/11/28 09:24:57', content: '', isFolder: true },
-    { id: 15, name: 'Aerosmith', path: 'music/rock/aerosmith', type: "Folder", size: '', last_Modified: '2023/11/28 09:24:57', content: '', isFolder: true },
-    { id: 16, name: 'AC/DC', path: 'music/rock/acdc', type: "Folder", size: '', last_Modified: '2023/11/28 09:24:57', content: '', isFolder: true },
-    { id: 17, name: 'Led Zeppelin', path: 'music/rock/ledzeppelin', type: "Folder", size: '', last_Modified: '2023/11/28 09:24:57', content: '', isFolder: true },
-    { id: 18, name: 'The Beatles', path: 'music/rock/thebeatles', type: "Folder", size: '', last_Modified: '2023/11/28 09:24:57', content: '', isFolder: true },
+    { id: 1, name: 'Music', path: 'music', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 2, name: 'Movies', path: 'movies', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 3, name: 'Books', path: 'books', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 4, name: 'Games', path: 'games', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 5, name: 'Rock', path: 'music/rock', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 6, name: 'Jazz', path: 'music/jazz', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 7, name: 'Classical', path: 'music/classical', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 15, name: 'Aerosmith', path: 'music/rock/aerosmith', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 16, name: 'AC/DC', path: 'music/rock/acdc', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 17, name: 'Led Zeppelin', path: 'music/rock/ledzeppelin', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 18, name: 'The Beatles', path: 'music/rock/thebeatles', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
 ];
 
 let MOCK_FILES: ItemModel[] = [
-    { id: 428, name: 'notes.txt', path: '', content: 'hi, this is an example', type: "Text File", size: '', last_Modified: '2023/11/28 09:24:57', isFolder: false },
-    { id: 4281, name: '2.txt', path: '', content: 'hi, this is an example', type: "Text File", size: '', last_Modified: '2023/11/28 09:24:57', isFolder: false },
-    { id: 28, name: 'Thriller.txt', path: 'music/rock/thebeatles/thriller', content: 'hi, this is an example', type: "Text File", size: '', last_Modified: '2023/11/28 09:24:57', isFolder: false },
-    { id: 29, name: 'Back in the U.S.S.R.txt', path: 'music/rock/thebeatles', content: 'hi, this is an example', type: "Text File", size: '', last_Modified: '2023/11/28 09:24:57', isFolder: false },
-    { id: 30, name: 'All You Need Is Love.txt', path: 'music/rock/thebeatles', content: 'hi, this is an example', type: "Text File", size: '', last_Modified: '2023/11/28 09:24:57', isFolder: false },
-    { id: 31, name: 'Hey Jude.txt', path: 'music/rock/ledzeppelin/heyjude', content: 'hi, this is an example', type: "Text File", size: '', last_Modified: '2023/11/28 09:24:57', isFolder: false },
-    { id: 32, name: 'Rock And Roll All Nite.txt', path: 'music/rock/ledzeppelin/rockandrollallnight', content: 'hi, this is an example', type: "Text File", size: '', last_Modified: '2023/11/28 09:24:57', isFolder: false },
+    { id: 428, name: 'notes.txt', path: '', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
+    { id: 4281, name: '2.txt', path: '', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
+    { id: 28, name: 'Thriller.txt', path: 'music/rock/thebeatles/thriller', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
+    { id: 29, name: 'Back in the U.S.S.R.txt', path: 'music/rock/thebeatles', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
+    { id: 30, name: 'All You Need Is Love.txt', path: 'music/rock/thebeatles', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
+    { id: 31, name: 'Hey Jude.txt', path: 'music/rock/ledzeppelin/heyjude', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
+    { id: 32, name: 'Rock And Roll All Nite.txt', path: 'music/rock/ledzeppelin/rockandrollallnight', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
 ];
 
 interface ExampleNode {
@@ -77,9 +77,9 @@ export class ExampleDataService implements IDataService<ExampleNode> {
                         name: file.name,
                         path: nodePath + '/' + file.name,
                         content: reader.result as string,
-                        type: Utils.getFileType(file.type),
-                        size: Utils.formatBytes(file.size),
-                        last_Modified: Utils.getDateTimeFormat(new Date),
+                        type: file.type,
+                        size: file.size,
+                        last_Modified: new Date,
                         isFolder: false
                     };
                     MOCK_FILES.push(newFile);
@@ -122,8 +122,8 @@ export class ExampleDataService implements IDataService<ExampleNode> {
             path,
             content: '',
             type: 'Folder',
-            size: '',
-            last_Modified: Utils.getDateTimeFormat(new Date),
+            size: null,
+            last_Modified: new Date,
             isFolder: true
         };
         MOCK_FOLDERS.push(newFolder);

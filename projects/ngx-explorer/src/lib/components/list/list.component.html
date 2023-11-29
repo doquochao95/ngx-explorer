@@ -22,13 +22,14 @@
                             {{ item.data?.name }}
                         </td>
                         <td>
-                            {{ item.data?.type}}
+                            {{ item.data?.type | filetype}}
+                        </td>
+                        <td *ngIf="item.data.isFolder"></td>
+                        <td *ngIf="!item.data.isFolder">
+                            {{ item.data?.size | filesize}}
                         </td>
                         <td>
-                            {{ item.data?.size}}
-                        </td>
-                        <td>
-                            {{ item.data?.last_Modified}}
+                            {{ item.data?.last_Modified | datetype}}
                         </td>
                     </tr>
                 </tbody>
