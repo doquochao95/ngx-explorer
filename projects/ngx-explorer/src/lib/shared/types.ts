@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 
 export type NodeContent<T> = { leafs: T[], nodes: T[] };
-export type NgExplorerOption= Partial<ExplorerOption>;
+export type NgExplorerOption = Partial<ExplorerOption>;
 
 export interface Dictionary<T> {
     [Key: string]: T;
@@ -18,7 +18,8 @@ export interface ItemModel {
     id: number;
     name: string;
     path: string;
-    content: string
+    content?: string
+    url?: string
     type: string;
     size: number;
     last_Modified: Date;
@@ -37,7 +38,7 @@ export interface IDataService<T> {
     renameLeaf(node: T, newName: string): Observable<any>;
     deleteNodes(nodes: T[]): Observable<any>;
     deleteLeafs(nodes: T[]): Observable<any>;
-    uploadFiles(node: T, files: FileList): Observable<any>;
+    uploadFiles(node: T, file: File): Observable<any>;
     download(node: T): Observable<any>;
 }
 
@@ -64,6 +65,6 @@ export enum FileTypeIconClass {
 export interface ExplorerOption {
     homeNodeName: string;
     autoRefresh: boolean;
-    readOnly :boolean;
+    readOnly: boolean;
     autoRefreshInterval: number;
 }

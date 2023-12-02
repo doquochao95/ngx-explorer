@@ -16,6 +16,7 @@ export class ExplorerComponent implements OnInit, AfterContentInit, OnDestroy {
 
     private _readOnly: boolean;
     private _autoRefresh: boolean;
+    progressValue : number = 0
 
     @Input()
     set readOnly(readOnly: boolean | string) {
@@ -35,6 +36,9 @@ export class ExplorerComponent implements OnInit, AfterContentInit, OnDestroy {
     constructor(@Inject(CURRENT_VIEW) private currentView: BehaviorSubject<AvialableView>, private explorerService: ExplorerService, private config: DefaultConfig) {
         this.sub.add(this.currentView.subscribe(view => {
             this.view = view;
+        }));
+        this.sub.add(this.explorerService.progressBar.subscribe(value => {
+            this.progressValue = value;
         }));
         this._readOnly = this.config.globalOptions.readOnly
         this._autoRefresh = this.config.globalOptions.autoRefresh

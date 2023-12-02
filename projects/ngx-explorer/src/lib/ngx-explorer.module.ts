@@ -18,7 +18,8 @@ import { FormsModule } from '@angular/forms';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { DateTypePipe } from './pipes/date-type.pipe';
 import { FileTypePipe } from './pipes/file-type.pipe';
-
+import { AlertModule } from 'ngx-bootstrap/alert';
+import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
 @NgModule({
     declarations: [
         IconsComponent,
@@ -41,7 +42,9 @@ import { FileTypePipe } from './pipes/file-type.pipe';
         FormsModule,
         BrowserAnimationsModule,
         TooltipModule.forRoot(),
-        ModalModule.forRoot()
+        ModalModule.forRoot(),
+        AlertModule.forRoot(),
+        ProgressbarModule.forRoot()
     ],
     exports: [
         IconsComponent,

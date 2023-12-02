@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ExampleNode, IDataService, ItemModel, NodeContent } from 'ngx-explorer';
-import { Observable, of, Subscriber, forkJoin } from 'rxjs';
+import { Observable, of, Subscriber, forkJoin, delay } from 'rxjs';
+import { AppDataService } from './app-data.service';
 
 @Component({
     selector: 'app-root',
@@ -12,29 +13,13 @@ export class AppComponent implements IDataService<ExampleNode> {
     isCollapsed = false;
     private id = 0;
     private folderId = 20;
-    MOCK_FOLDERS: ItemModel[] = [
-        { id: 1, name: 'Music', path: 'music', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-        { id: 2, name: 'Movies', path: 'movies', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-        { id: 3, name: 'Books', path: 'books', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-        { id: 4, name: 'Games', path: 'games', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-        { id: 5, name: 'Rock', path: 'music/rock', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-        { id: 6, name: 'Jazz', path: 'music/jazz', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-        { id: 7, name: 'Classical', path: 'music/classical', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-        { id: 15, name: 'Aerosmith', path: 'music/rock/aerosmith', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-        { id: 16, name: 'AC/DC', path: 'music/rock/acdc', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-        { id: 17, name: 'Led Zeppelin', path: 'music/rock/ledzeppelin', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-        { id: 18, name: 'The Beatles', path: 'music/rock/thebeatles', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-    ];
-    MOCK_FILES: ItemModel[] = [
-        { id: 428, name: 'notes.txt', path: '', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
-        { id: 4281, name: '2.txt', path: '', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
-        { id: 28, name: 'Thriller.txt', path: 'music/rock/thebeatles/thriller', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
-        { id: 29, name: 'Back in the U.S.S.R.txt', path: 'music/rock/thebeatles', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
-        { id: 30, name: 'All You Need Is Love.txt', path: 'music/rock/thebeatles', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
-        { id: 31, name: 'Hey Jude.txt', path: 'music/rock/ledzeppelin/heyjude', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
-        { id: 32, name: 'Rock And Roll All Nite.txt', path: 'music/rock/ledzeppelin/rockandrollallnight', content: 'hi, this is an example', type: "Text File", size: null, last_Modified: new Date, isFolder: false },
-    ];
-    constructor() { }
+    MOCK_FOLDERS: ItemModel[] = []
+    MOCK_FILES: ItemModel[] = []
+
+    constructor(private service: AppDataService) {
+        this.MOCK_FILES = this.service.getDataFile()
+        this.MOCK_FOLDERS = this.service.getDataFolder()
+    }
     download(node: ExampleNode): Observable<any> {
         const file = this.MOCK_FILES.find(f => f.id === node.id);
         let byteCharacters = atob(file.content.split(',')[1]);
@@ -59,35 +44,28 @@ export class AppComponent implements IDataService<ExampleNode> {
         return of(null);
     }
 
-    uploadFiles(node: ExampleNode, files: FileList): Observable<any> {
-        const results = [];
-
-        for (let i = 0; i < files.length; i++) {
-            const file = files.item(i);
-            const obs = new Observable((observer: Subscriber<any>): void => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                const id = ++this.id;
-                reader.onload = () => {
-                    const nodePath = node ? this.MOCK_FOLDERS.find(f => f.id === node.id).path : '';
-                    const newFile: ItemModel = {
-                        id,
-                        name: file.name,
-                        path: nodePath + '/' + file.name,
-                        content: reader.result as string,
-                        type: file.type,
-                        size: file.size,
-                        last_Modified: new Date,
-                        isFolder: false
-                    };
-                    this.MOCK_FILES.push(newFile);
-                    observer.next(reader.result);
-                    observer.complete();
-                };
-            });
-            results.push(obs);
-        }
-        return forkJoin(results);
+    public uploadFiles(node: ExampleNode, file: File): Observable<any> {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        const id = ++this.id;
+        reader.onload = () => {
+            const nodePath = node ? this.MOCK_FOLDERS.find(f => f.id === node.id).path : '';
+            const newFile: ItemModel = {
+                id,
+                name: file.name,
+                path: nodePath + '/' + file.name,
+                content: reader.result as string,
+                type: file.type,
+                size: file.size,
+                last_Modified: new Date,
+                isFolder: false
+            };
+            this.MOCK_FILES.push(newFile);
+        };
+        return of(file).pipe(delay(this.randomDelay(500,1000)))
+    }
+    private randomDelay(bottom: number, top: number): number {
+        return Math.floor(Math.random() * (1 + top - bottom)) + bottom;
     }
 
     deleteNodes(nodes: ExampleNode[]): Observable<any> {

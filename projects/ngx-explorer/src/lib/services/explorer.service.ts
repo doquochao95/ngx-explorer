@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subscription, concat, forkJoin, of } from 'rxjs';
+import { tap, toArray } from 'rxjs/operators';
 import { INode, Dictionary, NodeContent } from '../shared/types';
 import { Utils } from '../shared/utils';
 import { DataService } from './data.service';
@@ -12,16 +12,22 @@ import { DefaultConfig } from '../shared/default-config';
 export class ExplorerService {
     private internalTree = Utils.createNode();
     private flatPointers: Dictionary<INode> = { [this.internalTree.id]: this.internalTree };
+    public count = 0;
+    public percent = 0;
+    public total = 0;
 
     private readonly selectedNodes$ = new BehaviorSubject<INode[]>([]);
     private readonly openedNode$ = new BehaviorSubject<INode>(undefined);
     private readonly breadcrumbs$ = new BehaviorSubject<INode[]>([]);
     private readonly tree$ = new BehaviorSubject<INode>(this.internalTree);
+    private readonly progressBar$ = new BehaviorSubject<number>(0);
 
     public readonly selectedNodes = this.selectedNodes$.asObservable();
     public readonly openedNode = this.openedNode$.asObservable();
     public readonly breadcrumbs = this.breadcrumbs$.asObservable();
     public readonly tree = this.tree$.asObservable();
+    public readonly progressBar = this.progressBar$.asObservable();
+    private sub: Subscription;
 
     constructor(
         private dataService: DataService,
@@ -99,18 +105,38 @@ export class ExplorerService {
         const sub1 = nodes.length ? this.dataService.deleteNodes(nodes) : of([]);
         const sub2 = leafs.length ? this.dataService.deleteLeafs(leafs) : of([]);
 
-        forkJoin([sub1, sub2]).subscribe(() => {
+        forkJoin({sub1, sub2}).subscribe(() => {
             this.refresh();
         });
     }
 
     public upload(files: FileList) {
         const node = this.openedNode$.value;
-        this.dataService.uploadFiles(node.data, files).subscribe(() => {
-            this.refresh();
+        const fileList: File[] = Array.from(files);
+        this.count = 0;
+        this.percent = 0;
+        this.setProgressBar()
+        this.total = fileList.length;
+        const observableList: Array<Observable<any>> = fileList.map((item) => {
+            return this.dataService.uploadFiles(node.data, item)
         });
+        const strategy3 = concat(...observableList);
+        this.sub = strategy3
+            .pipe(
+                tap(() =>
+                    this.updateProgressMeter()
+                ),
+                toArray()
+            )
+            .subscribe(() => {
+                this.refresh();
+            })
     }
-
+    private updateProgressMeter() {
+        this.count++;
+        this.percent = this.total > 0 ? Math.round((this.count / this.total) * 100) : 0;
+        this.setProgressBar()
+    }
     public download() {
         const target = this.selectedNodes$.value[0];
         this.dataService.download(target.data).subscribe(() => {
@@ -152,5 +178,7 @@ export class ExplorerService {
                 this.tree$.next(this.internalTree);
             }));
     }
-
+    public setProgressBar() {
+        this.progressBar$.next(this.percent)
+    }
 }

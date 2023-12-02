@@ -20,4 +20,9 @@
             </div>
         </div>
     </div>
+    <progressbar *ngIf="progressValue>0"
+        class="progress-striped"
+        [value]="progressValue"
+        type="warning">
+    </progressbar>
 </div>
