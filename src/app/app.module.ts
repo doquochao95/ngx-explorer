@@ -4,6 +4,8 @@ import { AppComponent } from './app.component';
 import { NgxExplorerModule, DataService } from 'ngx-explorer';
 import { ExampleDataService } from './data.service';
 import { FormsModule } from '@angular/forms';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 @NgModule({
     declarations: [
         AppComponent,
@@ -11,7 +13,9 @@ import { FormsModule } from '@angular/forms';
     imports: [
         BrowserModule,
         FormsModule,
-        NgxExplorerModule
+        NgxExplorerModule,
+        CollapseModule,
+        BrowserAnimationsModule
     ],
     providers: [
         { provide: DataService, useClass: ExampleDataService }
