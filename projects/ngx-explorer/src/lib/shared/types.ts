@@ -39,7 +39,7 @@ export interface IDataService<T> {
     deleteNodes(nodes: T[]): Observable<any>;
     deleteLeafs(nodes: T[]): Observable<any>;
     uploadFiles(node: T, file: File): Observable<any>;
-    download(node: T): Observable<any>;
+    download(node: T[]): Observable<any>;
 }
 
 export interface IHelperService {

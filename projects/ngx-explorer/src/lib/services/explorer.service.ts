@@ -102,10 +102,9 @@ export class ExplorerService {
         const nodes = targets.filter(t => !t.isFile).map(data => data.data);
         const leafs = targets.filter(t => t.isFile).map(data => data.data);
 
-        const sub1 = nodes.length ? this.dataService.deleteNodes(nodes) : of([]);
-        const sub2 = leafs.length ? this.dataService.deleteLeafs(leafs) : of([]);
-
-        forkJoin({sub1, sub2}).subscribe(() => {
+        const sub1 = nodes.length ? this.dataService.deleteNodes(nodes) : of({});
+        const sub2 = leafs.length ? this.dataService.deleteLeafs(leafs) : of({});
+        forkJoin({ sub1, sub2 }).subscribe(() => {
             this.refresh();
         });
     }
@@ -138,8 +137,13 @@ export class ExplorerService {
         this.setProgressBar()
     }
     public download() {
-        const target = this.selectedNodes$.value[0];
-        this.dataService.download(target.data).subscribe(() => {
+        const selection = this.selectedNodes$.value;
+        if (selection.length === 0) {
+            throw new Error('Nothing selected to remove');
+        }
+        const targets = selection.map(node => this.flatPointers[node.id]);
+        const leafs = targets.filter(t => t.isFile).map(data => data.data);
+        this.dataService.download(leafs).subscribe(() => {
             this.refresh();
         });
     }

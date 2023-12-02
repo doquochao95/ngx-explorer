@@ -3,7 +3,6 @@
         <nxe-explorer readOnly="false"
             homeNodeName="Home"></nxe-explorer>
     </div>
-    <!-- <span>{{MOCK_FOLDERS | json}}</span> -->
     <p>
         <i type="button" (click)="isCollapsed = !isCollapsed" aria-expanded="false" aria-controls="collapseExample">
             JSON
@@ -21,11 +20,6 @@
                         <p>{{MOCK_FOLDERS|json}}</p>
                     </pre>
                     <a class="float-right" (click)="console(true)">console</a>
-                    <!-- <button
-                        type="button"
-                        class="btn btn-primary float-right mr-3 mb-2"
-                        (click)="console(true)">Console
-                    </button> -->
                 </div>
                 <div
                     class="col-6">
@@ -36,11 +30,6 @@
                         <p>{{MOCK_FILES|json}}</p>
                     </pre>
                     <a class="float-right" (click)="console()">console</a>
-                    <!-- <button
-                        type="button"
-                        class="btn btn-primary float-right mr-3 mb-2"
-                        (click)="console()">Console
-                    </button> -->
                 </div>
             </div>
         </div>

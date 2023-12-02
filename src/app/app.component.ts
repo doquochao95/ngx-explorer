@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ExampleNode, IDataService, ItemModel, NodeContent } from 'ngx-explorer';
-import { Observable, of, Subscriber, forkJoin, delay } from 'rxjs';
+import { Observable, of, Subscriber, forkJoin, delay, switchMap } from 'rxjs';
 import { AppDataService } from './app-data.service';
 
 @Component({
@@ -15,36 +15,52 @@ export class AppComponent implements IDataService<ExampleNode> {
     private folderId = 20;
     MOCK_FOLDERS: ItemModel[] = []
     MOCK_FILES: ItemModel[] = []
+    base64Image: any;
 
     constructor(private service: AppDataService) {
         this.MOCK_FILES = this.service.getDataFile()
         this.MOCK_FOLDERS = this.service.getDataFolder()
     }
-    download(node: ExampleNode): Observable<any> {
-        const file = this.MOCK_FILES.find(f => f.id === node.id);
-        let byteCharacters = atob(file.content.split(',')[1]);
-        let byteArrays = [];
-        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-            let slice = byteCharacters.slice(offset, offset + 512);
-            let byteNumbers = new Array(slice.length);
-            for (var i = 0; i < slice.length; i++) {
-                byteNumbers[i] = slice.charCodeAt(i);
+    download(nodes: ExampleNode[]): Observable<any> {
+        const results = nodes.map(node => {
+            const file = this.MOCK_FILES.find(f => f.id === node.id);
+            if (file.type.indexOf('image') != -1 && (file.url || !this.checkEmpty(file.url))) {
+                this.service.getBase64ImageFromURL(file.url).subscribe(base64data => {
+                    this.base64Image = `data:${file.type};base64,${base64data}`;
+                    var link = document.createElement('a');
+                    document.body.appendChild(link); // for Firefox
+                    link.setAttribute("href", this.base64Image);
+                    link.setAttribute("download", file.name);
+                    link.click();
+                });
+                return of({});
             }
-            let byteArray = new Uint8Array(byteNumbers);
-            byteArrays.push(byteArray);
-        }
-        let result = new Blob(byteArrays);
-        const blob = new Blob([result]);
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = file.name;
-        document.body.appendChild(link);
-        link.click();
-        return of(null);
+            else {
+                let byteCharacters = atob(file.content.split(',')[1]);
+                let byteArrays = [];
+                for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+                    let slice = byteCharacters.slice(offset, offset + 512);
+                    let byteNumbers = new Array(slice.length);
+                    for (var i = 0; i < slice.length; i++) {
+                        byteNumbers[i] = slice.charCodeAt(i);
+                    }
+                    let byteArray = new Uint8Array(byteNumbers);
+                    byteArrays.push(byteArray);
+                }
+                let result = new Blob(byteArrays);
+                const blob = new Blob([result]);
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = file.name;
+                document.body.appendChild(link);
+                link.click();
+                return of({});
+            }
+        });
+        return forkJoin(results);
     }
-
-    public uploadFiles(node: ExampleNode, file: File): Observable<any> {
+    uploadFiles(node: ExampleNode, file: File): Observable<any> {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         const id = ++this.id;
@@ -62,7 +78,7 @@ export class AppComponent implements IDataService<ExampleNode> {
             };
             this.MOCK_FILES.push(newFile);
         };
-        return of(file).pipe(delay(this.randomDelay(500,1000)))
+        return of(file).pipe(delay(this.randomDelay(500, 1000)))
     }
     private randomDelay(bottom: number, top: number): number {
         return Math.floor(Math.random() * (1 + top - bottom)) + bottom;
@@ -71,9 +87,10 @@ export class AppComponent implements IDataService<ExampleNode> {
     deleteNodes(nodes: ExampleNode[]): Observable<any> {
         const results = nodes.map(node => {
             const path = node.path + '/';
-            this.MOCK_FILES = this.MOCK_FILES.filter(f => !f.path.startsWith(path));
-            this.MOCK_FOLDERS = this.MOCK_FOLDERS.filter(f => !f.path.startsWith(path));
-            this.MOCK_FOLDERS = this.MOCK_FOLDERS.filter(f => f.id !== node.id);
+            const folder = this.MOCK_FOLDERS.filter(f => f.id === node.id || f.path.startsWith(path));
+            const file = this.MOCK_FILES.filter(f => f.path.startsWith(path));
+            folder.map(x => this.MOCK_FOLDERS.splice(this.MOCK_FOLDERS.indexOf(x), 1))
+            file.map(x => this.MOCK_FILES.splice(this.MOCK_FILES.indexOf(x), 1))
             return of({});
         });
         return forkJoin(results);
@@ -140,5 +157,8 @@ export class AppComponent implements IDataService<ExampleNode> {
     console(isFolder?: boolean) {
         isFolder ? console.log(this.MOCK_FOLDERS)
             : console.log(this.MOCK_FILES)
+    }
+    checkEmpty(str: string) {
+        return !str || /^\s*$/.test(str);
     }
 }

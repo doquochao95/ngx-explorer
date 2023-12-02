@@ -25,4 +25,7 @@ export class IconsComponent extends BaseView {
     ) {
         super(explorerService, helperService, filter);
     }
+    checkEmpty(str: string) {
+        return !str || /^\s*$/.test(str);
+    }
 }
