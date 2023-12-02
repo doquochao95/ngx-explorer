@@ -24,6 +24,12 @@ export interface ItemModel {
     last_Modified: Date;
     isFolder: boolean;
 }
+export interface ExampleNode {
+    name: string;
+    path: string;
+    content?: string;
+    id: number | string;
+}
 export interface IDataService<T> {
     getNodeChildren(node: T): Observable<NodeContent<T>>;
     createNode(parentNode: T, name: string): Observable<any>;
