@@ -12,7 +12,6 @@ import { FilterComponent } from './components/filter/filter.component';
 import { DragDropDirective } from './directives/drag-drop.directive';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ClickEventDirective } from './directives/click-event.directive';
 import { FormsModule } from '@angular/forms';
 import { FileSizePipe } from './pipes/file-size.pipe';
@@ -40,10 +39,8 @@ import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
     imports: [
         CommonModule,
         FormsModule,
-        BrowserAnimationsModule,
         TooltipModule.forRoot(),
         ModalModule.forRoot(),
-        AlertModule.forRoot(),
         ProgressbarModule.forRoot()
     ],
     exports: [

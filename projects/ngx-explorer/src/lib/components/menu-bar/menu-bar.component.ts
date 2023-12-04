@@ -16,10 +16,12 @@ export class MenuBarComponent implements OnDestroy {
     @ViewChild('uploader', { static: true }) uploader: ElementRef;
 
     modalRef?: BsModalRef;
-    canUpload = true;
+    canUpload = false;
     canDownload = false;
     canDelete = false;
     canRename = false;
+    canCreate = false;
+
     modalTitle: string = 'Enter folder name'
     currentState: string = 'Create'
 
@@ -38,13 +40,10 @@ export class MenuBarComponent implements OnDestroy {
         this.sub.add(this.explorerService.selectedNodes.subscribe(n => {
             this.selection = n;
             this.canDownload = n.length > 0 && n.every(x => x.isFile);
-            this.canDelete = n.length > 0;
-            this.canRename = n.length === 1;
-            if (config.globalOptions.readOnly) {
-                this.canUpload = false
-                this.canDelete = false
-                this.canRename = false
-            }
+            this.canDelete = n.length > 0 && !config.globalOptions.readOnly;
+            this.canRename = n.length === 1 && !config.globalOptions.readOnly;
+            this.canCreate = !config.globalOptions.readOnly
+            this.canUpload = !config.globalOptions.readOnly
         }));
         this.sub.add(this.explorerService.openedNode.subscribe(n => {
             this.recentFolder = n ? n.children.filter(x => !x.isFile) : [];

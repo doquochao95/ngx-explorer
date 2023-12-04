@@ -21,7 +21,7 @@ export interface ItemModel {
     content?: string
     url?: string
     type: string;
-    size: number;
+    size: number | null;
     last_Modified: Date;
     isFolder: boolean;
 }

@@ -5,6 +5,7 @@
         "ng": "ng",
         "start": "ng serve",
         "lib:watch": "ng build ngx-explorer --watch ",
+        "lib:build": "ng build ngx-explorer && cd dist/ngx-explorer && npm pack",
         "build:lib": "ng build ngx-explorer && npm run copy",
         "build": "ng build",
         "copy": "cp README.md dist/ngx-explorer/",

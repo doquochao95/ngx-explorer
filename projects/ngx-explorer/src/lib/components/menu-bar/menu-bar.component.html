@@ -4,7 +4,7 @@
         <div >
             <div class="vertical-divider"></div>
         </div>
-        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="New Folder" placement="bottom" (click)="openModal(template)"><i class="icon-folder-empty" aria-hidden="true"></i></button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="New Folder" placement="bottom" [hidden]="!canCreate" (click)="openModal(template)"><i class="icon-folder-empty" aria-hidden="true"></i></button>
         <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Refresh" placement="bottom" (click)="refresh()"><i class="icon-arrows-cw" aria-hidden="true"></i> </button>
         <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Upload" placement="bottom" [hidden]="!canUpload" (click)="openUploader()"><i class="icon-upload" aria-hidden="true"></i></button>
         <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Download" placement="bottom" [hidden]="!canDownload" (click)="download()"><i class="icon-download" aria-hidden="true"></i> </button>
