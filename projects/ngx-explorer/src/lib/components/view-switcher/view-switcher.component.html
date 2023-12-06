@@ -1,10 +1,10 @@
 <div class="nxe-view-switcher float-right">
-    <button [@wasClicked]="iconClicked" type="button" [delay]="1000" tooltip="Icon" placement="bottom" [ngClass]="{'enable': selected_Type === 'Icon'}"
-        (click)="setView(avialableView.Icon)"><i
+    <button [@wasClicked]="iconClicked" type="button" [delay]="1000" tooltip="Icon" placement="bottom" [ngClass]="{'enable': config.globalOptions.defaultViewType === 'Icon'}"
+        (click)="setView('Icon')"><i
             class="icon-th-large"
             aria-hidden="true"></i></button>
-    <button [@wasClicked]="detailClicked" type="button" [delay]="1000" tooltip="Detail" placement="bottom" [ngClass]="{'enable': selected_Type === 'List'}"
-        (click)="setView(avialableView.List)"><i
+    <button [@wasClicked]="detailClicked" type="button" [delay]="1000" tooltip="Detail" placement="bottom" [ngClass]="{'enable': config.globalOptions.defaultViewType === 'Detail'}"
+        (click)="setView('Detail')"><i
             class="icon-menu"
             aria-hidden="true"></i></button>
 </div>

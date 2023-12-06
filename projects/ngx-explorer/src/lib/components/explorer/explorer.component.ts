@@ -1,11 +1,12 @@
-import { Component, Inject, Input, OnDestroy, OnInit, ViewEncapsulation, AfterViewInit, AfterContentInit } from '@angular/core';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { AvialableView } from '../../shared/types';
-import { CURRENT_VIEW } from '../../injection-tokens/tokens';
-import { coerceBooleanProperty } from '@angular/cdk/coercion';
+import { Component, Input, OnDestroy, OnInit, ViewEncapsulation, AfterContentInit, numberAttribute, booleanAttribute, ViewChild, TemplateRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { DefaultConfig } from '../../shared/default-config';
 import { ExplorerService } from '../../services/explorer.service';
+import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 
+function capitalizeString(input: string): string {
+    return input ? input.charAt(0).toUpperCase() + input.slice(1) : input
+}
 @Component({
     selector: 'nxe-explorer',
     templateUrl: './explorer.component.html',
@@ -13,44 +14,42 @@ import { ExplorerService } from '../../services/explorer.service';
     encapsulation: ViewEncapsulation.None
 })
 export class ExplorerComponent implements OnInit, AfterContentInit, OnDestroy {
-
-    private _readOnly: boolean;
-    private _autoRefresh: boolean;
-    progressValue : number = 0
-    progessStop : boolean = true
-    @Input()
-    set readOnly(readOnly: boolean | string) {
-        this._readOnly = coerceBooleanProperty(readOnly);
-    }
-    @Input()
-    set autoRefresh(autoRefresh: boolean | string) {
-        this._autoRefresh = coerceBooleanProperty(autoRefresh);
-    }
-    @Input() autoRefreshInterval: number;
-    @Input() homeNodeName: string
-
-    public avialableView = AvialableView;
-    public view: string;
+    @ViewChild('upload') templateRef: TemplateRef<any>;
+    progressValue: number = 0
+    @Input({ alias: 'read-only', transform: booleanAttribute }) readOnly: boolean
+    @Input({ alias: 'auto-refresh', transform: booleanAttribute }) autoRefresh: boolean
+    @Input({ alias: 'refresh-interval' }) autoRefreshInterval: number;
+    @Input({ alias: 'main-node', transform: capitalizeString }) homeNodeName: string
+    @Input({ alias: 'view-type', transform: capitalizeString }) defaultViewType: string
+    uploading: boolean = false
     private sub = new Subscription();
-
-    constructor(@Inject(CURRENT_VIEW) private currentView: BehaviorSubject<AvialableView>, private explorerService: ExplorerService, private config: DefaultConfig) {
-        this.sub.add(this.currentView.subscribe(view => {
-            this.view = view;
-        }));
+    modalRef?: BsModalRef;
+    modalOptions: ModalOptions = {
+        backdrop: 'static',
+        keyboard: false,
+        class: 'modal-md modal-dialog-centered'
+    };
+    constructor(private explorerService: ExplorerService, public config: DefaultConfig, private modalService: BsModalService) {
         this.sub.add(this.explorerService.progressBar.subscribe(value => {
             this.progressValue = value;
-            this.progessStop = value == 100 ? true : false
         }));
-        this._readOnly = this.config.globalOptions.readOnly
-        this._autoRefresh = this.config.globalOptions.autoRefresh
-        this.homeNodeName = this.config.globalOptions.homeNodeName
-        this.autoRefreshInterval = this.config.globalOptions.autoRefreshInterval
+        this.sub.add(this.explorerService.uploadStatus.subscribe(value => {
+            if (value != undefined)
+                value ? this.openModal() : this.closeModal()
+        }));
     }
+
     ngOnInit() {
-        this.config.globalOptions.readOnly = this._readOnly
-        this.config.globalOptions.autoRefresh = this._autoRefresh
-        this.config.globalOptions.homeNodeName = this.homeNodeName
-        this.config.globalOptions.autoRefreshInterval = this.autoRefreshInterval
+        if (this.readOnly != undefined)
+            this.config.globalOptions.readOnly = this.readOnly
+        if (this.autoRefresh != undefined)
+            this.config.globalOptions.autoRefresh = this.autoRefresh
+        if (this.homeNodeName != undefined)
+            this.config.globalOptions.homeNodeName = this.homeNodeName
+        if (this.autoRefreshInterval != undefined)
+            this.config.globalOptions.autoRefreshInterval = this.autoRefreshInterval
+        if (this.defaultViewType != undefined)
+            this.config.globalOptions.defaultViewType = this.defaultViewType
     }
     ngOnDestroy() {
         this.sub.unsubscribe();
@@ -58,4 +57,10 @@ export class ExplorerComponent implements OnInit, AfterContentInit, OnDestroy {
     ngAfterContentInit() {
         this.explorerService.refresh()
     }
+    openModal() {
+        this.modalRef = this.modalService.show(this.templateRef, this.modalOptions);
+    }
+    closeModal() {
+        setTimeout(() => this.modalRef?.hide(), 2000);
+    };
 }

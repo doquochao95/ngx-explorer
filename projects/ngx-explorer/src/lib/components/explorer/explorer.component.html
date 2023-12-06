@@ -11,19 +11,28 @@
                 <nxe-second-menu-bar></nxe-second-menu-bar>
             </div>
             <div class="nxe-explorer-right-content">
-                <ng-container *ngIf="view === avialableView.Icon">
+                <ng-container *ngIf="config.globalOptions.defaultViewType == 'Icon'">
                     <nxe-icons></nxe-icons>
                 </ng-container>
-                <ng-container *ngIf="view === avialableView.List">
+                <ng-container *ngIf="config.globalOptions.defaultViewType === 'Detail'">
                     <nxe-list></nxe-list>
                 </ng-container>
             </div>
         </div>
     </div>
-    <progressbar *ngIf="progressValue==0" ></progressbar>
-    <progressbar *ngIf="progressValue>0"
-        class="progress-striped"
-        [value]="progressValue"
-        [type]="progessStop ? 'success' : 'info' ">
-    </progressbar>
+
 </div>
+<ng-template  #upload>
+    <div class="modal-body" *ngIf="progressValue == 0">
+        <label class="mb-0">Uploading</label>
+        <progressbar></progressbar>
+    </div>
+    <div class="modal-body"  *ngIf="progressValue > 0">
+        <label class="mb-0">{{progressValue == 100 ? 'Uploaded' : 'Uploading'}}</label>
+        <progressbar
+            class="progress-striped"
+            [value]="progressValue"
+            [type]="progressValue == 100 ? 'success' : 'info' ">
+        </progressbar>
+    </div>
+</ng-template>

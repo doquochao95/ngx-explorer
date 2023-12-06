@@ -21,12 +21,18 @@ export class ExplorerService {
     private readonly breadcrumbs$ = new BehaviorSubject<INode[]>([]);
     private readonly tree$ = new BehaviorSubject<INode>(this.internalTree);
     private readonly progressBar$ = new BehaviorSubject<number>(0);
+    private readonly uploadStatus$ = new BehaviorSubject<boolean>(undefined);
+
+
 
     public readonly selectedNodes = this.selectedNodes$.asObservable();
     public readonly openedNode = this.openedNode$.asObservable();
     public readonly breadcrumbs = this.breadcrumbs$.asObservable();
     public readonly tree = this.tree$.asObservable();
     public readonly progressBar = this.progressBar$.asObservable();
+    public readonly uploadStatus = this.uploadStatus$.asObservable();
+
+
     private sub: Subscription;
 
     constructor(
@@ -34,18 +40,15 @@ export class ExplorerService {
         public config: DefaultConfig
     ) {
         this.openNode(this.internalTree.id);
-
         if (this.config.globalOptions.autoRefresh) {
             setInterval(() => {
                 this.refresh();
             }, this.config.globalOptions.autoRefreshInterval);
         }
     }
-
     public selectNodes(nodes: INode[]) {
         this.selectedNodes$.next(nodes);
     }
-
     public openNode(id: number) {
         this.getNodeChildren(id).subscribe(() => {
             const parent = this.flatPointers[id];
@@ -55,7 +58,14 @@ export class ExplorerService {
             this.selectedNodes$.next([]);
         });
     }
-
+    public setUploadStatus(status: boolean) {
+        return new Promise((resolve, _reject) => {
+            this.uploadStatus$.next(status);
+            setTimeout(() => {
+                resolve(true)
+            }, 2000)
+        })
+    }
     public expandNode(id: number) {
         this.getNodeChildren(id).subscribe();
     }
@@ -109,13 +119,14 @@ export class ExplorerService {
         });
     }
 
-    public upload(files: FileList) {
+    public async upload(files: FileList) {
         const node = this.openedNode$.value;
         const fileList: File[] = Array.from(files);
         this.count = 0;
         this.percent = 0;
-        this.setProgressBar()
-        this.total = fileList.length;
+        this.total = fileList.length + 1;
+        this.updateProgressMeter()
+        await this.setUploadStatus(true)
         const observableList: Array<Observable<any>> = fileList.map((item) => {
             return this.dataService.uploadFiles(node.data, item)
         });
@@ -127,8 +138,9 @@ export class ExplorerService {
                 ),
                 toArray()
             )
-            .subscribe(() => {
+            .subscribe(async () => {
                 this.refresh();
+                await this.setUploadStatus(false)
             })
     }
     private updateProgressMeter() {

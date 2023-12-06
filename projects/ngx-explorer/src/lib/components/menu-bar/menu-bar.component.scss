@@ -15,29 +15,55 @@
         font-family: inherit;
         font-size: x-large;
         font-weight: inherit;
+        line-height: normal;
         transition-duration: 0.3s;
-        margin: 5px 10px 5px 10px;
+        margin: 0px 5px 0px 5px;
         // .icon-folder {
         //     color: $warning;
         // }
 
-        // .icon-arrows-cw {
-        //     color: $primary;
-        // }
         .icon-home::before {
-            scale: 1.5 !important;
+            scale: 1.2 !important;
+        }
+        .icon-folder-empty::before {
+            scale: 0.9 !important;
         }
         .icon-arrows-cw::before {
-            scale: 0.8 !important;
+            scale: 0.7 !important;
         }
-
-        // .icon-folder-empty {
-        //     color: $warning;
-        // }
-        // .icon-trash-empty {
-        //     color: $danger;
-        // }
-
+        .icon-upload::before {
+            scale: 0.9 !important;
+        }
+        .icon-download::before {
+            scale: 0.9 !important;
+        }
+        .icon-edit::before {
+            scale: 0.9 !important;
+        }
+        .icon-trash-empty::before {
+            scale: 0.9 !important;
+        }
+        .icon-folder-empty {
+            color: #555;
+        }
+        .icon-trash-empty {
+            color: #555;
+        }
+        .icon-arrows-cw {
+            color: #555;
+        }
+        .icon-upload {
+            color: #555;
+        }
+        .icon-home {
+            color: #555;
+        }
+        .icon-download {
+            color: #555;
+        }
+        .icon-edit {
+            color: #555;
+        }
         &:hover {
             transform: scale(1.3);
         }

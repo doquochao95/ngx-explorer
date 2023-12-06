@@ -1,8 +1,6 @@
-import { Component, Inject, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { AvialableView } from '../../shared/types';
-import { CURRENT_VIEW } from '../../injection-tokens/tokens';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
+import { DefaultConfig } from '../../shared/default-config';
 
 @Component({
     selector: 'nxe-view-switcher',
@@ -26,19 +24,17 @@ import { animate, keyframes, style, transition, trigger } from '@angular/animati
 export class ViewSwitcherComponent {
     iconClicked = false;
     detailClicked = false;
-
-    public readonly avialableView = AvialableView;
     selected_Type: string = 'Icon'
-    constructor(@Inject(CURRENT_VIEW) private currentView: BehaviorSubject<AvialableView>) {
+
+    constructor(public config: DefaultConfig) {
     }
 
-    setView(view: AvialableView) {
+    setView(view: string) {
         if (view == 'Icon')
             this.iconClicked = !Boolean(this.iconClicked);
         else
             this.detailClicked = !Boolean(this.detailClicked);
-        this.selected_Type = view
-        this.currentView.next(view);
+        this.config.globalOptions.defaultViewType = view
     }
 
 }

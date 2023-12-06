@@ -1,35 +1,41 @@
 <div class="demo-main">
     <div class="demo-container">
-        <nxe-explorer readOnly="false"
-            homeNodeName="Home"></nxe-explorer>
+        <nxe-explorer read-only="false"
+            main-node="home"
+            view-type="detail"></nxe-explorer>
     </div>
     <p>
-        <i type="button" (click)="isCollapsed = !isCollapsed" aria-expanded="false" aria-controls="collapseExample">
+        <i type="button"
+            (click)="isCollapsed = !isCollapsed"
+            aria-expanded="false"
+            aria-controls="collapseExample">
             JSON
         </i>
     </p>
     <div [collapse]="isCollapsed">
         <div class="card card-body">
             <div class="row">
-                <div
-                    class="col-6 ">
+                <div class="col-6 ">
                     <h6>Folders Json :
                         <span>{{MOCK_FOLDERS.length}}</span>
                     </h6>
                     <pre>
-                        <p>{{MOCK_FOLDERS|json}}</p>
+                        <p>{{MOCK_FOLDERS|json}}
+                        </p>
                     </pre>
-                    <a class="float-right" (click)="console(true)">console</a>
+                    <a class="float-right"
+                        (click)="console(true)">console</a>
                 </div>
-                <div
-                    class="col-6">
+                <div class="col-6">
                     <h6>Files Json :
                         <span>{{MOCK_FILES.length}}</span>
                     </h6>
                     <pre>
-                        <p>{{MOCK_FILES|json}}</p>
+                        <p>{{MOCK_FILES|json}}
+                        </p>
                     </pre>
-                    <a class="float-right" (click)="console()">console</a>
+                    <a class="float-right"
+                        (click)="console()">console</a>
                 </div>
             </div>
         </div>

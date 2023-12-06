@@ -6,8 +6,8 @@ import { IHelperService } from '../shared/types';
 })
 export class HelperService implements IHelperService {
     getFormat(data: any): string {
-        let name :string = data?.name as string;
-        let arr : string [] = name.split('.')
-        return arr[arr.length-1]
+        let name: string = data?.name as string;
+        let arr: string[] = name.split('.')
+        return arr[arr.length - 1]
     }
 }

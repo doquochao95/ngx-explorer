@@ -76,9 +76,10 @@ export class AppComponent implements IDataService<ExampleNode> {
                 last_Modified: new Date,
                 isFolder: false
             };
-            this.MOCK_FILES.push(newFile);
+            if (this.MOCK_FILES.filter(x => x.name == newFile.name).length == 0)
+                this.MOCK_FILES.push(newFile)
         };
-        return of(file).pipe(delay(this.randomDelay(500, 1000)))
+        return of(file).pipe(delay(this.randomDelay(100, 300)))
     }
     private randomDelay(bottom: number, top: number): number {
         return Math.floor(Math.random() * (1 + top - bottom)) + bottom;

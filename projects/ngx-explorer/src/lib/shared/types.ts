@@ -45,11 +45,6 @@ export interface IDataService<T> {
 export interface IHelperService {
     getFormat(data: any): string
 }
-
-export enum AvialableView {
-    List = 'List',
-    Icon = 'Icon',
-}
 export enum FileTypeIconClass {
     Folder = 'icon-folder',
     Pdf = 'icon-file-pdf',
@@ -66,5 +61,6 @@ export interface ExplorerOption {
     homeNodeName: string;
     autoRefresh: boolean;
     readOnly: boolean;
+    defaultViewType:string;
     autoRefreshInterval: number;
 }

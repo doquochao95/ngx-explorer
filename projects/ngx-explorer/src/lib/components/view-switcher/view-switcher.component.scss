@@ -1,5 +1,5 @@
 .nxe-view-switcher {
-    padding: 10px;
+    padding: 5px;
 
     button {
         cursor: pointer;
@@ -12,12 +12,18 @@
         transition-duration: 0.3s;
     }
     .icon-th-large::before {
-        scale: 0.8 !important;
+        scale: 0.7 !important;
     }
     .icon-menu::before {
-        scale: 0.8 !important;
+        scale: 0.7 !important;
+    }
+    .icon-th-large {
+        color: #555;
+    }
+    .icon-menu {
+        color: #555;
     }
     .enable {
-        scale: 1.5 !important;
+        scale: 1.4 !important;
     }
 }

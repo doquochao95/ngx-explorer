@@ -6,6 +6,7 @@ const defaultConfig: ExplorerOption = {
     homeNodeName: 'Files',
     autoRefresh: false,
     readOnly: false,
+    defaultViewType: 'Icon',
     autoRefreshInterval: 10000
 };
 @Injectable({ providedIn: 'root' })
