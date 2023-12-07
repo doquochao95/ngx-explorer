@@ -5,7 +5,8 @@
         <div class="nxe-icons-wrapper" *ngFor="let item of filteredItems" (dblclick)="open($event, item)" (click)="select($event, item)">
             <div class="nxe-icons-wrapper-inner" [ngClass]="{'nxe-icon-selected':isSelected(item)}" [delay]="1000"  container="body" [tooltip]="item.data?.name" placement="bottom">
                 <div class="nxe-icons-icon" *ngIf="!checkEmpty(item.data.url)">
-                    <img [src]="item.data.url"/>
+                    <img [src]="item.data.url" *ngIf="item.data.type.indexOf('image') != -1"/>
+                    <i *ngIf="item.data.type.indexOf('image') == -1" [className]="item.isFile ? getIconClass(item.data) : icon"></i>
                 </div>
                 <div class="nxe-icons-icon" *ngIf="checkEmpty(item.data.url)">
                     <img *ngIf="item.data.type.indexOf('image') != -1 && item.data.size <= 3000000" [src]="_sanitizer.bypassSecurityTrustUrl(item.data.content)"/>
