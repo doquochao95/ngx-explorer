@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, concat, forkJoin, of } from 'rxjs';
-import { tap, toArray } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subscription, concat, forkJoin, of, throwError } from 'rxjs';
+import { catchError, tap, toArray } from 'rxjs/operators';
 import { INode, Dictionary, NodeContent } from '../shared/types';
 import { Utils } from '../shared/utils';
 import { DataService } from './data.service';
@@ -21,7 +21,7 @@ export class ExplorerService {
     private readonly breadcrumbs$ = new BehaviorSubject<INode[]>([]);
     private readonly tree$ = new BehaviorSubject<INode>(this.internalTree);
     private readonly progressBar$ = new BehaviorSubject<number>(0);
-    private readonly uploadStatus$ = new BehaviorSubject<boolean>(undefined);
+    private readonly uploadStatus$ = new BehaviorSubject<string>(undefined);
 
 
 
@@ -58,7 +58,7 @@ export class ExplorerService {
             this.selectedNodes$.next([]);
         });
     }
-    public setUploadStatus(status: boolean) {
+    public setUploadStatus(status: string) {
         return new Promise((resolve, _reject) => {
             this.uploadStatus$.next(status);
             setTimeout(() => {
@@ -125,27 +125,48 @@ export class ExplorerService {
         this.count = 0;
         this.percent = 0;
         this.total = fileList.length + 1;
-        this.updateProgressMeter()
-        await this.setUploadStatus(true)
+        this.updateProgressMeter(true)
+        await this.setUploadStatus('upload')
         const observableList: Array<Observable<any>> = fileList.map((item) => {
             return this.dataService.uploadFiles(node.data, item)
         });
         const strategy3 = concat(...observableList);
         this.sub = strategy3
             .pipe(
-                tap(() =>
-                    this.updateProgressMeter()
-                ),
-                toArray()
-            )
-            .subscribe(async () => {
-                this.refresh();
-                await this.setUploadStatus(false)
-            })
+                tap({
+                    next: (e) => {
+                        this.updateProgressMeter(true)
+                    },
+                    error: (e) => {
+                        this.updateProgressMeter(false)
+                    },
+                }),
+                catchError(
+                    (error): Observable<any> => {
+                        if (error.status === 404) {
+                            return of(null);
+                        }
+                        return throwError(() => error);
+                    },
+                ), toArray())
+            .subscribe({
+                next: async (e) => {
+                    this.refresh();
+                    await this.setUploadStatus('success');
+                },
+                error: async (e) => {
+                    this.refresh();
+                    await this.setUploadStatus('failure');
+                }
+            });
     }
-    private updateProgressMeter() {
-        this.count++;
-        this.percent = this.total > 0 ? Math.round((this.count / this.total) * 100) : 0;
+    private updateProgressMeter(isSuccess: boolean) {
+        if (isSuccess) {
+            this.count++;
+            this.percent = this.total > 0 ? Math.round((this.count / this.total) * 100) : 0;
+        }
+        else
+            this.percent = 100
         this.setProgressBar()
     }
     public download() {

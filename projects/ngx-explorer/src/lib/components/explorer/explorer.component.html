@@ -28,11 +28,11 @@
         <progressbar></progressbar>
     </div>
     <div class="modal-body"  *ngIf="progressValue > 0">
-        <label class="mb-0">{{progressValue == 100 ? 'Uploaded' : 'Uploading'}}</label>
+        <label class="mb-0">{{progressStatus == 'success' ? 'Uploaded successfully' : progressStatus == 'failure' ? 'Upload failed' : 'Uploading' }}</label>
         <progressbar
             class="progress-striped"
             [value]="progressValue"
-            [type]="progressValue == 100 ? 'success' : 'info' ">
+            [type]="progressStatus == 'success' ? 'success' : progressStatus == 'failure' ? 'danger' : 'info' ">
         </progressbar>
     </div>
 </ng-template>

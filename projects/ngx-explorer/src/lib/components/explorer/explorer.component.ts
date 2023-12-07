@@ -16,6 +16,8 @@ function capitalizeString(input: string): string {
 export class ExplorerComponent implements OnInit, AfterContentInit, OnDestroy {
     @ViewChild('upload') templateRef: TemplateRef<any>;
     progressValue: number = 0
+    progressStatus: string = 'upload'
+
     @Input({ alias: 'read-only', transform: booleanAttribute }) readOnly: boolean
     @Input({ alias: 'auto-refresh', transform: booleanAttribute }) autoRefresh: boolean
     @Input({ alias: 'refresh-interval' }) autoRefreshInterval: number;
@@ -34,8 +36,19 @@ export class ExplorerComponent implements OnInit, AfterContentInit, OnDestroy {
             this.progressValue = value;
         }));
         this.sub.add(this.explorerService.uploadStatus.subscribe(value => {
-            if (value != undefined)
-                value ? this.openModal() : this.closeModal()
+            if (value != undefined) {
+                this.progressStatus = value
+                switch (value) {
+                    case "success":
+                        this.closeModal()
+                        break;
+                    case "failure":
+                        this.closeModal()
+                        break;
+                    default:
+                        this.openModal()
+                }
+            }
         }));
     }
 
