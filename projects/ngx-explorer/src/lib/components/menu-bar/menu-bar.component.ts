@@ -81,8 +81,8 @@ export class MenuBarComponent implements OnDestroy {
             this.modalTitle = this.selection[0].data.isFolder ? 'Enter new folder name' : 'Enter new file name'
             this.currentState = 'Rename'
             let temp: string[] = this.selection[0].data.name.split('.');
-            this.name = temp[0]
-            this.format = this.selection[0].data.isFolder ? null : '.' + temp[1]
+            this.name = temp.splice(0, temp.length - 1).join('.')
+            this.format = '.' + temp[0]
         }
         else {
             this.modalTitle = 'Enter folder name'
