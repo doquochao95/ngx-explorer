@@ -28,22 +28,16 @@ export class TreeComponent implements OnDestroy {
     }
 
     onClick(node: TreeNode) {
+        let allItem: number[] = this.getAllItem(this.treeNodes)
         let sameLayerItems: INode[] = this.getSameLayerItem(node, this.treeNodes)
         sameLayerItems.map(x => {
             if (this.expandedIds.indexOf(x.id) != -1)
                 this.removeExpandedNode(x.id)
         })
+        this.expandedIds = this.expandedIds.filter(x => allItem.indexOf(x) != -1 || x == 1)
         this.addExpandedNode(node.id);
         this.explorerService.openNode(node.id);
         this.explorerService.expandNode(node.id);
-        // else {
-        //     this.removeExpandedNode(node.id);
-        //     let nodes: INode;
-        //     this.sub.add(this.explorerService.tree.pipe(filter(x => !!x)).subscribe(x =>
-        //         nodes = x
-        //     ));
-        //     this.treeNodes = this.buildTree(nodes).children;
-        // }
     }
     ngOnDestroy(): void {
         this.sub.unsubscribe();
@@ -51,12 +45,21 @@ export class TreeComponent implements OnDestroy {
     private getSameLayerItem(node: TreeNode, treeNodes: TreeNode[]): TreeNode[] {
         for (let item of treeNodes) {
             if (node.id == item.id)
-                return treeNodes.filter(x => x.id != node.id)
+                return treeNodes
             else {
                 if (item.children.length > 0)
                     return this.getSameLayerItem(node, item.children)
             }
         }
+    }
+    private getAllItem(treeNodes: TreeNode[]): number[] {
+        let result: number[] = []
+        for (let item of treeNodes) {
+            result.push(item.id)
+            if (item.children.length > 0)
+                result.push(...this.getAllItem(item.children))
+        }
+        return result
     }
     private buildTree(node: INode): TreeNode {
         const treeNode = {
