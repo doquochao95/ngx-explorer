@@ -111,7 +111,7 @@ export class ExplorerService {
 
         const targets = selection.map(node => this.flatPointers[node.id]);
         const nodes = targets.filter(t => t.isFolder).map(data => data.data);
-        const leafs = targets.filter(t => t.isFolder).map(data => data.data);
+        const leafs = targets.filter(t => !t.isFolder).map(data => data.data);
 
         const sub1 = nodes.length ? this.dataService.deleteNodes(nodes) : of({});
         const sub2 = leafs.length ? this.dataService.deleteLeafs(leafs) : of({});
