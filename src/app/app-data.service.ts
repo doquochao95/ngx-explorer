@@ -4,17 +4,17 @@ import { ItemModel } from 'ngx-explorer';
 import { Observable, Observer } from "rxjs";
 
 let MOCK_FOLDERS_data: ItemModel[] = [
-    { id: 1, name: 'Music', path: 'music', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-    { id: 2, name: 'Movies', path: 'movies', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-    { id: 3, name: 'Books', path: 'books', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-    { id: 4, name: 'Games', path: 'games', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-    { id: 5, name: 'Rock', path: 'music/rock', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-    { id: 6, name: 'Jazz', path: 'music/jazz', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-    { id: 7, name: 'Classical', path: 'music/classical', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-    { id: 15, name: 'Aerosmith', path: 'music/rock/aerosmith', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 1, name: 'Music', path: 'music', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 2, name: 'Movies', path: 'movies', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 3, name: 'Books', path: 'books', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 4, name: 'Games', path: 'games', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 5, name: 'Rock', path: 'music/rock', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 6, name: 'Jazz', path: 'music/jazz', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 7, name: 'Classical', path: 'music/classical', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 15, name: 'Aerosmith', path: 'music/rock/aerosmith', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
     { id: 16, name: 'AC/DC', path: 'music/rock/acdc', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-    { id: 17, name: 'Led Zeppelin', path: 'music/rock/ledzeppelin', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-    { id: 18, name: 'The Beatles', path: 'music/rock/thebeatles', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 17, name: 'Led Zeppelin', path: 'music/rock/ledzeppelin', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 18, name: 'The Beatles', path: 'music/rock/thebeatles', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
 ];
 
 let MOCK_FILES_data: ItemModel[] = [

@@ -15,6 +15,8 @@ export class FileTypePipe implements PipeTransform {
             return 'Image File'
         if (typeString.indexOf('video') > -1)
             return 'Video File'
+        if (typeString.indexOf('folder') > -1)
+            return 'Folder'
         return 'Other File'
     }
 }

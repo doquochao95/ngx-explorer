@@ -115,7 +115,7 @@ export class AppComponent implements IDataService<ExampleNode> {
             name,
             path,
             content: '',
-            type: 'Folder',
+            type: 'folder',
             size: null,
             last_Modified: new Date,
             isFolder: true

@@ -20,7 +20,6 @@ export class TreeComponent implements OnDestroy {
     public treeNodes: TreeNode[] = [];
     private expandedIds: number[] = [];
     private sub = new Subscription();
-
     constructor(private explorerService: ExplorerService, private helperService: HelperService) {
         this.sub.add(this.explorerService.tree.pipe(filter(x => !!x)).subscribe(node => {
             this.addExpandedNode(node.id); // always expand root
@@ -28,29 +27,37 @@ export class TreeComponent implements OnDestroy {
         }));
     }
 
-    onClick(node: any) {
-        if (!node.expanded) {
-            this.addExpandedNode(node.id);
-            this.explorerService.expandNode(node.id);
-        }
-        else {
-            this.removeExpandedNode(node.id);
-            let nodes: INode;
-            this.sub.add(this.explorerService.tree.pipe(filter(x => !!x)).subscribe(x => nodes = x));
-            this.treeNodes = this.buildTree(nodes).children;
-        }
-    }
-    onDbClick(node: any) {
-        if (!node.expanded) {
-            this.addExpandedNode(node.id);
-            this.explorerService.expandNode(node.id);
-        }
+    onClick(node: TreeNode) {
+        let sameLayerItems: INode[] = this.getSameLayerItem(node, this.treeNodes)
+        sameLayerItems.map(x => {
+            if (this.expandedIds.indexOf(x.id) != -1)
+                this.removeExpandedNode(x.id)
+        })
+        this.addExpandedNode(node.id);
         this.explorerService.openNode(node.id);
+        this.explorerService.expandNode(node.id);
+        // else {
+        //     this.removeExpandedNode(node.id);
+        //     let nodes: INode;
+        //     this.sub.add(this.explorerService.tree.pipe(filter(x => !!x)).subscribe(x =>
+        //         nodes = x
+        //     ));
+        //     this.treeNodes = this.buildTree(nodes).children;
+        // }
     }
     ngOnDestroy(): void {
         this.sub.unsubscribe();
     }
-
+    private getSameLayerItem(node: TreeNode, treeNodes: TreeNode[]): TreeNode[] {
+        for (let item of treeNodes) {
+            if (node.id == item.id)
+                return treeNodes.filter(x => x.id != node.id)
+            else {
+                if (item.children.length > 0)
+                    return this.getSameLayerItem(node, item.children)
+            }
+        }
+    }
     private buildTree(node: INode): TreeNode {
         const treeNode = {
             id: node.id,
