@@ -12,7 +12,7 @@ let MOCK_FOLDERS_data: ItemModel[] = [
     { id: 6, name: 'Jazz', path: 'music/jazz', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
     { id: 7, name: 'Classical', path: 'music/classical', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
     { id: 15, name: 'Aerosmith', path: 'music/rock/aerosmith', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
-    { id: 16, name: 'AC/DC', path: 'music/rock/acdc', type: "Folder", size: null, last_Modified: new Date, content: '', isFolder: true },
+    { id: 16, name: 'AC/DC', path: 'music/rock/acdc', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
     { id: 17, name: 'Led Zeppelin', path: 'music/rock/ledzeppelin', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
     { id: 18, name: 'The Beatles', path: 'music/rock/thebeatles', type: "folder", size: null, last_Modified: new Date, content: '', isFolder: true },
 ];

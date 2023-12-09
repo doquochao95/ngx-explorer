@@ -71,7 +71,7 @@ export class BaseView implements OnDestroy {
     }
 
     open(event: MouseEvent, item: INode) {
-        if (!item.isFile) {
+        if (item.isFolder) {
             const metaKeyPressed = event.metaKey || event.ctrlKey || event.shiftKey;
             if (!metaKeyPressed) {
                 this.explorerService.openNode(item.id);

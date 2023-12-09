@@ -1,9 +1,8 @@
 import { Component, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { ExplorerService } from '../../services/explorer.service';
 import { filter } from 'rxjs/operators';
-import { HelperService } from '../../services/helper.service';
 import { Subscription } from 'rxjs';
-import { INode, ItemModel } from '../../shared/types';
+import { INode } from '../../shared/types';
 
 interface TreeNode extends INode {
     children: TreeNode[];
@@ -20,7 +19,7 @@ export class TreeComponent implements OnDestroy {
     public treeNodes: TreeNode[] = [];
     private expandedIds: number[] = [];
     private sub = new Subscription();
-    constructor(private explorerService: ExplorerService, private helperService: HelperService) {
+    constructor(private explorerService: ExplorerService) {
         this.sub.add(this.explorerService.tree.pipe(filter(x => !!x)).subscribe(node => {
             this.addExpandedNode(node.id); // always expand root
             this.treeNodes = this.buildTree(node).children;
@@ -28,13 +27,20 @@ export class TreeComponent implements OnDestroy {
     }
 
     onClick(node: TreeNode) {
-        let allItem: number[] = this.getAllItem(this.treeNodes)
-        let sameLayerItems: INode[] = this.getSameLayerItem(node, this.treeNodes)
-        sameLayerItems.map(x => {
-            if (this.expandedIds.indexOf(x.id) != -1)
-                this.removeExpandedNode(x.id)
-        })
-        this.expandedIds = this.expandedIds.filter(x => allItem.indexOf(x) != -1 || x == 1)
+        let items: number[] = []
+        if (!node.expanded) {
+            items = this.getAllItem(this.treeNodes)
+            let sameLayerItems: INode[] = this.getSameLayerItem(node, this.treeNodes)
+            sameLayerItems.map(x => {
+                if (this.expandedIds.indexOf(x.id) != -1)
+                    this.removeExpandedNode(x.id)
+            })
+            this.expandedIds = this.expandedIds.filter(x => items.indexOf(x) != -1 || x == 1)
+        }
+        else {
+            items = this.getAllItem(node.children)
+            this.expandedIds = this.expandedIds.filter(x => items.indexOf(x) == -1 || x == 1)
+        }
         this.addExpandedNode(node.id);
         this.explorerService.openNode(node.id);
         this.explorerService.expandNode(node.id);
@@ -47,8 +53,11 @@ export class TreeComponent implements OnDestroy {
             if (node.id == item.id)
                 return treeNodes
             else {
-                if (item.children.length > 0)
-                    return this.getSameLayerItem(node, item.children)
+                if (item.children.length > 0) {
+                    let res = this.getSameLayerItem(node, item.children)
+                    if (res != undefined)
+                        return res
+                }
             }
         }
     }
@@ -66,14 +75,14 @@ export class TreeComponent implements OnDestroy {
             id: node.id,
             parentId: node.parentId,
             data: node.data,
-            isFile: node.isFile,
+            isFolder: node.isFolder,
             children: [],
             expanded: false
         } as TreeNode;
 
         treeNode.expanded = this.expandedIds.indexOf(node.id) > -1;
         if (treeNode.expanded) {
-            treeNode.children = node.children.filter(x => !x.isFile).map(x => this.buildTree(x));
+            treeNode.children = node.children.filter(x => x.isFolder).map(x => this.buildTree(x));
         }
         return treeNode;
     }

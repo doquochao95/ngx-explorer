@@ -23,7 +23,8 @@ export class FilterComponent implements OnDestroy {
             this.clear();
         }));
         this.sub.add(explorerService.openedNode.subscribe((e: any) => {
-            this.placeHolder = `Search ${e.data?.name || this.config.globalOptions.homeNodeName}`
+            if (e != undefined)
+                this.placeHolder = `Search ${e.data != undefined ? e.data.name : '' || this.config.globalOptions.homeNodeName}`;
         }));
     }
 

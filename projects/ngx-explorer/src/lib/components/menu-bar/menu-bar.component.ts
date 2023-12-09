@@ -39,15 +39,15 @@ export class MenuBarComponent implements OnDestroy {
     ) {
         this.sub.add(this.explorerService.selectedNodes.subscribe(n => {
             this.selection = n;
-            this.canDownload = n.length > 0 && n.every(x => x.isFile);
+            this.canDownload = n.length > 0 && n.every(x => !x.isFolder);
             this.canDelete = n.length > 0 && !config.globalOptions.readOnly;
             this.canRename = n.length === 1 && !config.globalOptions.readOnly;
             this.canCreate = !config.globalOptions.readOnly
             this.canUpload = !config.globalOptions.readOnly
         }));
         this.sub.add(this.explorerService.openedNode.subscribe(n => {
-            this.recentFolder = n ? n.children.filter(x => !x.isFile) : [];
-            this.recentFile = n ? n.children.filter(x => x.isFile) : [];
+            this.recentFolder = n ? n.children.filter(x => x.isFolder) : [];
+            this.recentFile = n ? n.children.filter(x => !x.isFolder) : [];
         }));
     }
 
