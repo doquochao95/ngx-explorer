@@ -1,3 +1,4 @@
+import { HelperService } from './../../projects/ngx-explorer/src/lib/services/helper.service';
 import { Component } from '@angular/core';
 import { ExampleNode, IDataService, ItemModel, NodeContent } from 'ngx-explorer';
 import { Observable, of, Subscriber, forkJoin, delay, switchMap } from 'rxjs';
@@ -17,7 +18,7 @@ export class AppComponent implements IDataService<ExampleNode> {
     MOCK_FILES: ItemModel[] = []
     base64Image: any;
 
-    constructor(private service: AppDataService) {
+    constructor(private service: AppDataService,private helperService : HelperService) {
         this.MOCK_FILES = this.service.getDataFile()
         this.MOCK_FOLDERS = this.service.getDataFolder()
     }
@@ -121,6 +122,7 @@ export class AppComponent implements IDataService<ExampleNode> {
             isFolder: true
         };
         this.MOCK_FOLDERS.push(newFolder);
+        this.helperService.refreshExplorer()
         return of(newFolder);
     }
 

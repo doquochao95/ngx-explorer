@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { DefaultConfig } from '../../shared/default-config';
 import { ExplorerService } from '../../services/explorer.service';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { HelperService } from '../../services/helper.service';
 
 function capitalizeString(input: string): string {
     return input ? input.charAt(0).toUpperCase() + input.slice(1) : input
@@ -31,7 +32,7 @@ export class ExplorerComponent implements OnInit, AfterContentInit, OnDestroy {
         keyboard: false,
         class: 'modal-md modal-dialog-centered'
     };
-    constructor(private explorerService: ExplorerService, public config: DefaultConfig, private modalService: BsModalService) {
+    constructor(private explorerService: ExplorerService, public config: DefaultConfig, private modalService: BsModalService, private helperService: HelperService) {
         this.sub.add(this.explorerService.progressBar.subscribe(value => {
             this.progressValue = value;
         }));
@@ -49,6 +50,9 @@ export class ExplorerComponent implements OnInit, AfterContentInit, OnDestroy {
                         this.openModal()
                 }
             }
+        }));
+        this.sub.add(this.helperService.emitter.subscribe(() => {
+            this.explorerService.refresh()
         }));
     }
 
