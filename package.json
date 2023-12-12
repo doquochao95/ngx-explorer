@@ -1,12 +1,12 @@
 {
     "name": "explorer-app",
-    "version": "0.0.0",
+    "version": "1.0.1",
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
         "lib:watch": "ng build ngx-explorer --watch ",
         "lib:build": "ng build ngx-explorer && cd dist/ngx-explorer && npm pack",
-        "build:lib": "ng build ngx-explorer && npm run copy",
+        "lib:publish": "ng build ngx-explorer && cd dist/ngx-explorer && npm pack && npm publish",
         "build": "ng build",
         "copy": "cp README.md dist/ngx-explorer/",
         "test": "ng test",
