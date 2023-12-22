@@ -1,12 +1,13 @@
 {
     "name": "ngx-explorer-sdteam",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "peerDependencies": {
         "@angular/common": ">= 16.0.0",
         "@angular/core": ">= 16.0.0",
         "@angular/cdk": ">=16.0.0",
         "rxjs": ">= 6.5.0",
-        "bootstrap": "4.6.2",
+        "@types/bootstrap": "^5.0.15",
+        "bootstrap": "^5.0.1",
         "ngx-bootstrap": "11.0.2"
     },
     "dependencies": {

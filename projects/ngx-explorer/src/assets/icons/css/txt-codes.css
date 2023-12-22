@@ -11,6 +11,8 @@
 .icon-th-large:before { content: '\e809'; } /* '' */
 .icon-folder:before { content: '\e80a'; } /* '' */
 .icon-folder-open:before { content: '\e80b'; } /* '' */
+.icon-share:before { content: '\e80c'; } /* '' */
+.icon-ok:before { content: '\e80d'; } /* '' */
 .icon-copy:before { content: '\f0c5'; } /* '' */
 .icon-paste:before { content: '\f0ea'; } /* '' */
 .icon-doc-text:before { content: '\f0f6'; } /* '' */

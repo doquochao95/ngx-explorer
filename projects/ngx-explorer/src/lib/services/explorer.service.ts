@@ -81,7 +81,13 @@ export class ExplorerService {
         if (this.openedNode$.value != undefined)
             this.openNode(this.openedNode$.value.id);
     }
-
+    public copyPath() {
+        const folder = this.breadcrumbs$.value.map(x =>
+            x.data?.name ?? ''
+        ).join('/');
+        const file = this.selectedNodes$.value[0].data.name;
+        navigator.clipboard.writeText(`${this.config.globalOptions.homeNodeName}${folder}/${file}`);
+    }
     public rename(name: string) {
         const nodes = this.selectedNodes$.value;
         if (nodes.length > 1) {

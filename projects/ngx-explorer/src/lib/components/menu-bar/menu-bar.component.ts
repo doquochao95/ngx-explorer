@@ -5,6 +5,7 @@ import { DefaultConfig } from '../../shared/default-config';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { ConfirmComponent } from '../confirm/confirm.component';
 import { INode } from '../../shared/types';
+import { Toast } from 'bootstrap';
 
 @Component({
     selector: 'nxe-menu-bar',
@@ -21,6 +22,8 @@ export class MenuBarComponent implements OnDestroy {
     canDelete = false;
     canRename = false;
     canCreate = false;
+    canCopyPath = false;
+
 
     modalTitle: string = 'Enter folder name'
     currentState: string = 'Create'
@@ -44,6 +47,7 @@ export class MenuBarComponent implements OnDestroy {
             this.canRename = n.length === 1 && !config.globalOptions.readOnly;
             this.canCreate = !config.globalOptions.readOnly
             this.canUpload = !config.globalOptions.readOnly
+            this.canCopyPath = n.length === 1 && !config.globalOptions.readOnly && n.every(x => !x.isFolder);
         }));
         this.sub.add(this.explorerService.openedNode.subscribe(n => {
             this.recentFolder = n ? n.children.filter(x => x.isFolder) : [];
@@ -71,7 +75,10 @@ export class MenuBarComponent implements OnDestroy {
     download() {
         this.explorerService.download();
     }
-
+    copyPath(){
+        this.explorerService.copyPath()
+        this.showCopyToast()
+    }
     ngOnDestroy() {
         this.sub.unsubscribe();
     }
@@ -167,5 +174,9 @@ export class MenuBarComponent implements OnDestroy {
     }
     goHome() {
         this.explorerService.openNode(1)
+    }
+    showCopyToast() {
+        const toasts: any[] = Array.from(document.querySelectorAll('.toast')).map(toastNode => new Toast(toastNode))
+        toasts.forEach((item) => { item.show(); })
     }
 }

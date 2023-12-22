@@ -1,6 +1,6 @@
 {
     "name": "explorer-app",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
@@ -25,7 +25,8 @@
         "@angular/platform-browser": "~16.2.9",
         "@angular/platform-browser-dynamic": "~16.2.9",
         "@angular/router": "~16.2.9",
-        "bootstrap": "4.6.2",
+        "@types/bootstrap": "^5.0.15",
+        "bootstrap": "^5.0.1",
         "ngx-bootstrap": "11.0.2",
         "rxjs": "~7.8.1",
         "tslib": "^2.6.2",

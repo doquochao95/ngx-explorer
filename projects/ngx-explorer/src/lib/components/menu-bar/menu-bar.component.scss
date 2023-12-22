@@ -43,6 +43,9 @@
         .icon-trash-empty::before {
             scale: 0.9 !important;
         }
+        .icon-share::before {
+            scale: 0.9 !important;
+        }
         .icon-folder-empty {
             color: #555;
         }
@@ -64,8 +67,14 @@
         .icon-edit {
             color: #555;
         }
+        .icon-share {
+            color: #555;
+        }
         &:hover {
             transform: scale(1.3);
         }
     }
+}
+.icon-ok {
+    color: #28a745;
 }
