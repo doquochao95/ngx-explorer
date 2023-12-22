@@ -47,7 +47,7 @@ export class MenuBarComponent implements OnDestroy {
             this.canRename = n.length === 1 && !config.globalOptions.readOnly;
             this.canCreate = !config.globalOptions.readOnly
             this.canUpload = !config.globalOptions.readOnly
-            this.canCopyPath = n.length === 1 && !config.globalOptions.readOnly && n.every(x => !x.isFolder);
+            this.canCopyPath = n.length === 1 && n.every(x => !x.isFolder);
         }));
         this.sub.add(this.explorerService.openedNode.subscribe(n => {
             this.recentFolder = n ? n.children.filter(x => x.isFolder) : [];
