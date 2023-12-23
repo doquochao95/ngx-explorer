@@ -19,6 +19,8 @@ import { DateTypePipe } from './pipes/date-type.pipe';
 import { FileTypePipe } from './pipes/file-type.pipe';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+
 @NgModule({
     declarations: [
         IconsComponent,
@@ -39,6 +41,7 @@ import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
     imports: [
         CommonModule,
         FormsModule,
+        ClipboardModule,
         TooltipModule.forRoot(),
         ModalModule.forRoot(),
         ProgressbarModule.forRoot()

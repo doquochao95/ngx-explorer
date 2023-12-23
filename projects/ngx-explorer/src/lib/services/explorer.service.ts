@@ -5,6 +5,7 @@ import { INode, Dictionary, NodeContent } from '../shared/types';
 import { Utils } from '../shared/utils';
 import { DataService } from './data.service';
 import { DefaultConfig } from '../shared/default-config';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Injectable({
     providedIn: 'root'
@@ -37,7 +38,8 @@ export class ExplorerService {
 
     constructor(
         private dataService: DataService,
-        public config: DefaultConfig
+        public config: DefaultConfig,
+        private clipboard: Clipboard
     ) {
         this.openNode(this.internalTree.id);
         if (this.config.globalOptions.autoRefresh) {
@@ -81,12 +83,17 @@ export class ExplorerService {
         if (this.openedNode$.value != undefined)
             this.openNode(this.openedNode$.value.id);
     }
-    public copyPath() {
-        const folder = this.breadcrumbs$.value.map(x =>
-            x.data?.name ?? ''
-        ).join('/');
-        const file = this.selectedNodes$.value[0].data.name;
-        navigator.clipboard.writeText(`${this.config.globalOptions.homeNodeName}${folder}/${file}`);
+    public copyToClipboard(): boolean {
+        try {
+            const folder = this.breadcrumbs$.value.map(x => x.data?.name ?? '').join('/');
+            const file = this.selectedNodes$.value[0].data.name;
+            const path = `${this.config.globalOptions.homeNodeName}${folder}/${file}`
+            window.isSecureContext && navigator.clipboard ? navigator.clipboard.writeText(path) : this.clipboard.copy(path)
+            return true
+        }
+        catch (err) {
+            return false
+        }
     }
     public rename(name: string) {
         const nodes = this.selectedNodes$.value;

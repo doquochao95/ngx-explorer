@@ -27,7 +27,8 @@ export class MenuBarComponent implements OnDestroy {
 
     modalTitle: string = 'Enter folder name'
     currentState: string = 'Create'
-
+    toastBody: string = ''
+    toastIcon: string = ''
     name: string = ''
     format: string = null
     private sub = new Subscription();
@@ -75,9 +76,8 @@ export class MenuBarComponent implements OnDestroy {
     download() {
         this.explorerService.download();
     }
-    copyPath(){
-        this.explorerService.copyPath()
-        this.showCopyToast()
+    copyPath() {
+        this.showCopyToast(this.explorerService.copyToClipboard())
     }
     ngOnDestroy() {
         this.sub.unsubscribe();
@@ -175,7 +175,15 @@ export class MenuBarComponent implements OnDestroy {
     goHome() {
         this.explorerService.openNode(1)
     }
-    showCopyToast() {
+    showCopyToast(isSuccess: boolean) {
+        if (isSuccess) {
+            this.toastBody = 'Copied Successfully'
+            this.toastIcon = 'icon-ok'
+        }
+        else {
+            this.toastBody = 'Unable to copy to clipboard'
+            this.toastIcon = 'icon-cancel-1'
+        }
         const toasts: any[] = Array.from(document.querySelectorAll('.toast')).map(toastNode => new Toast(toastNode))
         toasts.forEach((item) => { item.show(); })
     }

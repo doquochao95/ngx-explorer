@@ -39,11 +39,11 @@
         <button type="button" class="btn btn-primary" (click)="confirm()" [disabled]="!name">{{currentState}}</button>
     </div>
 </ng-template>
-<div class="position-fixed bottom-0 right-0 p-3" style="z-index: 1; right: 0; bottom: 0; width: 205px;">
-    <div id="toast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+<div class="position-fixed bottom-0 right-0 p-3" style="z-index: 1; right: 0; bottom: 0;">
+    <div id="toast" class="toast hide text-center w-auto" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
         <div class="toast-body">
-            Copied Successfully
-            <i class="icon-ok" aria-hidden="true"></i>
+            {{toastBody}}
+            <i  [ngClass]="toastIcon" aria-hidden="true"></i>
         </div>
     </div>
 </div>
