@@ -12,7 +12,6 @@ import { FilterComponent } from './components/filter/filter.component';
 import { DragDropDirective } from './directives/drag-drop.directive';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import { ClickEventDirective } from './directives/click-event.directive';
 import { FormsModule } from '@angular/forms';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { DateTypePipe } from './pipes/date-type.pipe';
@@ -33,7 +32,6 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
         TreeComponent,
         FilterComponent,
         DragDropDirective,
-        ClickEventDirective,
         FileSizePipe,
         DateTypePipe,
         FileTypePipe

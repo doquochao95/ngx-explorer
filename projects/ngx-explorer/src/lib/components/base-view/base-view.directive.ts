@@ -31,10 +31,18 @@ export class BaseView implements OnDestroy {
 
     get filteredItems(): INode[] {
         const filter = this.filter.value;
-        if (!filter) {
+        if (!filter)
             return this.items;
+        if (filter.includes('/')) {
+            let filterArray = filter.split('/')
+            let name = filterArray[filterArray.length - 1]
+            const paths = filterArray.slice(1, filterArray.length - 1)
+            this.explorerService.filterItems(paths)
+            return this.items.filter(i => i.data?.name.toLowerCase() == name.toLowerCase());
         }
-        return this.items.filter(i => i.data?.name.toLowerCase().includes(filter.toLowerCase()));
+        else {
+            return this.items.filter(i => i.data?.name.toLowerCase().includes(filter.toLowerCase()));
+        }
     }
     getIconClass(data: any) {
         let format: string = this.helperService.getFormat(data);

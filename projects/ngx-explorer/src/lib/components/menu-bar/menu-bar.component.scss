@@ -6,7 +6,26 @@
         height: 100%;
         box-sizing: border-box;
     }
-
+    .nxe-menu-bar-home-button {
+        cursor: pointer;
+        border-radius: 5px;
+        background: transparent;
+        border: 0;
+        font-family: inherit;
+        font-size: x-large;
+        font-weight: inherit;
+        line-height: normal;
+        transition-duration: 0.3s;
+        .icon-home::before {
+            scale: 1.2 !important;
+        }
+        .icon-home {
+            color: #555;
+        }
+        &:hover {
+            transform: scale(1.3);
+        }
+    }
     .nxe-menu-bar-button {
         cursor: pointer;
         border-radius: 5px;

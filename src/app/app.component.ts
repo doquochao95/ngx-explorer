@@ -18,7 +18,7 @@ export class AppComponent implements IDataService<ExampleNode> {
     MOCK_FILES: ItemModel[] = []
     base64Image: any;
 
-    constructor(private service: AppDataService,private helperService : HelperService) {
+    constructor(private service: AppDataService, private helperService: HelperService) {
         this.MOCK_FILES = this.service.getDataFile()
         this.MOCK_FOLDERS = this.service.getDataFolder()
     }
@@ -70,14 +70,14 @@ export class AppComponent implements IDataService<ExampleNode> {
             const newFile: ItemModel = {
                 id,
                 name: file.name,
-                path: nodePath + '/' + file.name,
+                path: nodePath,
                 content: reader.result as string,
                 type: file.type,
                 size: file.size,
                 last_Modified: new Date,
                 isFolder: false
             };
-            if (this.MOCK_FILES.filter(x => x.name == newFile.name).length == 0)
+            if (this.MOCK_FILES.filter(x => x.name == newFile.name && x.path == newFile.path).length == 0)
                 this.MOCK_FILES.push(newFile)
         };
         return of(file).pipe(delay(this.randomDelay(100, 300)))
@@ -109,7 +109,8 @@ export class AppComponent implements IDataService<ExampleNode> {
     }
 
     createNode(node: ExampleNode, name: string): Observable<any> {
-        const path = (node?.path ? node.path + '/' : '') + name.replace(/[\W_]+/g, ' ');
+        name = name.replace(/[^a-zA-Z0-9 ]/g, '');
+        const path = (node?.path ? node.path + '/' : '') + name.replace(/[\W_]+/g, '').toLowerCase();
         const id = ++this.folderId;
         const newFolder: ItemModel = {
             id,
@@ -138,7 +139,6 @@ export class AppComponent implements IDataService<ExampleNode> {
 
         const leafs = this.MOCK_FILES.filter(f => {
             const paths = f.path.split('/');
-            paths.pop();
             const filteredPath = paths.join('/');
             return filteredPath === folderPath;
         });

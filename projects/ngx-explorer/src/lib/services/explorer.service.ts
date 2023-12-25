@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, concat, forkJoin, of, throwError } from 'rxjs';
-import { catchError, tap, toArray } from 'rxjs/operators';
+import { catchError, tap, toArray, filter } from 'rxjs/operators';
 import { INode, Dictionary, NodeContent } from '../shared/types';
 import { Utils } from '../shared/utils';
 import { DataService } from './data.service';
@@ -48,11 +48,20 @@ export class ExplorerService {
             }, this.config.globalOptions.autoRefreshInterval);
         }
     }
+    public filterItems(pathArray: string[]) {
+        this.openNode(1, true)
+        pathArray.forEach((val) => {
+            const flat = Object.values(this.flatPointers)
+            let flatInx = flat.find(x => x.data != undefined && x.data.name == val).id
+            console.log(flatInx)
+            this.openNode(flatInx, true)
+        })
+    }
     public selectNodes(nodes: INode[]) {
         this.selectedNodes$.next(nodes);
     }
-    public openNode(id: number) {
-        this.getNodeChildren(id).subscribe(() => {
+    public openNode(id: number, isFilter?: boolean) {
+        this.getNodeChildren(id, isFilter).subscribe(() => {
             const parent = this.flatPointers[id];
             this.openedNode$.next(parent);
             const breadcrumbs = Utils.buildBreadcrumbs(this.flatPointers, parent);
@@ -148,10 +157,10 @@ export class ExplorerService {
         this.sub = strategy3
             .pipe(
                 tap({
-                    next: (e) => {
+                    next: () => {
                         this.updateProgressMeter(true)
                     },
-                    error: (e) => {
+                    error: () => {
                         this.updateProgressMeter(false)
                     },
                 }),
@@ -164,11 +173,11 @@ export class ExplorerService {
                     },
                 ), toArray())
             .subscribe({
-                next: async (e) => {
+                next: async () => {
                     this.refresh();
                     await this.setUploadStatus('success');
                 },
-                error: async (e) => {
+                error: async () => {
                     this.refresh();
                     await this.setUploadStatus('failure');
                 }
@@ -195,7 +204,7 @@ export class ExplorerService {
         });
     }
 
-    private getNodeChildren(id: number) {
+    private getNodeChildren(id: number, isFilter?: boolean) {
         const parent = this.flatPointers[id];
         if (!parent.isFolder) {
             throw new Error('Cannot open leaf node');
@@ -225,8 +234,8 @@ export class ExplorerService {
                 const nodeChildren = parent.children.filter(c => c.isFolder);
                 const leafChildren = parent.children.filter(c => !c.isFolder);
                 parent.children = nodeChildren.concat(leafChildren);
-
-                this.tree$.next(this.internalTree);
+                if (!isFilter)
+                    this.tree$.next(this.internalTree);
             }));
     }
     public setProgressBar() {

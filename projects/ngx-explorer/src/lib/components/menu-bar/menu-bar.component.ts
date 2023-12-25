@@ -48,7 +48,7 @@ export class MenuBarComponent implements OnDestroy {
             this.canRename = n.length === 1 && !config.globalOptions.readOnly;
             this.canCreate = !config.globalOptions.readOnly
             this.canUpload = !config.globalOptions.readOnly
-            this.canCopyPath = n.length === 1 && n.every(x => !x.isFolder);
+            this.canCopyPath = n.length === 1;
         }));
         this.sub.add(this.explorerService.openedNode.subscribe(n => {
             this.recentFolder = n ? n.children.filter(x => x.isFolder) : [];
@@ -103,7 +103,7 @@ export class MenuBarComponent implements OnDestroy {
             this.modalTitle = 'Enter folder name'
             this.currentState = 'Create'
             for (let i = 1; i <= 100; i++) {
-                let tempName = `New folder (${i})`
+                let tempName = `New folder ${i}`
                 if (!this.recentFolder.some(x => x.data.name == tempName)) {
                     this.name = tempName
                     break

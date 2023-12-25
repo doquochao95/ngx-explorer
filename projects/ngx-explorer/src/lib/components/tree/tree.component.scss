@@ -43,13 +43,19 @@ $item-spacing: 10px;
                 // &.icon-folder {
                 //     color: $warning;
                 // }
+                // &.icon-folder-open {
+                //     color: $warning;
+                // }
             }
         }
 
         .grow {
             flex: 1;
         }
-
+        .grow-weight {
+            flex: 1;
+            font-weight: 400;
+        }
         &:hover {
             background-color: #d7edff;
         }
