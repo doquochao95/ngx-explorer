@@ -51,10 +51,11 @@ $item-spacing: 10px;
 
         .grow {
             flex: 1;
+            font-weight: 300;
         }
         .grow-weight {
             flex: 1;
-            font-weight: 400;
+            font-weight: 500;
         }
         &:hover {
             background-color: #d7edff;
