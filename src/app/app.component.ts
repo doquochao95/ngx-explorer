@@ -109,8 +109,7 @@ export class AppComponent implements IDataService<ExampleNode> {
     }
 
     createNode(node: ExampleNode, name: string): Observable<any> {
-        name = name.replace(/[^a-zA-Z0-9 ]/g, '');
-        const path = (node?.path ? node.path + '/' : '') + name.replace(/[\W_]+/g, '').toLowerCase();
+        const path = (node?.path ? node.path + '/' : '') + name;
         const id = ++this.folderId;
         const newFolder: ItemModel = {
             id,

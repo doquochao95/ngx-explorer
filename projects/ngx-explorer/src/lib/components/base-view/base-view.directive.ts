@@ -18,7 +18,7 @@ export class BaseView implements OnDestroy {
     imageFormat: string = 'jpg, jpeg, png'
     archiveFormat: string = 'zip, rar'
     videoFormat: string = 'mp4, wmv, flv, avi, mov'
-
+    tempValue: string = ''
     constructor(protected explorerService: ExplorerService, protected helperService: HelperService, @Inject(FILTER_STRING) private filter: BehaviorSubject<string>) {
         this.subs.add(this.explorerService.openedNode.subscribe(nodes => {
             this.items = nodes ? nodes.children : [];
@@ -30,19 +30,29 @@ export class BaseView implements OnDestroy {
     }
 
     get filteredItems(): INode[] {
+
         const filter = this.filter.value;
-        if (!filter)
-            return this.items;
-        if (filter.includes('/')) {
-            let filterArray = filter.split('/')
-            let name = filterArray[filterArray.length - 1]
-            const paths = filterArray.slice(1, filterArray.length - 1)
-            this.explorerService.filterItems(paths)
-            return this.items.filter(i => i.data?.name.toLowerCase() == name.toLowerCase());
+        if (!filter) {
+            if (this.tempValue != filter)
+                this.explorerService.refresh()
+            this.tempValue = filter
         }
-        else {
-            return this.items.filter(i => i.data?.name.toLowerCase().includes(filter.toLowerCase()));
+        if (this.tempValue != filter) {
+            if (filter.includes('/')) {
+                let filterArray = filter.split('/')
+                const name = filterArray[filterArray.length - 1]
+                const paths = filterArray.slice(1, filterArray.length - 1)
+                this.explorerService.filterItems(paths).subscribe(() => {
+                    const itemPath = name.includes('.') ? filterArray.slice(1, filterArray.length - 1).join('/') : filterArray.slice(1, filterArray.length).join('/')
+                    this.items = this.items.filter(i => i.data?.name == name && i.data?.path == itemPath);
+                })
+            }
+            else {
+                this.items = this.items.filter(i => i.data?.name.toLowerCase().includes(filter.toLowerCase()));
+            }
+            this.tempValue = filter
         }
+        return this.items
     }
     getIconClass(data: any) {
         let format: string = this.helperService.getFormat(data);

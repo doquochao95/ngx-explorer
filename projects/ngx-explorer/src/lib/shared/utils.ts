@@ -1,7 +1,12 @@
+import { filter } from 'rxjs/operators';
 import { INode, Dictionary } from './types';
 
 export class Utils {
     private static id = 0;
+    private static filter : RegExp = /[/:*?"<>|\\]+/
+    static checkSpecialChar(str: string) {
+        return this.filter.test(str) ? false : true
+    }
     static createNode(parentId = 0, isFolder = true, data?: any): INode {
         const id = ++this.id;
         return {

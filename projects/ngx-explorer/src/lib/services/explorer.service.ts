@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, concat, forkJoin, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, concat, defer, forkJoin, lastValueFrom, of, throwError } from 'rxjs';
 import { catchError, tap, toArray, filter } from 'rxjs/operators';
 import { INode, Dictionary, NodeContent } from '../shared/types';
 import { Utils } from '../shared/utils';
@@ -49,25 +49,37 @@ export class ExplorerService {
         }
     }
     public filterItems(pathArray: string[]) {
-        this.openNode(1, true)
-        pathArray.forEach((val) => {
-            const flat = Object.values(this.flatPointers)
-            let flatInx = flat.find(x => x.data != undefined && x.data.name == val).id
-            console.log(flatInx)
-            this.openNode(flatInx, true)
+        return defer(async () => {
+            await this.openNode(1, true)
+            let path = ''
+            for (let val of pathArray) {
+                path = path ? `${path}/${val}` : val
+                const flat = Object.values(this.flatPointers)
+                let flatModel = flat.find(x => x.data != undefined && x.data.name == val && x.data.path == path)
+                if (flatModel == undefined)
+                    break
+                let flatInx = flatModel.id
+                await this.openNode(flatInx, true)
+            }
+            return;
         })
     }
     public selectNodes(nodes: INode[]) {
         this.selectedNodes$.next(nodes);
     }
-    public openNode(id: number, isFilter?: boolean) {
-        this.getNodeChildren(id, isFilter).subscribe(() => {
-            const parent = this.flatPointers[id];
-            this.openedNode$.next(parent);
-            const breadcrumbs = Utils.buildBreadcrumbs(this.flatPointers, parent);
-            this.breadcrumbs$.next(breadcrumbs);
-            this.selectedNodes$.next([]);
-        });
+    public async openNode(id: number, isFilter?: boolean) {
+        return await lastValueFrom(
+            this.getNodeChildren(id, isFilter)
+                .pipe(tap(response => {
+                    if (response) {
+                        const parent = this.flatPointers[id];
+                        this.openedNode$.next(parent);
+                        const breadcrumbs = Utils.buildBreadcrumbs(this.flatPointers, parent);
+                        this.breadcrumbs$.next(breadcrumbs);
+                        this.selectedNodes$.next([]);
+                    }
+                }))
+        )
     }
     public setUploadStatus(status: string) {
         return new Promise((resolve, _reject) => {
@@ -204,39 +216,53 @@ export class ExplorerService {
         });
     }
 
-    private getNodeChildren(id: number, isFilter?: boolean) {
+    private getNodeChildren(id: number, isFilter?: boolean): Observable<any> {
         const parent = this.flatPointers[id];
         if (!parent.isFolder) {
             throw new Error('Cannot open leaf node');
         }
 
-        return this.dataService
-            .getNodeChildren(parent.data)
-            .pipe(tap(({ leafs, nodes }: NodeContent<any>) => {
-                const newNodes = nodes.map(data => Utils.createNode(id, true, data));
-                const newLeafs = leafs.map(data => Utils.createNode(id, false, data));
-                const newChildren = newNodes.concat(newLeafs);
-                const added = newChildren.filter(c => !parent.children.find(o => Utils.compareObjects(o.data, c.data)));
-                const removed = parent.children.filter(o => !newChildren.find(c => Utils.compareObjects(o.data, c.data)));
+        return new Observable((observer: any) => {
+            this.dataService
+                .getNodeChildren(parent.data)
+                .pipe(
+                    tap(({ leafs, nodes }: NodeContent<any>) => {
+                        const newNodes = nodes.map(data => Utils.createNode(id, true, data));
+                        const newLeafs = leafs.map(data => Utils.createNode(id, false, data));
+                        const newChildren = newNodes.concat(newLeafs);
+                        const added = newChildren.filter(c => !parent.children.find(o => Utils.compareObjects(o.data, c.data)));
+                        const removed = parent.children.filter(o => !newChildren.find(c => Utils.compareObjects(o.data, c.data)));
 
-                removed.forEach(c => {
-                    const index = parent.children.findIndex(o => o.id === c.id);
-                    parent.children.splice(index, 1);
-                    delete this.flatPointers[c.id];
+                        removed.forEach(c => {
+                            const index = parent.children.findIndex(o => o.id === c.id);
+                            parent.children.splice(index, 1);
+                            delete this.flatPointers[c.id];
+                        });
+
+                        added.forEach(c => {
+                            parent.children.push(c);
+                            this.flatPointers[c.id] = c;
+                        });
+
+                        parent.children.sort((a, b) => a.data.name.localeCompare(b.data.name) && a.isFolder === b.isFolder ? 0 : a.isFolder ? -1 : 1);
+                        const nodeChildren = parent.children.filter(c => c.isFolder);
+                        const leafChildren = parent.children.filter(c => !c.isFolder);
+                        parent.children = nodeChildren.concat(leafChildren);
+                        if (!isFilter)
+                            this.tree$.next(this.internalTree);
+
+                    }), toArray())
+                .subscribe({
+                    next: async (res) => {
+                        observer.next(res)
+                        observer.complete()
+                    },
+                    error: async () => {
+                        observer.error({})
+                        observer.complete()
+                    }
                 });
-
-                added.forEach(c => {
-                    parent.children.push(c);
-                    this.flatPointers[c.id] = c;
-                });
-
-                parent.children.sort((a, b) => a.data.name.localeCompare(b.data.name) && a.isFolder === b.isFolder ? 0 : a.isFolder ? -1 : 1);
-                const nodeChildren = parent.children.filter(c => c.isFolder);
-                const leafChildren = parent.children.filter(c => !c.isFolder);
-                parent.children = nodeChildren.concat(leafChildren);
-                if (!isFilter)
-                    this.tree$.next(this.internalTree);
-            }));
+        })
     }
     public setProgressBar() {
         this.progressBar$.next(this.percent)

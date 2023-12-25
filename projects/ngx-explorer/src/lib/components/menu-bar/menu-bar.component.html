@@ -27,7 +27,7 @@
     <div class="modal-body">
         <div class="row">
             <div class="col">
-                <input class="form-control" type="text"  [(ngModel)]="name" (keyup)="onChange()">
+                <input class="form-control" type="text"  [(ngModel)]="name" (keydown)="onChange($event)">
             </div>
             <div class="col-auto align-self-end pl-0" *ngIf="selection.length > 0 && currentState == 'Rename' && !selection[0].isFolder">
                 <label class="mb-0">{{format}}</label>

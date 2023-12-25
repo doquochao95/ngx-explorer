@@ -6,6 +6,7 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { ConfirmComponent } from '../confirm/confirm.component';
 import { INode } from '../../shared/types';
 import { Toast } from 'bootstrap';
+import { Utils } from '../../shared/utils';
 
 @Component({
     selector: 'nxe-menu-bar',
@@ -35,7 +36,6 @@ export class MenuBarComponent implements OnDestroy {
     selection: INode[] = [];
     recentFolder: INode[] = [];
     recentFile: INode[] = [];
-    regexName: RegExp = /\([0-9]*\)/g
     constructor(
         private explorerService: ExplorerService,
         public config: DefaultConfig,
@@ -103,7 +103,7 @@ export class MenuBarComponent implements OnDestroy {
             this.modalTitle = 'Enter folder name'
             this.currentState = 'Create'
             for (let i = 1; i <= 100; i++) {
-                let tempName = `New folder ${i}`
+                let tempName = `New folder (${i})`
                 if (!this.recentFolder.some(x => x.data.name == tempName)) {
                     this.name = tempName
                     break
@@ -163,7 +163,8 @@ export class MenuBarComponent implements OnDestroy {
     cancel(): void {
         this.modalRef?.hide();
     }
-    onChange() {
+    onChange(event: any) {
+        return Utils.checkSpecialChar(event.key)
     }
     openConfirmDialog() {
         this.modalRef = this.modalService.show(ConfirmComponent, { initialState: { message: 'Are you sure you want to delete the selected files?' }, class: 'modal-dialog-centered' });
