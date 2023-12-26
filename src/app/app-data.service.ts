@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TRANSITION_DURATIONS } from 'ngx-bootstrap/modal/modal-options.class';
-import { ItemModel } from 'ngx-explorer';
+import { ItemModel } from 'ngx-explorer-sdteam';
 import { Observable, Observer } from "rxjs";
 
 let MOCK_FOLDERS_data: ItemModel[] = [

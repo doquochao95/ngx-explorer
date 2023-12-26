@@ -1,6 +1,6 @@
-import { HelperService } from './../../projects/ngx-explorer/src/lib/services/helper.service';
+import { HelperService } from './../../projects/ngx-explorer-sdteam/src/lib/services/helper.service';
 import { Component } from '@angular/core';
-import { ExampleNode, IDataService, ItemModel, NodeContent } from 'ngx-explorer';
+import { ExampleNode, IDataService, ItemModel, NodeContent } from 'ngx-explorer-sdteam';
 import { Observable, of, Subscriber, forkJoin, delay, switchMap } from 'rxjs';
 import { AppDataService } from './app-data.service';
 

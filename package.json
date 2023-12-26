@@ -4,9 +4,9 @@
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
-        "lib:watch": "ng build ngx-explorer --watch ",
-        "lib:build": "ng build ngx-explorer && cd dist/ngx-explorer && npm pack",
-        "lib:publish": "ng build ngx-explorer && cd dist/ngx-explorer && npm pack && npm publish",
+        "lib:watch": "ng build ngx-explorer-sdteam --watch ",
+        "lib:build": "ng build ngx-explorer-sdteam && cd dist/ngx-explorer-sdteam && npm pack",
+        "lib:publish": "ng build ngx-explorer-sdteam && cd dist/ngx-explorer-sdteam && npm pack && npm publish",
         "build": "ng build",
         "copy": "cp README.md dist/ngx-explorer/",
         "test": "ng test",
@@ -60,13 +60,13 @@
             [
                 "@semantic-release/npm",
                 {
-                    "pkgRoot": "dist/ngx-explorer"
+                    "pkgRoot": "dist/ngx-explorer-sdteam"
                 }
             ],
             [
                 "@semantic-release/exec",
                 {
-                    "prepareCmd": "cp ./dist/ngx-explorer/package.json ./projects/ngx-explorer/package.json"
+                    "prepareCmd": "cp ./dist/ngx-explorer-sdteam/package.json ./projects/ngx-explorer-sdteam/package.json"
                 }
             ],
             "@semantic-release/github",
@@ -75,7 +75,7 @@
                 {
                     "assets": [
                         "CHANGELOG.md",
-                        "projects/ngx-explorer/package.json"
+                        "projects/ngx-explorer-sdteam/package.json"
                     ]
                 }
             ]

@@ -17,8 +17,8 @@
       "dom"
     ],
     "paths": {
-      "ngx-explorer": [
-        "projects/ngx-explorer/src/public-api.ts",
+      "ngx-explorer-sdteam": [
+        "projects/ngx-explorer-sdteam/src/public-api.ts",
       ]
     }
   },

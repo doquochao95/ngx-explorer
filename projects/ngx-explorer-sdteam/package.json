@@ -15,13 +15,13 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/artemnih/ngx-explorer.git"
+        "url": "https://github.com/doquochao95/ngx-explorer.git"
     },
     "author": "@artemnih",
     "license": "MIT",
     "description": "Angular library that provides simple file manager.",
     "bugs": {
-        "url": "https://github.com/artemnih/ngx-explorer/issues"
+        "url": "https://github.com/doquochao95/ngx-explorer/issuess"
     },
     "keywords": [
         "angular",

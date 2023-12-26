@@ -7,12 +7,12 @@ This is a front-end implementation only. There are no services at this point.
 ## How to use
 - Install package
 ```
-npm i ngx-explorer # install
+npm i ngx-explorer-sdteam # install
 npm start # run demo
 ```
 - Implement `IDataService` provider interface
 ```Typescript
-import { IDataService } from 'ngx-explorer';
+import { IDataService } from 'ngx-explorer-sdteam';
 
 export class MyDataService implements IDataService<MyNodeType> {
     ...
@@ -20,7 +20,7 @@ export class MyDataService implements IDataService<MyNodeType> {
 ```
 - Add `NgxExplorerModule` and data provider to `NgModule`
 ```Typescript
-import { NgxExplorerModule, DataService } from 'ngx-explorer';
+import { NgxExplorerModule, DataService } from 'ngx-explorer-sdteam';
 
 @NgModule({
     imports: [
@@ -40,6 +40,6 @@ import { NgxExplorerModule, DataService } from 'ngx-explorer';
 export class AppModule { }
 ```
 - Add `<nxe-explorer></nxe-explorer>` to the template
-- Add css import `@import '~ngx-explorer/src/assets/icons/css/nxe.css'`
+- Add css import `@import '~ngx-explorer-sdteam/src/assets/icons/css/nxe.css'`
 
 ![explorer](docs/ss.png)
