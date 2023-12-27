@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { ElementRef, Injectable, TemplateRef } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, concat, defer, forkJoin, lastValueFrom, of, throwError } from 'rxjs';
 import { catchError, tap, toArray, filter } from 'rxjs/operators';
-import { INode, Dictionary, NodeContent } from '../shared/types';
+import { INode, Dictionary, NodeContent, ContextMenuOption, ModalTemplateOption, ModalDataModel, ToastModel } from '../shared/types';
 import { Utils } from '../shared/utils';
 import { DataService } from './data.service';
 import { DefaultConfig } from '../shared/default-config';
@@ -21,18 +21,19 @@ export class ExplorerService {
     private readonly openedNode$ = new BehaviorSubject<INode>(undefined);
     private readonly breadcrumbs$ = new BehaviorSubject<INode[]>([]);
     private readonly tree$ = new BehaviorSubject<INode>(this.internalTree);
-    private readonly progressBar$ = new BehaviorSubject<number>(0);
-    private readonly uploadStatus$ = new BehaviorSubject<string>(undefined);
-
-
+    private readonly contextMenu$ = new BehaviorSubject<ContextMenuOption>(undefined);
+    private readonly modalDataModel$ = new BehaviorSubject<ModalDataModel>(undefined);
+    private readonly toast$ = new BehaviorSubject<ToastModel>(undefined);
+    private readonly uploader$ = new BehaviorSubject<ElementRef>(undefined);
 
     public readonly selectedNodes = this.selectedNodes$.asObservable();
     public readonly openedNode = this.openedNode$.asObservable();
     public readonly breadcrumbs = this.breadcrumbs$.asObservable();
     public readonly tree = this.tree$.asObservable();
-    public readonly progressBar = this.progressBar$.asObservable();
-    public readonly uploadStatus = this.uploadStatus$.asObservable();
-
+    public readonly contextMenu = this.contextMenu$.asObservable();
+    public readonly modalDataModel = this.modalDataModel$.asObservable();
+    public readonly toast = this.toast$.asObservable();
+    public readonly uploader = this.uploader$.asObservable();
 
     private sub: Subscription;
 
@@ -81,14 +82,7 @@ export class ExplorerService {
                 }))
         )
     }
-    public setUploadStatus(status: string) {
-        return new Promise((resolve, _reject) => {
-            this.uploadStatus$.next(status);
-            setTimeout(() => {
-                resolve(true)
-            }, 2000)
-        })
-    }
+
     public expandNode(id: number) {
         this.getNodeChildren(id).subscribe();
     }
@@ -160,8 +154,7 @@ export class ExplorerService {
         this.count = 0;
         this.percent = 0;
         this.total = fileList.length + 1;
-        this.updateProgressMeter(true)
-        await this.setUploadStatus('upload')
+        await this.updateModalUpload('upload', false, true)
         const observableList: Array<Observable<any>> = fileList.map((item) => {
             return this.dataService.uploadFiles(node.data, item)
         });
@@ -169,40 +162,62 @@ export class ExplorerService {
         this.sub = strategy3
             .pipe(
                 tap({
-                    next: () => {
-                        this.updateProgressMeter(true)
+                    next: async () => {
+                        await this.updateModalUpload('uploading', false, true,)
                     },
-                    error: () => {
-                        this.updateProgressMeter(false)
+                    error: async () => {
+                        await this.updateModalUpload('uploading', false, false)
                     },
                 }),
                 catchError(
                     (error): Observable<any> => {
-                        if (error.status === 404) {
+                        if (error.status === 404)
                             return of(null);
-                        }
                         return throwError(() => error);
                     },
                 ), toArray())
             .subscribe({
                 next: async () => {
                     this.refresh();
-                    await this.setUploadStatus('success');
+                    await this.updateModalUpload('success', true)
+
                 },
                 error: async () => {
                     this.refresh();
-                    await this.setUploadStatus('failure');
+                    await this.updateModalUpload('failure', true)
                 }
             });
     }
-    private updateProgressMeter(isSuccess: boolean) {
-        if (isSuccess) {
-            this.count++;
-            this.percent = this.total > 0 ? Math.round((this.count / this.total) * 100) : 0;
+    private updateModalUpload(status: string, isFinished: boolean, isSuccess?: boolean,) {
+        if (isFinished) {
+            const modalData = <ModalDataModel>{
+                template_Type: 'upload',
+                upload_Status: status
+            }
+            return new Promise((resolve, _reject) => {
+                this.setModal(modalData)
+                setTimeout(() => {
+                    resolve(true)
+                }, 2000)
+            })
         }
-        else
-            this.percent = 100
-        this.setProgressBar()
+        else {
+            if (isSuccess) {
+                this.count++;
+                this.percent = this.total > 0 ? Math.round((this.count / this.total) * 100) : 0;
+            }
+            else
+                this.percent = 100
+            const modalData = <ModalDataModel>{
+                template_Type: 'upload',
+                progress_Bar_Value: this.percent,
+                upload_Status: status
+            }
+            return new Promise((resolve, _reject) => {
+                this.setModal(modalData)
+                resolve(true)
+            })
+        }
     }
     public download() {
         const selection = this.selectedNodes$.value;
@@ -232,19 +247,16 @@ export class ExplorerService {
                         const newChildren = newNodes.concat(newLeafs);
                         const added = newChildren.filter(c => !parent.children.find(o => Utils.compareObjects(o.data, c.data)));
                         const removed = parent.children.filter(o => !newChildren.find(c => Utils.compareObjects(o.data, c.data)));
-
                         removed.forEach(c => {
                             const index = parent.children.findIndex(o => o.id === c.id);
                             parent.children.splice(index, 1);
                             delete this.flatPointers[c.id];
                         });
-
                         added.forEach(c => {
                             parent.children.push(c);
                             this.flatPointers[c.id] = c;
                         });
-
-                        parent.children.sort((a, b) => a.data.name.localeCompare(b.data.name) && a.isFolder === b.isFolder ? 0 : a.isFolder ? -1 : 1);
+                        parent.children.sort((a, b) => a.data.name.localeCompare(b.data.name));
                         const nodeChildren = parent.children.filter(c => c.isFolder);
                         const leafChildren = parent.children.filter(c => !c.isFolder);
                         parent.children = nodeChildren.concat(leafChildren);
@@ -264,7 +276,16 @@ export class ExplorerService {
                 });
         })
     }
-    public setProgressBar() {
-        this.progressBar$.next(this.percent)
+    public setContextMenu(menu: ContextMenuOption) {
+        this.contextMenu$.next(menu)
+    }
+    public setModal(modal: ModalDataModel) {
+        this.modalDataModel$.next(modal)
+    }
+    public setToast(toast: ToastModel) {
+        this.toast$.next(toast)
+    }
+    public setUploader(element: ElementRef) {
+        this.uploader$.next(element)
     }
 }

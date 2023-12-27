@@ -1,0 +1,5 @@
+<span><i [className]="element.icon"></i>{{ element.label }}</span>
+<b *ngIf="element.submenu">▶</b>
+<nav class="submenu" *ngIf="element.visible && element.submenu">
+    <nxe-context-menu-item *ngFor="let subelement of element.submenu" [element]="subelement" (clicked)="clicked.emit()"></nxe-context-menu-item>
+</nav>

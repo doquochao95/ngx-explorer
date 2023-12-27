@@ -1,3 +1,5 @@
+import { TemplateRef } from '@angular/core';
+import { ContextMenu } from './context-menu';
 import { Observable } from 'rxjs';
 
 export type NodeContent<T> = { leafs: T[], nodes: T[] };
@@ -61,6 +63,35 @@ export interface ExplorerOption {
     homeNodeName: string;
     autoRefresh: boolean;
     readOnly: boolean;
-    defaultViewType:string;
+    defaultViewType: string;
     autoRefreshInterval: number;
+    offSetTop: number;
+    offSetRight: number;
+    offSetBottom: number;
+    offSetLeft: number;
+}
+export interface ContextMenuOption {
+    visible: boolean;
+    elements: ContextMenu[];
+}
+export interface ModalTemplateOption {
+    type: string;
+    template: TemplateRef<any>
+}
+export interface ModalDataModel {
+    template_Type: string;
+    template: TemplateRef<any> | null
+    progress_Bar_Value: number | null;
+    upload_Status: string | null;
+
+    modal_Title : string | null;
+    modify_Type : string | null;
+    file_Name : string | null;
+    file_Format : string | null;
+
+    model_State: boolean
+}
+export interface ToastModel {
+    toastBody: string;
+    toastIcon: string
 }

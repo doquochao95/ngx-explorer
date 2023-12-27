@@ -1,0 +1,55 @@
+nav {
+    display: flex;
+    flex-direction: column;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+    max-width: 150px;
+    min-width: 100px;
+    position: absolute;
+    z-index: 99;
+    background: white;
+    animation: popup 0.3s both;
+}
+
+nav.submenu {
+    animation: slide 0.3s both;
+    left: 100px;
+    top: 0;
+}
+
+:host {
+    padding: 10px;
+    text-align: left;
+    vertical-align: middle;
+    position: relative;
+    display: flex;
+}
+
+:host:hover,
+:host(.active) {
+    background: rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+span {
+    flex: auto;
+}
+
+b {
+    font-size: 12px;
+    font-weight: light;
+    color: grey;
+}
+
+@keyframes slide {
+    from {
+        opcaity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+[class^="icon-"]:before, [class*=" icon-"]:before {
+    margin-right: 10px;
+}

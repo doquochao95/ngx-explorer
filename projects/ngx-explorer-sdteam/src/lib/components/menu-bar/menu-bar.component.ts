@@ -1,12 +1,13 @@
-import { Component, ElementRef, OnDestroy, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Subscription, BehaviorSubject } from 'rxjs';
 import { ExplorerService } from '../../services/explorer.service';
 import { DefaultConfig } from '../../shared/default-config';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { ConfirmComponent } from '../confirm/confirm.component';
-import { INode } from '../../shared/types';
-import { Toast } from 'bootstrap';
-import { Utils } from '../../shared/utils';
+
+import { INode, ModalDataModel } from '../../shared/types';
+import { HelperService } from '../../services/helper.service';
+import { FILTER_STRING } from '../../injection-tokens/tokens';
+import { BaseView } from '../../directives/base-view.directive';
 
 @Component({
     selector: 'nxe-menu-bar',
@@ -14,10 +15,11 @@ import { Utils } from '../../shared/utils';
     styleUrls: ['./menu-bar.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class MenuBarComponent implements OnDestroy {
+export class MenuBarComponent extends BaseView implements OnDestroy, AfterViewInit {
     @ViewChild('uploader', { static: true }) uploader: ElementRef;
+    @ViewChild('upload') upload: TemplateRef<any>;
+    @ViewChild('modify') modify: TemplateRef<any>;
 
-    modalRef?: BsModalRef;
     canUpload = false;
     canDownload = false;
     canDelete = false;
@@ -25,22 +27,19 @@ export class MenuBarComponent implements OnDestroy {
     canCreate = false;
     canCopyPath = false;
 
-
-    modalTitle: string = 'Enter folder name'
-    currentState: string = 'Create'
-    toastBody: string = ''
-    toastIcon: string = ''
-    name: string = ''
-    format: string = null
     private sub = new Subscription();
     selection: INode[] = [];
-    recentFolder: INode[] = [];
-    recentFile: INode[] = [];
+
+    progressValue: number = 0
+    progressStatus: string = 'upload'
     constructor(
-        private explorerService: ExplorerService,
+        explorerService: ExplorerService,
+        helperService: HelperService,
+        modalService: BsModalService,
+        @Inject(FILTER_STRING) filter: BehaviorSubject<string>,
         public config: DefaultConfig,
-        private modalService: BsModalService
     ) {
+        super(explorerService, helperService, modalService, filter);
         this.sub.add(this.explorerService.selectedNodes.subscribe(n => {
             this.selection = n;
             this.canDownload = n.length > 0 && n.every(x => !x.isFolder);
@@ -50,142 +49,45 @@ export class MenuBarComponent implements OnDestroy {
             this.canUpload = !config.globalOptions.readOnly
             this.canCopyPath = n.length === 1;
         }));
-        this.sub.add(this.explorerService.openedNode.subscribe(n => {
-            this.recentFolder = n ? n.children.filter(x => x.isFolder) : [];
-            this.recentFile = n ? n.children.filter(x => !x.isFolder) : [];
+        this.sub.add(this.explorerService.modalDataModel.subscribe(res => {
+            if (res?.template_Type == 'upload' && res?.upload_Status) {
+                this.progressValue = res?.progress_Bar_Value ?? this.progressValue;
+                this.progressStatus = res?.upload_Status ?? this.progressStatus;
+                switch (res?.upload_Status) {
+                    case "upload":
+                        this.openModalUpload()
+                        break;
+                    case "success":
+                        this.closeModalUpload()
+                        break;
+                    case "failure":
+                        this.closeModalUpload()
+                        break;
+                    default:
+                }
+            }
         }));
     }
-
-    refresh() {
-        this.explorerService.refresh();
+    ngAfterViewInit() {
+        this.explorerService.refresh()
     }
-
-    openUploader() {
-        this.uploader.nativeElement.click();
-    }
-
-    handleFiles(event: Event) {
-        const files: FileList = (event.target as HTMLInputElement).files;
-        if (!files || files.length === 0) {
-            return;
+    ngDoCheck(): void {
+        const modalUpload = <ModalDataModel>{
+            template_Type: 'upload',
+            template: this.upload
         }
-        this.explorerService.upload(files);
-        this.uploader.nativeElement.value = '';
-    }
-
-    download() {
-        this.explorerService.download();
-    }
-    copyPath() {
-        this.showCopyToast(this.explorerService.copyToClipboard())
+        const modalModify = <ModalDataModel>{
+            template_Type: 'modify',
+            template: this.modify
+        }
+        this.explorerService.setModal(modalUpload)
+        this.explorerService.setModal(modalModify)
+        this.explorerService.setUploader(this.uploader)
     }
     ngOnDestroy() {
         this.sub.unsubscribe();
     }
-
-    openModal(template: TemplateRef<any>, isRename?: boolean) {
-        if (isRename) {
-            if (this.selection[0].data.isFolder) {
-                this.modalTitle = 'Enter new folder name'
-                this.currentState = 'Rename'
-                this.name = this.selection[0].data.name;
-                this.format = null
-            }
-            else {
-                this.modalTitle = 'Enter new file name'
-                this.currentState = 'Rename'
-                let temp: string[] = this.selection[0].data.name.split('.');
-                this.name = temp.splice(0, temp.length - 1).join('.')
-                this.format = '.' + temp[0]
-            }
-        }
-        else {
-            this.modalTitle = 'Enter folder name'
-            this.currentState = 'Create'
-            for (let i = 1; i <= 100; i++) {
-                let tempName = `New folder (${i})`
-                if (!this.recentFolder.some(x => x.data.name == tempName)) {
-                    this.name = tempName
-                    break
-                }
-            }
-            this.format = null
-        }
-        this.modalRef = this.modalService.show(template, { class: 'modal-md modal-dialog-centered' });
-    }
-
-    confirm(): void {
-        //Create
-        if (this.currentState == 'Create') {
-            if (this.recentFolder.some(x => x.data.name == this.name.trim())) {
-                for (let i = 1; i <= 100; i++) {
-                    let tempName = `${this.name.trim()} (${i})`
-                    if (!this.recentFolder.some(x => x.data.name == tempName)) {
-                        this.name = tempName
-                        break
-                    }
-                }
-            }
-            this.explorerService.createNode(this.name.trim())
-        }
-        //Rename
-        else {
-            //File
-            if (this.format != null) {
-                if (this.recentFile.filter(x => x.id != this.selection[0].id).some(x => x.data.name == this.name.trim() + this.format.trim())) {
-                    for (let i = 1; i <= 100; i++) {
-                        let tempName = `${this.name.trim()} (${i})`
-                        if (!this.recentFile.filter(x => x.id != this.selection[0].id).some(x => x.data.name == tempName + this.format.trim())) {
-                            this.name = tempName
-                            break
-                        }
-                    }
-                }
-                this.explorerService.rename(this.name.trim() + this.format.trim())
-            }
-            //Folder
-            else {
-                if (this.recentFolder.filter(x => x.id != this.selection[0].id).some(x => x.data.name == this.name.trim())) {
-                    for (let i = 1; i <= 100; i++) {
-                        let tempName = `${this.name.trim()} (${i})`
-                        if (!this.recentFolder.filter(x => x.id != this.selection[0].id).some(x => x.data.name == tempName)) {
-                            this.name = tempName
-                            break
-                        }
-                    }
-                }
-                this.explorerService.rename(this.name.trim());
-            }
-        }
-        this.modalRef?.hide();
-    }
-
-    cancel(): void {
-        this.modalRef?.hide();
-    }
-    onChange(event: any) {
-        return Utils.checkSpecialChar(event.key)
-    }
-    openConfirmDialog() {
-        this.modalRef = this.modalService.show(ConfirmComponent, { initialState: { message: 'Are you sure you want to delete the selected files?' }, class: 'modal-dialog-centered' });
-        this.modalRef.content.onClose.subscribe((result: boolean) => {
-            if (result)
-                this.explorerService.remove();
-        })
-    }
     goHome() {
         this.explorerService.openNode(1)
-    }
-    showCopyToast(isSuccess: boolean) {
-        if (isSuccess) {
-            this.toastBody = 'Copied Successfully'
-            this.toastIcon = 'icon-ok'
-        }
-        else {
-            this.toastBody = 'Unable to copy to clipboard'
-            this.toastIcon = 'icon-cancel-1'
-        }
-        const toasts: any[] = Array.from(document.querySelectorAll('.toast')).map(toastNode => new Toast(toastNode))
-        toasts.forEach((item) => { item.show(); })
     }
 }

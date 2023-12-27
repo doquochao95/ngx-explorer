@@ -4,11 +4,11 @@
         <div >
             <div class="vertical-divider"></div>
         </div>
-        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="New Folder" placement="bottom" [hidden]="!canCreate" (click)="openModal(template)"><i class="icon-folder-empty" aria-hidden="true"></i></button>
-        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Refresh" placement="bottom" (click)="refresh()"><i class="icon-arrows-cw" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="New Folder" placement="bottom" [hidden]="!canCreate" (click)="openModalModify()"><i class="icon-folder-empty" aria-hidden="true"></i></button>
+        <!-- <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Refresh" placement="bottom" (click)="refresh()"><i class="icon-arrows-cw" aria-hidden="true"></i> </button> -->
         <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Upload" placement="bottom" [hidden]="!canUpload" (click)="openUploader()"><i class="icon-upload" aria-hidden="true"></i></button>
         <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Download" placement="bottom" [hidden]="!canDownload" (click)="download()"><i class="icon-download" aria-hidden="true"></i> </button>
-        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Rename" placement="bottom" [hidden]="!canRename" (click)="openModal(template,true)"><i class="icon-edit" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Rename" placement="bottom" [hidden]="!canRename" (click)="openModalModify(true)"><i class="icon-edit" aria-hidden="true"></i> </button>
         <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Delete" placement="bottom" [hidden]="!canDelete" (click)="openConfirmDialog()"><i class="icon-trash-empty" aria-hidden="true"></i> </button>
         <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Copy Path" placement="bottom" [hidden]="!canCopyPath" (click)="copyPath()"><i class="icon-share" aria-hidden="true"></i> </button>
         <div class="flex-fill">
@@ -17,7 +17,29 @@
     </div>
     <input style="display: none" type="file" multiple (change)="handleFiles($event)" data-max-size="500" #uploader>
 </div>
-<ng-template #template>
+<div class="position-fixed bottom-0 right-0 p-3" style="z-index: 1; right: 0; bottom: 0;">
+    <div id="toast" class="toast hide text-center w-auto" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+        <div class="toast-body">
+            {{toast?.toastBody}}
+            <i  [ngClass]="toast?.toastIcon" aria-hidden="true"></i>
+        </div>
+    </div>
+</div>
+<ng-template #upload>
+    <div class="modal-body" *ngIf="progressValue == 0">
+        <label class="mb-0">Uploading</label>
+        <progressbar></progressbar>
+    </div>
+    <div class="modal-body"  *ngIf="progressValue > 0">
+        <label class="mb-0">{{progressStatus == 'success' ? 'Uploaded successfully' : progressStatus == 'failure' ? 'Upload failed' : 'Uploading' }}</label>
+        <progressbar
+            class="progress-striped"
+            [value]="progressValue"
+            [type]="progressStatus == 'success' ? 'success' : progressStatus == 'failure' ? 'danger' : 'info' ">
+        </progressbar>
+    </div>
+</ng-template>
+<ng-template #modify>
     <div class="modal-header">
         <h5 class="modal-title">{{modalTitle}}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancel()">
@@ -29,21 +51,13 @@
             <div class="col">
                 <input class="form-control" type="text"  [(ngModel)]="name" (keydown)="onChange($event)">
             </div>
-            <div class="col-auto align-self-end pl-0" *ngIf="selection.length > 0 && currentState == 'Rename' && !selection[0].isFolder">
+            <div class="col-auto align-self-end pl-0" *ngIf="selection.length > 0 && modifyType == 'Rename' && !selection[0].isFolder">
                 <label class="mb-0">{{format}}</label>
             </div>
         </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancel()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="confirm()" [disabled]="!name">{{currentState}}</button>
+        <button type="button" class="btn btn-primary" (click)="confirm()" [disabled]="!name">{{modifyType}}</button>
     </div>
 </ng-template>
-<div class="position-fixed bottom-0 right-0 p-3" style="z-index: 1; right: 0; bottom: 0;">
-    <div id="toast" class="toast hide text-center w-auto" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
-        <div class="toast-body">
-            {{toastBody}}
-            <i  [ngClass]="toastIcon" aria-hidden="true"></i>
-        </div>
-    </div>
-</div>

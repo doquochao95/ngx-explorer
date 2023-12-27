@@ -147,6 +147,12 @@ export class AppComponent implements IDataService<ExampleNode> {
 
     renameNode(nodeInfo: ExampleNode, newName: string): Observable<ExampleNode> {
         const node = this.MOCK_FOLDERS.find(f => f.id === nodeInfo.id);
+        const nodePathArray = node.path.split('/')
+        nodePathArray[nodePathArray.length - 1] = newName
+        const newPath = nodePathArray.join('/')
+        this.MOCK_FOLDERS.filter(x => x.path.startsWith(nodeInfo.path) && x.id != nodeInfo.id).map(x => x.path = newPath + x.path.slice(nodeInfo.path.length, x.path.length))
+        this.MOCK_FILES.filter(x => x.path.startsWith(nodeInfo.path)).map(x => x.path = newPath + x.path.slice(nodeInfo.path.length, x.path.length))
+        node.path = newPath
         node.name = newName;
         return of(node);
     }

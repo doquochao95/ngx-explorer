@@ -1,0 +1,7 @@
+
+<nav #nav [ngStyle]="{ 'top': top, 'right': right }">
+    <div *ngFor="let element of elements" >
+        <nxe-context-menu-item *ngIf="!element.isSeperate" [element]="element" (clicked)="hide(element)" [class.active]="element.active"></nxe-context-menu-item>
+        <hr *ngIf="element.isSeperate">
+    </div>
+</nav>

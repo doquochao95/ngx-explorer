@@ -7,7 +7,11 @@ const defaultConfig: ExplorerOption = {
     autoRefresh: false,
     readOnly: false,
     defaultViewType: 'Icon',
-    autoRefreshInterval: 10000
+    autoRefreshInterval: 10000,
+    offSetTop: 0,
+    offSetRight: 0,
+    offSetBottom: 0,
+    offSetLeft: 0
 };
 @Injectable({ providedIn: 'root' })
 export class DefaultConfig {

@@ -19,11 +19,13 @@ import { FileTypePipe } from './pipes/file-type.pipe';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { ContextMenuComponent } from './components/context-menu/context-menu.component';
+import { ContextMenuItemComponent } from './components/context-menu/context-menu-item/context-menu-item.component';
 
 @NgModule({
     declarations: [
-        IconsComponent,
         ExplorerComponent,
+        IconsComponent,
         MenuBarComponent,
         BreadcrumbsComponent,
         ListComponent,
@@ -31,6 +33,8 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
         ViewSwitcherComponent,
         TreeComponent,
         FilterComponent,
+        ContextMenuComponent,
+        ContextMenuItemComponent,
         DragDropDirective,
         FileSizePipe,
         DateTypePipe,
@@ -45,8 +49,8 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
         ProgressbarModule.forRoot()
     ],
     exports: [
-        IconsComponent,
         ExplorerComponent,
+        IconsComponent,
         MenuBarComponent,
         BreadcrumbsComponent,
         ListComponent,
@@ -54,6 +58,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
         ViewSwitcherComponent,
         TreeComponent,
         FilterComponent,
+        ContextMenuComponent
     ]
 })
 export class NgxExplorerModule { }
