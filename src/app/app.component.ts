@@ -1,15 +1,16 @@
 import { HelperService } from './../../projects/ngx-explorer-sdteam/src/lib/services/helper.service';
-import { Component } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { ExampleNode, IDataService, ItemModel, NodeContent } from 'ngx-explorer-sdteam';
 import { Observable, of, Subscriber, forkJoin, delay, switchMap } from 'rxjs';
 import { AppDataService } from './app-data.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements IDataService<ExampleNode> {
+export class AppComponent implements IDataService<ExampleNode>, AfterViewInit {
     title = 'explorer-app';
     isCollapsed = false;
     private id = 0;
@@ -17,10 +18,18 @@ export class AppComponent implements IDataService<ExampleNode> {
     MOCK_FOLDERS: ItemModel[] = []
     MOCK_FILES: ItemModel[] = []
     base64Image: any;
+    filter: string = 'Home/Music/Rock/The Beatles/Back in the U.S.S.R.txt'
+    baseUrl = environment.baseUrl;
 
     constructor(private service: AppDataService, private helperService: HelperService) {
         this.MOCK_FILES = this.service.getDataFile()
         this.MOCK_FOLDERS = this.service.getDataFolder()
+    }
+    getBaseUrl(): Observable<any> {
+        return of(`${this.baseUrl}#/admin/file-explorer?filter=`);
+    }
+    ngAfterViewInit(): void {
+        // this.helperService.filterItem(this.filter)
     }
     download(nodes: ExampleNode[]): Observable<any> {
         const results = nodes.map(node => {

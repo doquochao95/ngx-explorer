@@ -93,7 +93,7 @@ export class BaseView implements OnDestroy {
         protected explorerService: ExplorerService,
         protected helperService: HelperService,
         protected modalService: BsModalService,
-        @Inject(FILTER_STRING) private filter: BehaviorSubject<string>
+        @Inject(FILTER_STRING) protected filter: BehaviorSubject<string>
     ) {
         this.subs.add(this.explorerService.openedNode.subscribe(nodes => {
             this.items = nodes ? nodes.children : [];
@@ -209,8 +209,11 @@ export class BaseView implements OnDestroy {
     public refresh() {
         this.explorerService.refresh();
     }
-    public copyPath() {
+    public path() {
         this.showCopyToast(this.explorerService.copyToClipboard())
+    }
+    public link() {
+        this.showCopyToast(this.explorerService.shareToClipboard())
     }
     public isSelected(item: INode) {
         return this.selection.indexOf(item) !== -1;
@@ -236,7 +239,8 @@ export class BaseView implements OnDestroy {
                     new ContextMenu("Rename", "icon-edit", () => this.openModalModify(true)),
                     new ContextMenu("Delete", "icon-trash-empty", () => this.openConfirmDialog()),
                     new ContextMenu('', "", null, null, false, false, false, true),
-                    new ContextMenu("Copy Path", "icon-share", () => this.copyPath())
+                    new ContextMenu("Path", "icon-share", () => this.path()),
+                    new ContextMenu("Link", "icon-link", () => this.link())
                 ];
             else
                 menuElements = [
@@ -247,7 +251,8 @@ export class BaseView implements OnDestroy {
                     new ContextMenu("Rename", "icon-edit", () => this.openModalModify(true)),
                     new ContextMenu("Delete", "icon-trash-empty", () => this.openConfirmDialog()),
                     new ContextMenu('', "", null, null, false, false, false, true),
-                    new ContextMenu("Copy Path", "icon-share", () => this.copyPath())
+                    new ContextMenu("Path", "icon-share", () => this.path()),
+                    new ContextMenu("Link", "icon-link", () => this.link())
                 ];
         }
         else {

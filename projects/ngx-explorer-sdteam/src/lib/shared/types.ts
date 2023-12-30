@@ -42,6 +42,7 @@ export interface IDataService<T> {
     deleteLeafs(nodes: T[]): Observable<any>;
     uploadFiles(node: T, file: File): Observable<any>;
     download(node: T[]): Observable<any>;
+    getBaseUrl(): Observable<any>;
 }
 
 export interface IHelperService {

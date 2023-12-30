@@ -6,11 +6,14 @@ import { Subject } from 'rxjs';
     providedIn: 'root'
 })
 export class HelperService implements IHelperService {
-    readonly emitter = new Subject<string>();
+    readonly emitter = new Subject<string | null>();
 
     constructor() { }
     refreshExplorer(): void {
-        this.emitter.next('');
+        this.emitter.next(null);
+    }
+    filterItem(filter: string): void {
+        this.emitter.next(filter);
     }
     getFormat(data: any): string {
         let name: string = data?.name as string;

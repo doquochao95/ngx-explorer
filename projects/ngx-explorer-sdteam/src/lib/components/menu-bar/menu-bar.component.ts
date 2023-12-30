@@ -26,6 +26,7 @@ export class MenuBarComponent extends BaseView implements OnDestroy, AfterViewIn
     canRename = false;
     canCreate = false;
     canCopyPath = false;
+    canShare = false;
 
     private sub = new Subscription();
     selection: INode[] = [];
@@ -48,6 +49,7 @@ export class MenuBarComponent extends BaseView implements OnDestroy, AfterViewIn
             this.canCreate = !config.globalOptions.readOnly
             this.canUpload = !config.globalOptions.readOnly
             this.canCopyPath = n.length === 1;
+            this.canShare = n.length === 1;
         }));
         this.sub.add(this.explorerService.modalDataModel.subscribe(res => {
             if (res?.template_Type == 'upload' && res?.upload_Status) {

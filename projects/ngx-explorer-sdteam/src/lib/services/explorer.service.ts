@@ -103,7 +103,28 @@ export class ExplorerService {
             const folder = this.breadcrumbs$.value.map(x => x.data?.name ?? '').join('/');
             const file = this.selectedNodes$.value[0].data.name;
             const path = `${this.config.globalOptions.homeNodeName}${folder}/${file}`
+
             window.isSecureContext && navigator.clipboard ? navigator.clipboard.writeText(path) : this.clipboard.copy(path)
+            return true
+        }
+        catch (err) {
+            return false
+        }
+    }
+    public shareToClipboard(): boolean {
+        try {
+            const folder = this.breadcrumbs$.value.map(x => x.data?.name ?? '').join('/');
+            const file = this.selectedNodes$.value[0].data.name;
+            const path = `${this.config.globalOptions.homeNodeName}${folder}/${file}`
+            let url: string = ''
+            this.dataService
+                .getBaseUrl()
+                .subscribe({
+                    next: (res) => {
+                        url = `${res}${encodeURIComponent(path)}`
+                    }
+                });
+            window.isSecureContext && navigator.clipboard ? navigator.clipboard.writeText(url) : this.clipboard.copy(url)
             return true
         }
         catch (err) {

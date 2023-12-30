@@ -10,7 +10,8 @@
         <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Download" placement="bottom" [hidden]="!canDownload" (click)="download()"><i class="icon-download" aria-hidden="true"></i> </button>
         <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Rename" placement="bottom" [hidden]="!canRename" (click)="openModalModify(true)"><i class="icon-edit" aria-hidden="true"></i> </button>
         <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Delete" placement="bottom" [hidden]="!canDelete" (click)="openConfirmDialog()"><i class="icon-trash-empty" aria-hidden="true"></i> </button>
-        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Copy Path" placement="bottom" [hidden]="!canCopyPath" (click)="copyPath()"><i class="icon-share" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Path" placement="bottom" [hidden]="!canCopyPath" (click)="path()"><i class="icon-share" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Link" placement="bottom" [hidden]="!canShare" (click)="link()"><i class="icon-link" aria-hidden="true"></i> </button>
         <div class="flex-fill">
             <nxe-view-switcher ></nxe-view-switcher>
         </div>

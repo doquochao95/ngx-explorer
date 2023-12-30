@@ -38,8 +38,12 @@ export class ExplorerComponent extends BaseView implements OnInit, AfterContentI
         @Inject(FILTER_STRING) filter: BehaviorSubject<string>
     ) {
         super(explorerService, helperService, modalService, filter);
-        this.sub.add(this.helperService.emitter.subscribe(() => {
-            this.explorerService.refresh()
+        this.sub.add(this.helperService.emitter.subscribe((res) => {
+            if (res == null)
+                this.explorerService.refresh()
+            else {
+                this.filter.next(res)
+            }
         }));
     }
 
