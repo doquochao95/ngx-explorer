@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewEncapsulation, booleanAttribute, Inject, AfterViewInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewEncapsulation, booleanAttribute, Inject, AfterViewInit, AfterContentInit } from '@angular/core';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { DefaultConfig } from '../../shared/default-config';
 import { ExplorerService } from '../../services/explorer.service';
@@ -16,7 +16,7 @@ function capitalizeString(input: string): string {
     styleUrls: ['./explorer.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class ExplorerComponent extends BaseView implements OnInit, OnDestroy, AfterViewInit {
+export class ExplorerComponent extends BaseView implements OnInit, OnDestroy, AfterContentInit {
 
     @Input({ alias: 'read-only', transform: booleanAttribute }) readOnly: boolean
     @Input({ alias: 'auto-refresh', transform: booleanAttribute }) autoRefresh: boolean
@@ -68,7 +68,7 @@ export class ExplorerComponent extends BaseView implements OnInit, OnDestroy, Af
     ngOnDestroy() {
         this.sub.unsubscribe();
     }
-    ngAfterViewInit() {
+    ngAfterContentInit() {
         this.explorerService.refresh()
     }
 }

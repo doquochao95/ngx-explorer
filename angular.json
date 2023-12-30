@@ -53,6 +53,9 @@
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
                             "projects/ngx-explorer-sdteam/src/assets/icons/css/txt.css",
                             "src/styles.scss"
+                        ],
+                        "allowedCommonJsDependencies": [
+                            "lodash"
                         ]
                     },
                     "configurations": {
