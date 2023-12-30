@@ -18,7 +18,7 @@ export class AppComponent implements IDataService<ExampleNode>, AfterViewInit {
     MOCK_FOLDERS: ItemModel[] = []
     MOCK_FILES: ItemModel[] = []
     base64Image: any;
-    filter: string = 'Home/Music/Rock/The Beatles/Back in the U.S.S.R.txt'
+    filter: string = 'Home/marguerite-729510_640.jpg'
     baseUrl = environment.baseUrl;
 
     constructor(private service: AppDataService, private helperService: HelperService) {

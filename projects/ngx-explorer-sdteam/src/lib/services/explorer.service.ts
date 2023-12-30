@@ -42,7 +42,6 @@ export class ExplorerService {
         public config: DefaultConfig,
         private clipboard: Clipboard
     ) {
-        this.openNode(this.internalTree.id);
         if (this.config.globalOptions.autoRefresh) {
             setInterval(() => {
                 this.refresh();
@@ -99,6 +98,8 @@ export class ExplorerService {
     public refresh() {
         if (this.openedNode$.value != undefined)
             this.openNode(this.openedNode$.value.id);
+        else
+            this.openNode(this.internalTree.id);
     }
     public copyToClipboard(): boolean {
         try {
