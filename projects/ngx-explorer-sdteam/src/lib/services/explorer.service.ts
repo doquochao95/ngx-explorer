@@ -51,6 +51,8 @@ export class ExplorerService {
     }
     public filterItems(pathArray: string[]) {
         return defer(async () => {
+            if (pathArray.length == 0)
+                return
             await this.openNode(1, true)
             let path = ''
             for (let val of pathArray) {

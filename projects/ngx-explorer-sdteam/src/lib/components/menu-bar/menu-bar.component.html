@@ -18,7 +18,7 @@
     </div>
     <input style="display: none" type="file" multiple (change)="handleFiles($event)" data-max-size="500" #uploader>
 </div>
-<div class="position-fixed bottom-0 right-0 p-3" style="z-index: 1; right: 0; bottom: 0;">
+<div class="position-fixed" [ngStyle]="{'z-index': 10, 'right': config.globalOptions.offSetRight + 10 + 'px', 'bottom': config.globalOptions.offSetBottom + 10 + 'px' }">
     <div id="toast" class="toast hide text-center w-auto" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
         <div class="toast-body">
             {{toast?.toastBody}}

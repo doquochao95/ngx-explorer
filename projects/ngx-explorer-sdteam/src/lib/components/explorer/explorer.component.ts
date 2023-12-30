@@ -14,10 +14,9 @@ function capitalizeString(input: string): string {
     selector: 'nxe-explorer',
     templateUrl: './explorer.component.html',
     styleUrls: ['./explorer.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    // changeDetection: ChangeDetectionStrategy.OnPush
+    encapsulation: ViewEncapsulation.None
 })
-export class ExplorerComponent extends BaseView implements OnInit, AfterContentInit, OnDestroy {
+export class ExplorerComponent extends BaseView implements OnInit, OnDestroy {
 
     @Input({ alias: 'read-only', transform: booleanAttribute }) readOnly: boolean
     @Input({ alias: 'auto-refresh', transform: booleanAttribute }) autoRefresh: boolean
@@ -69,8 +68,5 @@ export class ExplorerComponent extends BaseView implements OnInit, AfterContentI
     }
     ngOnDestroy() {
         this.sub.unsubscribe();
-    }
-    ngAfterContentInit() {
-        this.explorerService.refresh()
     }
 }

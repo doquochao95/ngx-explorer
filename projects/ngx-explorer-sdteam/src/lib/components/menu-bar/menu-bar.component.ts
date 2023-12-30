@@ -15,7 +15,7 @@ import { BaseView } from '../../directives/base-view.directive';
     styleUrls: ['./menu-bar.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class MenuBarComponent extends BaseView implements OnDestroy, AfterViewInit {
+export class MenuBarComponent extends BaseView implements OnDestroy {
     @ViewChild('uploader', { static: true }) uploader: ElementRef;
     @ViewChild('upload') upload: TemplateRef<any>;
     @ViewChild('modify') modify: TemplateRef<any>;
@@ -69,9 +69,6 @@ export class MenuBarComponent extends BaseView implements OnDestroy, AfterViewIn
                 }
             }
         }));
-    }
-    ngAfterViewInit() {
-        this.explorerService.refresh()
     }
     ngDoCheck(): void {
         const modalUpload = <ModalDataModel>{

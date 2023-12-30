@@ -77,8 +77,9 @@ export class BaseView implements OnDestroy {
                 const name = filterArray[filterArray.length - 1]
                 const paths = filterArray.slice(1, filterArray.length - 1)
                 this.explorerService.filterItems(paths).subscribe(() => {
-                    const itemPath = name.includes('.') ? filterArray.slice(1, filterArray.length - 1).join('/') : filterArray.slice(1, filterArray.length).join('/')
-                    this.items = this.items.filter(i => i.data?.name == name && i.data?.path == itemPath);
+                    // const itemPath = name.includes('.') ? filterArray.slice(1, filterArray.length - 1).join('/') : filterArray.slice(1, filterArray.length).join('/')
+                    // this.items = this.items.filter(i => i.data?.name == name && i.data?.path == itemPath);
+                    this.items = this.items.filter(i => i.data?.name == name );
                 })
             }
             else {

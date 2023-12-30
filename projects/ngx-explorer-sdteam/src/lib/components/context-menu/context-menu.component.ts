@@ -72,14 +72,14 @@ export class ContextMenuComponent extends BaseView implements OnInit {
         let isTop = true;
         const contextMenu = this.navRef.nativeElement;
         const x = event.clientX + this.config.globalOptions.offSetLeft;
-        const y = event.clientY + this.config.globalOptions.offSetTop;
+        const y = event.clientY - this.config.globalOptions.offSetTop;
         this.top = `${y}px`;
         this.right = `${window.innerWidth - contextMenu.offsetWidth - x}px`;
-        if (contextMenu.offsetWidth + x > window.innerWidth + this.config.globalOptions.offSetLeft + this.config.globalOptions.offSetRight) {
+        if (contextMenu.offsetWidth + x > window.innerWidth + this.config.globalOptions.offSetLeft - this.config.globalOptions.offSetRight) {
             this.right = `${window.innerWidth - x}px`;
             isRight = false;
         }
-        if (contextMenu.offsetHeight + y > window.innerHeight + this.config.globalOptions.offSetTop + this.config.globalOptions.offSetBottom) {
+        if (contextMenu.offsetHeight + y > window.innerHeight - this.config.globalOptions.offSetTop - this.config.globalOptions.offSetBottom) {
             this.top = `${y - contextMenu.offsetHeight}px`;
             isTop = false;
         }
