@@ -1,5 +1,5 @@
 import { FILTER_STRING } from './../../injection-tokens/tokens';
-import { Component, OnInit, HostListener, ViewChild, ElementRef, Inject } from '@angular/core';
+import { Component, HostListener, ViewChild, ElementRef, Inject } from '@angular/core';
 import { ContextMenu } from '../../shared/context-menu';
 import { BaseView } from '../../directives/base-view.directive';
 import { ExplorerService } from '../../services/explorer.service';
@@ -14,7 +14,7 @@ import { DefaultConfig } from '../../shared/default-config';
     templateUrl: './context-menu.component.html',
     styleUrls: ['./context-menu.component.scss']
 })
-export class ContextMenuComponent extends BaseView implements OnInit {
+export class ContextMenuComponent extends BaseView {
     @HostListener('mouseover', ['$event'])
     public mouseouver(event: MouseEvent): void {
         this.setInactive(this.elements);
@@ -26,23 +26,23 @@ export class ContextMenuComponent extends BaseView implements OnInit {
 
         event.preventDefault();
 
-        const activeItem = this.elements.findIndex(e => e.active);
+        const activeItem = this.elements.findIndex(e => e.isActived);
         if (event.key === 'ArrowDown') {
-            if (activeItem < 0) this.elements[0].active = true;
-            this.elements[activeItem].active = false;
+            if (activeItem < 0) this.elements[0].isActived = true;
+            this.elements[activeItem].isActived = false;
 
             const isLast = activeItem === this.elements.length - 1;
-            this.elements[isLast ? 0 : activeItem + 1].active = true;
+            this.elements[isLast ? 0 : activeItem + 1].isActived = true;
         } else if (event.key === 'ArrowUp') {
-            if (activeItem < 0) this.elements[0].active = true;
-            this.elements[activeItem].active = false;
+            if (activeItem < 0) this.elements[0].isActived = true;
+            this.elements[activeItem].isActived = false;
 
             const isFirst = activeItem === 0;
-            this.elements[isFirst ? this.elements.length - 1 : activeItem - 1].active = true;
+            this.elements[isFirst ? this.elements.length - 1 : activeItem - 1].isActived = true;
         } else if (event.key === 'ArrowRight') {
             if (activeItem < 0) return;
-            this.elements[activeItem].visible = true;
-            this.elements[activeItem].submenu[0].active = true;
+            this.elements[activeItem].isVisibled = true;
+            this.elements[activeItem].submenu[0].isActived = true;
         } else if (event.key === 'Enter') {
             if (activeItem < 0 || !this.elements[activeItem].action) return;
             this.elements[activeItem].action();
@@ -96,21 +96,18 @@ export class ContextMenuComponent extends BaseView implements OnInit {
         explorerService: ExplorerService,
         helperService: HelperService,
         modalService: BsModalService,
-        public config: DefaultConfig,
+        config: DefaultConfig,
         @Inject(FILTER_STRING) filter: BehaviorSubject<string>
     ) {
-        super(explorerService, helperService, modalService, filter);
+        super(explorerService, helperService, modalService, config, filter);
     }
-
-    ngOnInit() { }
-
     hide(element: ContextMenu) {
-        element.visible = false;
+        element.isVisibled = false;
         if (element && element.submenu) {
             element.submenu.forEach(e => this.hide(e));
         }
         const data: ContextMenuOption = <ContextMenuOption>{
-            visible: false,
+            isVisibled: false,
             elements: this.elements
         }
         this.explorerService.setContextMenu(data)
@@ -118,10 +115,9 @@ export class ContextMenuComponent extends BaseView implements OnInit {
 
     setInactive(elements: ContextMenu[]) {
         elements.forEach(element => {
-            element.active = false;
+            element.isActived = false;
             if (!element.submenu) return;
             this.setInactive(element.submenu);
         })
     }
-
 }

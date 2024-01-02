@@ -6,6 +6,7 @@ import { HelperService } from '../../services/helper.service';
 import { BaseView } from '../../directives/base-view.directive';
 import { FileTypeIconClass } from '../../shared/types';
 import { BsModalService } from 'ngx-bootstrap/modal';
+import { DefaultConfig } from '../../shared/default-config';
 
 @Component({
     selector: 'nxe-list',
@@ -20,10 +21,11 @@ export class ListComponent extends BaseView implements AfterViewInit {
         explorerService: ExplorerService,
         helperService: HelperService,
         modalService: BsModalService,
+        config: DefaultConfig,
         private cd: ChangeDetectorRef,
         @Inject(FILTER_STRING) filter: BehaviorSubject<string>
     ) {
-        super(explorerService, helperService, modalService,  filter);
+        super(explorerService, helperService, modalService, config, filter);
     }
     ngAfterViewInit() {
         this.cd.markForCheck()

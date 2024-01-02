@@ -7,6 +7,7 @@ import { BaseView } from '../../directives/base-view.directive';
 import { FileTypeIconClass } from '../../shared/types';
 import { DomSanitizer } from '@angular/platform-browser';
 import { BsModalService } from 'ngx-bootstrap/modal';
+import { DefaultConfig } from '../../shared/default-config';
 
 @Component({
     selector: 'nxe-icons',
@@ -21,11 +22,12 @@ export class IconsComponent extends BaseView implements AfterViewInit {
         explorerService: ExplorerService,
         helperService: HelperService,
         modalService: BsModalService,
+        config: DefaultConfig,
         public _sanitizer: DomSanitizer,
         private cd: ChangeDetectorRef,
         @Inject(FILTER_STRING) filter: BehaviorSubject<string>
     ) {
-        super(explorerService, helperService, modalService,  filter);
+        super(explorerService, helperService, modalService, config, filter);
     }
     checkEmpty(str: string) {
         return !str || /^\s*$/.test(str);

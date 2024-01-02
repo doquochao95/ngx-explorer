@@ -1,7 +1,7 @@
 <div class="nxe-list"
     nxeDragDrop
     (dragging)="dragging = $event">
-    <div class="nxe-list-drag" [ngClass]="{ dragging: dragging}" (click)="emptySpaceClick()" (contextmenu)="openContextMenu($event)"></div>
+    <div class="nxe-list-drag" [ngClass]="{ dragging: dragging}" (click)="emptySpaceClick()" (contextmenu)="openContextMenu()"></div>
     <div class="nxe-list-backpad" ></div>
     <div class="nxe-list-container">
         <div class="nxe-list-wrapper ">
@@ -18,7 +18,7 @@
                     <tr *ngFor="let item of filteredItems"
                         (dblclick)="open($event, item)"
                         (click)="select($event, item)"
-                        (contextmenu)="openContextMenu($event,item)"
+                        (contextmenu)="openContextMenu(item)"
                         [ngClass]="{'nxe-list-row-selected':isSelected(item)}">
                         <td>
                             <span class="nxe-list-icon">

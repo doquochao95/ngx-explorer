@@ -25,6 +25,7 @@ export class ExplorerService {
     private readonly modalDataModel$ = new BehaviorSubject<ModalDataModel>(undefined);
     private readonly toast$ = new BehaviorSubject<ToastModel>(undefined);
     private readonly uploader$ = new BehaviorSubject<ElementRef>(undefined);
+    private readonly searchInput$ = new BehaviorSubject<ElementRef>(undefined);
 
     public readonly selectedNodes = this.selectedNodes$.asObservable();
     public readonly openedNode = this.openedNode$.asObservable();
@@ -34,6 +35,7 @@ export class ExplorerService {
     public readonly modalDataModel = this.modalDataModel$.asObservable();
     public readonly toast = this.toast$.asObservable();
     public readonly uploader = this.uploader$.asObservable();
+    public readonly searchInput = this.searchInput$.asObservable();
 
     private sub: Subscription;
 
@@ -311,5 +313,8 @@ export class ExplorerService {
     }
     public setUploader(element: ElementRef) {
         this.uploader$.next(element)
+    }
+    public setSearchInput(element: ElementRef) {
+        this.searchInput$.next(element)
     }
 }

@@ -1,50 +1,30 @@
+import { filter } from 'rxjs/operators';
 import { Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { FILTER_STRING } from '../../injection-tokens/tokens';
 import { ExplorerService } from '../../services/explorer.service';
 import { DefaultConfig } from '../../shared/default-config';
+import { BaseView } from '../../directives/base-view.directive';
+import { HelperService } from '../../services/helper.service';
+import { BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({
     selector: 'nxe-filter',
     templateUrl: './filter.component.html',
     styleUrls: ['./filter.component.scss']
 })
-export class FilterComponent implements OnDestroy {
+export class FilterComponent extends BaseView implements OnDestroy {
     @ViewChild('input') input: ElementRef<HTMLInputElement>;
-
-    private sub = new Subscription();
-    placeHolder: string = "Search"
     constructor(
-        @Inject(FILTER_STRING) private filter: BehaviorSubject<string>,
         explorerService: ExplorerService,
-        public config: DefaultConfig
+        helperService: HelperService,
+        modalService: BsModalService,
+        config: DefaultConfig,
+        @Inject(FILTER_STRING) filter: BehaviorSubject<string>
     ) {
-        this.sub.add(explorerService.tree.subscribe(() => {
-            this.clear();
-        }));
-        this.sub.add(explorerService.openedNode.subscribe((e: any) => {
-            if (e != undefined)
-                this.placeHolder = `Search ${e.data != undefined ? e.data.name : '' || this.config.globalOptions.homeNodeName}`;
-        }));
+        super(explorerService, helperService, modalService, config, filter);
     }
-
-    onChange(e: KeyboardEvent, value: string) {
-        if (e.key === 'Escape') {
-            this.input.nativeElement.value = '';
-            this.filter.next('');
-            return;
-        }
-        this.filter.next(value.trim());
+    ngDoCheck(): void {
+        this.explorerService.setSearchInput(this.input)
     }
-
-    clear() {
-        if (!this.input) { return; }
-        this.input.nativeElement.value = '';
-        this.filter.next('');
-    }
-
-    ngOnDestroy() {
-        this.sub.unsubscribe();
-    }
-
 }

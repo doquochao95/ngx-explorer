@@ -38,13 +38,13 @@ export class ContextMenuItemComponent implements OnInit {
 
     submenuOpen() {
         if (this.element.submenu) {
-            this.element.visible = true;
+            this.element.isVisibled = true;
         }
     }
 
     submenuClose() {
         if (this.element.submenu) {
-            this.element.visible = false;
+            this.element.isVisibled = false;
         }
     }
 }

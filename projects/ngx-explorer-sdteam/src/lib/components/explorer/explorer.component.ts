@@ -27,22 +27,15 @@ export class ExplorerComponent extends BaseView implements OnInit, OnDestroy, Af
     @Input({ alias: 'offset-left' }) offSetLeft: number;
     @Input({ alias: 'main-node', transform: capitalizeString }) homeNodeName: string
     @Input({ alias: 'view-type', transform: capitalizeString }) defaultViewType: string
-    private sub = new Subscription();
 
     constructor(
         explorerService: ExplorerService,
         helperService: HelperService,
         modalService: BsModalService,
-        public config: DefaultConfig,
+        config: DefaultConfig,
         @Inject(FILTER_STRING) filter: BehaviorSubject<string>
     ) {
-        super(explorerService, helperService, modalService, filter);
-        this.sub.add(this.helperService.emitter.subscribe((res) => {
-            if (res == null)
-                this.explorerService.refresh()
-            else
-                this.filter.next(res)
-        }));
+        super(explorerService, helperService, modalService, config, filter);
     }
 
     ngOnInit() {
@@ -64,9 +57,6 @@ export class ExplorerComponent extends BaseView implements OnInit, OnDestroy, Af
             this.config.globalOptions.offSetBottom = this.offSetBottom
         if (this.offSetLeft != undefined)
             this.config.globalOptions.offSetLeft = this.offSetLeft
-    }
-    ngOnDestroy() {
-        this.sub.unsubscribe();
     }
     ngAfterContentInit() {
         this.explorerService.refresh()

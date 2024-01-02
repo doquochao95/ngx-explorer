@@ -1,6 +1,6 @@
 <div class="nxe-menu-bar">
     <div class="d-flex">
-        <button class="nxe-menu-bar-home-button" type="button" [delay]="1000" tooltip="Home" placement="bottom" (click)="goHome()" ><i class="icon-home" aria-hidden="true"></i></button>
+        <button class="nxe-menu-bar-home-button" type="button" [delay]="1000" tooltip="Home" placement="bottom" (click)="explorerService.openNode(1)" ><i class="icon-home" aria-hidden="true"></i></button>
         <div >
             <div class="vertical-divider"></div>
         </div>
@@ -50,7 +50,7 @@
     <div class="modal-body">
         <div class="row">
             <div class="col">
-                <input class="form-control" type="text"  [(ngModel)]="name" (keydown)="onChange($event)">
+                <input class="form-control" type="text"  [(ngModel)]="name" (keydown)="onNameChange($event)">
             </div>
             <div class="col-auto align-self-end pl-0" *ngIf="selection.length > 0 && modifyType == 'Rename' && !selection[0].isFolder">
                 <label class="mb-0">{{format}}</label>

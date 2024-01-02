@@ -1,6 +1,7 @@
+import { DefaultConfig } from './../shared/default-config';
 import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, Host, HostListener, Inject, Input, OnDestroy, Self, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { ContextMenuOption, FileTypeIconClass, INode, ModalDataModel, ToastModel } from '../shared/types';
+import { ContextMenuOption, FileTypeIconClass, INode, ModalDataModel, ToastModel, TreeNode } from '../shared/types';
 import { FILTER_STRING } from '../injection-tokens/tokens';
 import { ExplorerService } from '../services/explorer.service';
 import { HelperService } from '../services/helper.service';
@@ -9,6 +10,8 @@ import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { Utils } from '../shared/utils';
 import { ConfirmComponent } from '../components/confirm/confirm.component';
 import { Toast } from 'bootstrap';
+import { filter } from 'rxjs/operators';
+
 @Directive()
 export class BaseView implements OnDestroy {
     @HostListener('mousedown', ['$event'])
@@ -21,7 +24,7 @@ export class BaseView implements OnDestroy {
     public dragging = false;
     public top: string = '0';
     public right: string = '0';
-    public _visible: boolean = false;
+    public _isVisibled: boolean = false;
     public _elements: ContextMenu[] = [
         new ContextMenu("test 1", "", () => console.log('test 1')),
         new ContextMenu("test 2", "", () => console.log('test 2')),
@@ -36,6 +39,21 @@ export class BaseView implements OnDestroy {
     public modifyType: string = 'Create'
     public toast: ToastModel = <ToastModel>{}
 
+    public canUpload = false;
+    public canDownload = false;
+    public canDelete = false;
+    public canRename = false;
+    public canCreate = false;
+    public canCopyPath = false;
+    public canShare = false;
+
+    public progressValue: number = 0
+    public progressStatus: string = 'upload'
+
+    public treeNodes: TreeNode[] = [];
+    public searchPlaceHolder: string = "Search"
+
+    private expandedIds: number[] = [];
     private recentFolder: INode[] = [];
     private recentFile: INode[] = [];
     private modalModifyTemplate: TemplateRef<any>;
@@ -49,6 +67,7 @@ export class BaseView implements OnDestroy {
     private videoFormat: string = 'mp4, wmv, flv, avi, mov'
     private tempValue: string = ''
     private uploaderElement: ElementRef;
+    private searchInputElement: ElementRef<HTMLInputElement>;
     private modalOptions: ModalOptions = {
         backdrop: 'static',
         keyboard: false,
@@ -57,7 +76,7 @@ export class BaseView implements OnDestroy {
     protected subs = new Subscription();
 
     get visible(): boolean {
-        return this._visible
+        return this._isVisibled
     }
 
     get elements(): ContextMenu[] {
@@ -65,7 +84,7 @@ export class BaseView implements OnDestroy {
     }
 
     get filteredItems(): INode[] {
-        const filter = this.filter.value;
+        const filter = this.filterString.value;
         if (!filter) {
             if (this.tempValue != filter)
                 this.explorerService.refresh()
@@ -79,7 +98,7 @@ export class BaseView implements OnDestroy {
                 this.explorerService.filterItems(paths).subscribe(() => {
                     // const itemPath = name.includes('.') ? filterArray.slice(1, filterArray.length - 1).join('/') : filterArray.slice(1, filterArray.length).join('/')
                     // this.items = this.items.filter(i => i.data?.name == name && i.data?.path == itemPath);
-                    this.items = this.items.filter(i => i.data?.name == name );
+                    this.items = this.items.filter(i => i.data?.name == name);
                 })
             }
             else {
@@ -94,18 +113,31 @@ export class BaseView implements OnDestroy {
         protected explorerService: ExplorerService,
         protected helperService: HelperService,
         protected modalService: BsModalService,
-        @Inject(FILTER_STRING) protected filter: BehaviorSubject<string>
+        protected config: DefaultConfig,
+        @Inject(FILTER_STRING) protected filterString: BehaviorSubject<string>
     ) {
+        this.subs.add(this.helperService.emitter.subscribe((res) => {
+            res == null ? this.explorerService.refresh() : this.filterString.next(res)
+        }));
         this.subs.add(this.explorerService.openedNode.subscribe(nodes => {
             this.items = nodes ? nodes.children : [];
             this.recentFolder = nodes ? nodes.children.filter(x => x.isFolder) : [];
             this.recentFile = nodes ? nodes.children.filter(x => !x.isFolder) : [];
+            if (nodes != undefined)
+                this.searchPlaceHolder = `Search ${nodes.data != undefined ? nodes.data.name : '' || this.config.globalOptions.homeNodeName}`;
         }));
         this.subs.add(this.explorerService.selectedNodes.subscribe(nodes => {
             this.selection = nodes ? nodes : [];
+            this.canDownload = nodes.length > 0 && nodes.every(x => !x.isFolder);
+            this.canDelete = nodes.length > 0 && !config.globalOptions.readOnly;
+            this.canRename = nodes.length === 1 && !config.globalOptions.readOnly;
+            this.canCreate = !config.globalOptions.readOnly
+            this.canUpload = !config.globalOptions.readOnly
+            this.canCopyPath = nodes.length === 1;
+            this.canShare = nodes.length === 1;
         }));
         this.subs.add(this.explorerService.contextMenu.subscribe(status => {
-            this._visible = status?.visible
+            this._isVisibled = status?.isVisibled
             this._elements = status?.elements
         }));
         this.subs.add(this.explorerService.toast.subscribe(toast => {
@@ -114,7 +146,26 @@ export class BaseView implements OnDestroy {
         this.subs.add(this.explorerService.uploader.subscribe(element => {
             this.uploaderElement = element
         }));
+        this.subs.add(this.explorerService.searchInput.subscribe(element => {
+            this.searchInputElement = element
+        }));
         this.subs.add(this.explorerService.modalDataModel.subscribe(res => {
+            if (res?.template_Type == 'upload' && res?.upload_Status) {
+                this.progressValue = res?.progress_Bar_Value ?? this.progressValue;
+                this.progressStatus = res?.upload_Status ?? this.progressStatus;
+                switch (res?.upload_Status) {
+                    case "upload":
+                        this.openModalUpload()
+                        break;
+                    case "success":
+                        this.closeModalUpload()
+                        break;
+                    case "failure":
+                        this.closeModalUpload()
+                        break;
+                    default:
+                }
+            }
             if (res?.template) {
                 if (res.template_Type == 'modify')
                     this.modalModifyTemplate = res?.template
@@ -135,6 +186,11 @@ export class BaseView implements OnDestroy {
                     this.format = res?.file_Format
                 }
             }
+        }));
+        this.subs.add(this.explorerService.tree.pipe(filter(x => !!x)).subscribe(node => {
+            this.addExpandedNode(node.id); // always expand root
+            this.treeNodes = this.buildTree(node).children;
+            this.clearSearchInput();
         }));
     }
     ngOnDestroy() {
@@ -222,8 +278,7 @@ export class BaseView implements OnDestroy {
     public emptySpaceClick(): void {
         this.explorerService.selectNodes([]);
     }
-    public openContextMenu(event: any, item?: INode) {
-        console.log(event)
+    public openContextMenu(item?: INode) {
         let menuElements: ContextMenu[] = []
         if (item != undefined) {
             if (this.selection.length <= 1) {
@@ -233,37 +288,37 @@ export class BaseView implements OnDestroy {
             }
             if (item.isFolder)
                 menuElements = [
-                    new ContextMenu("New Folder", "icon-folder-empty", () => this.openModalModify()),
-                    new ContextMenu("Upload", "icon-upload", () => this.openUploader()),
-                    new ContextMenu('', "", null, null, false, false, false, true),
-                    // new ContextMenu("Refresh", "icon-arrows-cw", () => this.refresh()),
-                    new ContextMenu("Rename", "icon-edit", () => this.openModalModify(true)),
-                    new ContextMenu("Delete", "icon-trash-empty", () => this.openConfirmDialog()),
-                    new ContextMenu('', "", null, null, false, false, false, true),
+                    new ContextMenu("New Folder", "icon-folder-empty", () => this.openModalModify(), null, false, !this.canCreate),
+                    new ContextMenu("Upload", "icon-upload", () => this.openUploader(), null, false, !this.canUpload),
+                    new ContextMenu('', "", null, null, true, !this.canCreate && !this.canUpload),
+                    new ContextMenu("Rename", "icon-edit", () => this.openModalModify(true), null, false, !this.canRename),
+                    new ContextMenu("Delete", "icon-trash-empty", () => this.openConfirmDialog(), null, false, !this.canDelete),
+                    new ContextMenu('', "", null, null, true, !this.canRename && !this.canDelete),
                     new ContextMenu("Path", "icon-share", () => this.path()),
                     new ContextMenu("Link", "icon-link", () => this.link())
                 ];
             else
                 menuElements = [
-                    new ContextMenu("New Folder", "icon-folder-empty", () => this.openModalModify()),
-                    new ContextMenu("Upload", "icon-upload", () => this.openUploader()),
-                    new ContextMenu('', "", null, null, false, false, false, true),
+                    new ContextMenu("New Folder", "icon-folder-empty", () => this.openModalModify(), null, false, !this.canCreate),
+                    new ContextMenu("Upload", "icon-upload", () => this.openUploader(), null, false, !this.canUpload),
+                    new ContextMenu('', "", null, null, true, !this.canCreate && !this.canUpload),
                     new ContextMenu("Download", "icon-download", () => this.download()),
-                    new ContextMenu("Rename", "icon-edit", () => this.openModalModify(true)),
-                    new ContextMenu("Delete", "icon-trash-empty", () => this.openConfirmDialog()),
-                    new ContextMenu('', "", null, null, false, false, false, true),
+                    new ContextMenu("Rename", "icon-edit", () => this.openModalModify(true), null, false, !this.canRename),
+                    new ContextMenu("Delete", "icon-trash-empty", () => this.openConfirmDialog(), null, false, !this.canDelete),
+                    new ContextMenu('', "", null, null, true),
                     new ContextMenu("Path", "icon-share", () => this.path()),
                     new ContextMenu("Link", "icon-link", () => this.link())
                 ];
         }
         else {
-            menuElements = [
-                new ContextMenu("New Folder", "icon-folder-empty", () => this.openModalModify()),
-                new ContextMenu("Upload", "icon-upload", () => this.openUploader()),
-            ];
+            if (this.canCreate && this.canUpload)
+                menuElements = [
+                    new ContextMenu("New Folder", "icon-folder-empty", () => this.openModalModify(), null, false, !this.canCreate),
+                    new ContextMenu("Upload", "icon-upload", () => this.openUploader(), null, false, !this.canUpload),
+                ];
         }
         const data: ContextMenuOption = <ContextMenuOption>{
-            visible: true,
+            isVisibled: true,
             elements: menuElements
         }
         this.explorerService.setContextMenu(data)
@@ -367,7 +422,7 @@ export class BaseView implements OnDestroy {
         }
         this.explorerService.setModal(modalData)
     }
-    public onChange(event: any) {
+    public onNameChange(event: any) {
         return Utils.checkSpecialChar(event.key)
     }
     public openConfirmDialog() {
@@ -402,5 +457,85 @@ export class BaseView implements OnDestroy {
         this.explorerService.setToast(toastData)
         const toasts: any[] = Array.from(document.querySelectorAll('.toast')).map(toastNode => new Toast(toastNode))
         toasts.forEach((item) => { item.show(); })
+    }
+    public onTreeClick(node: TreeNode) {
+        let items: number[] = []
+        if (!node.expanded) {
+            items = this.getAllItem(this.treeNodes)
+            let sameLayerItems: INode[] = this.getSameLayerItem(node, this.treeNodes)
+            sameLayerItems.map(x => {
+                if (this.expandedIds.indexOf(x.id) != -1)
+                    this.removeExpandedNode(x.id)
+            })
+            this.expandedIds = this.expandedIds.filter(x => items.indexOf(x) != -1 || x == 1)
+        }
+        else {
+            items = this.getAllItem(node.children)
+            this.expandedIds = this.expandedIds.filter(x => items.indexOf(x) == -1 || x == 1)
+        }
+        this.addExpandedNode(node.id);
+        this.explorerService.openNode(node.id);
+        this.explorerService.expandNode(node.id);
+    }
+    private getSameLayerItem(node: TreeNode, treeNodes: TreeNode[]): TreeNode[] {
+        for (let item of treeNodes) {
+            if (node.id == item.id)
+                return treeNodes
+            else {
+                if (item.children.length > 0) {
+                    let res = this.getSameLayerItem(node, item.children)
+                    if (res != undefined)
+                        return res
+                }
+            }
+        }
+    }
+    private getAllItem(treeNodes: TreeNode[]): number[] {
+        let result: number[] = []
+        for (let item of treeNodes) {
+            result.push(item.id)
+            if (item.children.length > 0)
+                result.push(...this.getAllItem(item.children))
+        }
+        return result
+    }
+    private buildTree(node: INode): TreeNode {
+        const treeNode = {
+            id: node.id,
+            parentId: node.parentId,
+            data: node.data,
+            isFolder: node.isFolder,
+            children: [],
+            expanded: false
+        } as TreeNode;
+
+        treeNode.expanded = this.expandedIds.indexOf(node.id) > -1;
+        if (treeNode.expanded) {
+            treeNode.children = node.children.filter(x => x.isFolder).map(x => this.buildTree(x));
+        }
+        return treeNode;
+    }
+    private removeExpandedNode(id: number) {
+        const index = this.expandedIds.indexOf(id);
+        this.expandedIds.splice(index, 1);
+    }
+    private addExpandedNode(id: number) {
+        const index = this.expandedIds.indexOf(id);
+        if (index === -1) {
+            this.expandedIds.push(id);
+        }
+    }
+    public onSearchChange(e: KeyboardEvent, value: string) {
+        if (e.key === 'Escape') {
+            this.searchInputElement.nativeElement.value = '';
+            this.filterString.next('');
+            return;
+        }
+        this.filterString.next(value.trim());
+    }
+    public clearSearchInput() {
+        if (!this.searchInputElement) { return; }
+        this.searchInputElement.nativeElement.value = '';
+        this.filterString.next('');
     }
 }

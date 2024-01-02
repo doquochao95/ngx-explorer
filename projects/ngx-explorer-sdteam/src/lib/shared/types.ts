@@ -72,7 +72,7 @@ export interface ExplorerOption {
     offSetLeft: number;
 }
 export interface ContextMenuOption {
-    visible: boolean;
+    isVisibled: boolean;
     elements: ContextMenu[];
 }
 export interface ModalTemplateOption {
@@ -95,4 +95,9 @@ export interface ModalDataModel {
 export interface ToastModel {
     toastBody: string;
     toastIcon: string
+}
+
+export interface TreeNode extends INode {
+    children: TreeNode[];
+    expanded: boolean;
 }
