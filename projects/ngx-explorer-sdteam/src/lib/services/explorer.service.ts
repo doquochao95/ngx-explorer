@@ -252,9 +252,7 @@ export class ExplorerService {
         }
         const targets = selection.map(node => this.flatPointers[node.id]);
         const leafs = targets.filter(t => !t.isFolder).map(data => data.data);
-        this.dataService.download(leafs).subscribe(() => {
-            this.refresh();
-        });
+        this.dataService.download(leafs).subscribe(() => {});
     }
 
     private getNodeChildren(id: number, isFilter?: boolean): Observable<any> {
