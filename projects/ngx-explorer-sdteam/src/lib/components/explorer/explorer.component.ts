@@ -1,5 +1,5 @@
-import { Component, Input, OnDestroy, OnInit, ViewEncapsulation, booleanAttribute, Inject, AfterViewInit, AfterContentInit } from '@angular/core';
-import { Subscription, BehaviorSubject } from 'rxjs';
+import { Component, Input, OnDestroy, OnInit, ViewEncapsulation, booleanAttribute, Inject, AfterContentInit } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { DefaultConfig } from '../../shared/default-config';
 import { ExplorerService } from '../../services/explorer.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -33,9 +33,28 @@ export class ExplorerComponent extends BaseView implements OnInit, OnDestroy, Af
         helperService: HelperService,
         modalService: BsModalService,
         config: DefaultConfig,
-        @Inject(FILTER_STRING) filter: BehaviorSubject<string>
+        @Inject(FILTER_STRING) filterString: BehaviorSubject<string>
     ) {
-        super(explorerService, helperService, modalService, config, filter);
+        super(explorerService, helperService, modalService, config, filterString);
+        this.subs.add(this.explorerService.modalDataModel.subscribe(res => {
+            if (res?.template_Type == 'upload' && res?.upload_Status) {
+                this.progressValue = res?.progress_Bar_Value ?? this.progressValue;
+                this.progressStatus = res?.upload_Status ?? this.progressStatus;
+                switch (res?.upload_Status) {
+                    case "upload":
+                        this.openModalUpload()
+                        break;
+                    case "success":
+                        this.closeModalUpload()
+                        break;
+                    case "failure":
+                        this.closeModalUpload()
+                        break;
+                    default:
+                }
+            }
+        }));
+
     }
 
     ngOnInit() {

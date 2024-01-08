@@ -14,7 +14,7 @@ import { DefaultConfig } from '../../shared/default-config';
     styleUrls: ['./list.component.scss'],
     encapsulation: ViewEncapsulation.None,
 })
-export class ListComponent extends BaseView implements AfterViewInit {
+export class ListComponent extends BaseView {
 
     icon = FileTypeIconClass.Folder
     constructor(
@@ -22,12 +22,8 @@ export class ListComponent extends BaseView implements AfterViewInit {
         helperService: HelperService,
         modalService: BsModalService,
         config: DefaultConfig,
-        private cd: ChangeDetectorRef,
-        @Inject(FILTER_STRING) filter: BehaviorSubject<string>
+        @Inject(FILTER_STRING) filterString: BehaviorSubject<string>
     ) {
-        super(explorerService, helperService, modalService, config, filter);
-    }
-    ngAfterViewInit() {
-        this.cd.markForCheck()
+        super(explorerService, helperService, modalService, config, filterString);
     }
 }

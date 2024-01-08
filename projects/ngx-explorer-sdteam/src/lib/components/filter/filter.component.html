@@ -1,4 +1,4 @@
 <div class="nxe-filter">
-    <input class="nxe-filter-input" type="text" #input (keyup)="onSearchChange($event, input.value)" [placeholder]="searchPlaceHolder">
+    <input class="nxe-filter-input" type="text" #input (keyup)="onSearchChange($event, input.value)" [placeholder]="searchPlaceHolder" [ngModel]="filterString.value" >
     <button class="nxe-filter-button" (click)="clearSearchInput()"><i class="icon-cancel" aria-hidden="true"></i></button>
 </div>

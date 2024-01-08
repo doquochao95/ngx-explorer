@@ -16,30 +16,8 @@
             <nxe-view-switcher ></nxe-view-switcher>
         </div>
     </div>
-    <input style="display: none" type="file" multiple (change)="handleFiles($event)" data-max-size="500" #uploader>
 </div>
-<div class="position-fixed" [ngStyle]="{'z-index': 10, 'right': config.globalOptions.offSetRight + 10 + 'px', 'bottom': config.globalOptions.offSetBottom + 10 + 'px' }">
-    <div id="toast" class="toast hide text-center w-auto" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
-        <div class="toast-body">
-            {{toast?.toastBody}}
-            <i  [ngClass]="toast?.toastIcon" aria-hidden="true"></i>
-        </div>
-    </div>
-</div>
-<ng-template #upload>
-    <div class="modal-body" *ngIf="progressValue == 0">
-        <label class="mb-0">Uploading</label>
-        <progressbar></progressbar>
-    </div>
-    <div class="modal-body"  *ngIf="progressValue > 0">
-        <label class="mb-0">{{progressStatus == 'success' ? 'Uploaded successfully' : progressStatus == 'failure' ? 'Upload failed' : 'Uploading' }}</label>
-        <progressbar
-            class="progress-striped"
-            [value]="progressValue"
-            [type]="progressStatus == 'success' ? 'success' : progressStatus == 'failure' ? 'danger' : 'info' ">
-        </progressbar>
-    </div>
-</ng-template>
+<input style="display: none" type="file" multiple (change)="handleFiles($event)" data-max-size="500" #uploader>
 <ng-template #modify>
     <div class="modal-header">
         <h5 class="modal-title">{{modalTitle}}</h5>
@@ -62,3 +40,11 @@
         <button type="button" class="btn btn-primary" (click)="confirm()" [disabled]="!name">{{modifyType}}</button>
     </div>
 </ng-template>
+<div class="position-fixed" [ngStyle]="{'z-index': 10, 'right': config.globalOptions.offSetRight + 10 + 'px', 'bottom': config.globalOptions.offSetBottom + 10 + 'px' }">
+    <div id="menubarcomponent" class="toast hide text-center w-auto" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+        <div class="toast-body">
+            {{toast?.toastBody}}
+            <i  [ngClass]="toast?.toastIcon" aria-hidden="true"></i>
+        </div>
+    </div>
+</div>

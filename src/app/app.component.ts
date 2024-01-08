@@ -29,7 +29,7 @@ export class AppComponent implements IDataService<ExampleNode>, AfterViewInit {
         return of(`${this.baseUrl}#/admin/file-explorer?filter=`);
     }
     ngAfterViewInit(): void {
-        // this.helperService.filterItem(this.filter)
+        this.helperService.filterItem(this.filter)
     }
     download(nodes: ExampleNode[]): Observable<any> {
         const results = nodes.map(node => {

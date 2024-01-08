@@ -1,7 +1,7 @@
 import { DefaultConfig } from './../shared/default-config';
-import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, Host, HostListener, Inject, Input, OnDestroy, Self, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { Directive, ElementRef, HostListener, Inject, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { ContextMenuOption, FileTypeIconClass, INode, ModalDataModel, ToastModel, TreeNode } from '../shared/types';
+import { ContextMenuOption, FileTypeIconClass, INode, ToastModel, TreeNode } from '../shared/types';
 import { FILTER_STRING } from '../injection-tokens/tokens';
 import { ExplorerService } from '../services/explorer.service';
 import { HelperService } from '../services/helper.service';
@@ -10,15 +10,19 @@ import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { Utils } from '../shared/utils';
 import { ConfirmComponent } from '../components/confirm/confirm.component';
 import { Toast } from 'bootstrap';
-import { filter } from 'rxjs/operators';
 
 @Directive()
 export class BaseView implements OnDestroy {
+    @ViewChild('uploader', { static: true }) uploader: ElementRef;
+    @ViewChild('upload') upload: TemplateRef<any>;
+    @ViewChild('modify') modify: TemplateRef<any>;
+
     @HostListener('mousedown', ['$event'])
     public mousedown(event: MouseEvent): void {
         if (event.ctrlKey || event.shiftKey)
             event.preventDefault();
     }
+
     public selection: INode[] = [];
     public items: INode[] = [];
     public dragging = false;
@@ -53,11 +57,10 @@ export class BaseView implements OnDestroy {
     public treeNodes: TreeNode[] = [];
     public searchPlaceHolder: string = "Search"
 
+    private tempItems: INode[] = [];
     private expandedIds: number[] = [];
     private recentFolder: INode[] = [];
     private recentFile: INode[] = [];
-    private modalModifyTemplate: TemplateRef<any>;
-    private modalUploadTemplate: TemplateRef<any>;
     private pdfFormat: string = 'pdf'
     private wordFormat: string = 'doc, docx'
     private excelFormat: string = 'xlsx, xlsm, xls, xltx, xltm'
@@ -65,9 +68,7 @@ export class BaseView implements OnDestroy {
     private imageFormat: string = 'jpg, jpeg, png'
     private archiveFormat: string = 'zip, rar'
     private videoFormat: string = 'mp4, wmv, flv, avi, mov'
-    private tempValue: string = ''
-    private uploaderElement: ElementRef;
-    private searchInputElement: ElementRef<HTMLInputElement>;
+    private tempFilterValue: string = ''
     private modalOptions: ModalOptions = {
         backdrop: 'static',
         keyboard: false,
@@ -86,25 +87,23 @@ export class BaseView implements OnDestroy {
     get filteredItems(): INode[] {
         const filter = this.filterString.value;
         if (!filter) {
-            if (this.tempValue != filter)
-                this.explorerService.refresh()
-            this.tempValue = filter
+            if (this.tempFilterValue != filter)
+                this.items = this.tempItems
+            this.tempFilterValue = filter
         }
-        if (this.tempValue != filter) {
+        if (this.tempFilterValue != filter) {
             if (filter.includes('/')) {
                 let filterArray = filter.split('/')
                 const name = filterArray[filterArray.length - 1]
                 const paths = filterArray.slice(1, filterArray.length - 1)
                 this.explorerService.filterItems(paths).subscribe(() => {
-                    // const itemPath = name.includes('.') ? filterArray.slice(1, filterArray.length - 1).join('/') : filterArray.slice(1, filterArray.length).join('/')
-                    // this.items = this.items.filter(i => i.data?.name == name && i.data?.path == itemPath);
-                    this.items = this.items.filter(i => i.data?.name == name);
+                    this.items = this.tempItems.filter(i => i.data?.name == name);
                 })
             }
             else {
-                this.items = this.items.filter(i => i.data?.name.toLowerCase().includes(filter.toLowerCase()));
+                this.items = this.tempItems.filter(i => i.data?.name.toLowerCase().includes(filter.toLowerCase()));
             }
-            this.tempValue = filter
+            this.tempFilterValue = filter
         }
         return this.items
     }
@@ -121,6 +120,7 @@ export class BaseView implements OnDestroy {
         }));
         this.subs.add(this.explorerService.openedNode.subscribe(nodes => {
             this.items = nodes ? nodes.children : [];
+            this.tempItems = nodes ? nodes.children : [];
             this.recentFolder = nodes ? nodes.children.filter(x => x.isFolder) : [];
             this.recentFile = nodes ? nodes.children.filter(x => !x.isFolder) : [];
             if (nodes != undefined)
@@ -139,58 +139,6 @@ export class BaseView implements OnDestroy {
         this.subs.add(this.explorerService.contextMenu.subscribe(status => {
             this._isVisibled = status?.isVisibled
             this._elements = status?.elements
-        }));
-        this.subs.add(this.explorerService.toast.subscribe(toast => {
-            this.toast = toast
-        }));
-        this.subs.add(this.explorerService.uploader.subscribe(element => {
-            this.uploaderElement = element
-        }));
-        this.subs.add(this.explorerService.searchInput.subscribe(element => {
-            this.searchInputElement = element
-        }));
-        this.subs.add(this.explorerService.modalDataModel.subscribe(res => {
-            if (res?.template_Type == 'upload' && res?.upload_Status) {
-                this.progressValue = res?.progress_Bar_Value ?? this.progressValue;
-                this.progressStatus = res?.upload_Status ?? this.progressStatus;
-                switch (res?.upload_Status) {
-                    case "upload":
-                        this.openModalUpload()
-                        break;
-                    case "success":
-                        this.closeModalUpload()
-                        break;
-                    case "failure":
-                        this.closeModalUpload()
-                        break;
-                    default:
-                }
-            }
-            if (res?.template) {
-                if (res.template_Type == 'modify')
-                    this.modalModifyTemplate = res?.template
-                if (res.template_Type == 'upload')
-                    this.modalUploadTemplate = res?.template
-            }
-            if (res?.model_State == false) {
-                if (res?.template_Type == 'modify')
-                    this.modalRef?.hide()
-                if (res?.template_Type == 'upload')
-                    setTimeout(() => this.modalRef?.hide(), 2000);
-            }
-            if (res?.modal_Title && res?.modify_Type) {
-                if (res.template_Type == 'modify') {
-                    this.modalTitle = res?.modal_Title
-                    this.modifyType = res?.modify_Type
-                    this.name = res?.file_Name
-                    this.format = res?.file_Format
-                }
-            }
-        }));
-        this.subs.add(this.explorerService.tree.pipe(filter(x => !!x)).subscribe(node => {
-            this.addExpandedNode(node.id); // always expand root
-            this.treeNodes = this.buildTree(node).children;
-            this.clearSearchInput();
         }));
     }
     ngOnDestroy() {
@@ -250,7 +198,8 @@ export class BaseView implements OnDestroy {
         }
     }
     public openUploader() {
-        this.uploaderElement.nativeElement.click();
+        if (this.uploader != undefined)
+            this.uploader.nativeElement.click();
     }
     public handleFiles(event: Event) {
         const files: FileList = (event.target as HTMLInputElement).files;
@@ -258,7 +207,7 @@ export class BaseView implements OnDestroy {
             return;
         }
         this.explorerService.upload(files);
-        this.uploaderElement.nativeElement.value = '';
+        this.uploader.nativeElement.value = '';
     }
     public download() {
         this.explorerService.download();
@@ -324,51 +273,38 @@ export class BaseView implements OnDestroy {
         this.explorerService.setContextMenu(data)
     }
     public openModalModify(isRename?: boolean) {
-        let modalData = <ModalDataModel>{}
-        if (isRename) {
-            if (this.selection[0].data.isFolder) {
-                this.modalTitle = 'Enter new folder name'
-                this.modifyType = 'Rename'
-                this.name = this.selection[0].data.name;
-                this.format = null
-                modalData = <ModalDataModel>{
-                    template_Type: 'modify',
-                    modal_Title: 'Enter new folder name',
-                    modify_Type: 'Rename',
-                    file_Name: this.selection[0].data.name,
-                    file_Format: ''
+        if (this.modify != undefined) {
+            if (isRename) {
+                if (this.selection[0].data.isFolder) {
+                    this.modalTitle = 'Enter new folder name'
+                    this.modifyType = 'Rename'
+                    this.name = this.selection[0].data.name;
+                    this.format = null
+                }
+                else {
+                    let temp: string[] = this.selection[0].data.name.split('.');
+                    this.modalTitle = 'Enter new file name'
+                    this.modifyType = 'Rename'
+                    this.name = temp.splice(0, temp.length - 1).join('.')
+                    this.format = '.' + temp[0]
                 }
             }
             else {
-                let temp: string[] = this.selection[0].data.name.split('.');
-                modalData = <ModalDataModel>{
-                    template_Type: 'modify',
-                    modal_Title: 'Enter new file name',
-                    modify_Type: 'Rename',
-                    file_Name: temp.splice(0, temp.length - 1).join('.'),
-                    file_Format: '.' + temp[0]
+                let _fileName = ''
+                for (let i = 1; i <= 100; i++) {
+                    let tempName = `New folder (${i})`
+                    if (!this.recentFolder.some(x => x.data.name == tempName)) {
+                        _fileName = tempName
+                        break
+                    }
                 }
+                this.modalTitle = 'Enter folder name'
+                this.modifyType = 'Create'
+                this.name = _fileName;
+                this.format = ''
             }
+            this.modalRef = this.modalService.show(this.modify, { class: 'modal-md modal-dialog-centered' });
         }
-        else {
-            let _fileName = ''
-            for (let i = 1; i <= 100; i++) {
-                let tempName = `New folder (${i})`
-                if (!this.recentFolder.some(x => x.data.name == tempName)) {
-                    _fileName = tempName
-                    break
-                }
-            }
-            modalData = <ModalDataModel>{
-                template_Type: 'modify',
-                modal_Title: 'Enter folder name',
-                modify_Type: 'Create',
-                file_Name: _fileName,
-                file_Format: ''
-            }
-        }
-        this.explorerService.setModal(modalData)
-        this.modalRef = this.modalService.show(this.modalModifyTemplate, { class: 'modal-md modal-dialog-centered' });
     }
     public confirm(): void {
         //Create
@@ -416,11 +352,7 @@ export class BaseView implements OnDestroy {
         this.cancel()
     }
     public cancel(): void {
-        const modalData = <ModalDataModel>{
-            template_Type: 'modify',
-            model_State: false
-        }
-        this.explorerService.setModal(modalData)
+        this.modalRef?.hide()
     }
     public onNameChange(event: any) {
         return Utils.checkSpecialChar(event.key)
@@ -433,30 +365,30 @@ export class BaseView implements OnDestroy {
         })
     }
     public openModalUpload() {
-        this.modalRef = this.modalService.show(this.modalUploadTemplate, this.modalOptions);
+        if (this.upload != undefined)
+            this.modalRef = this.modalService.show(this.upload, this.modalOptions);
     }
     public closeModalUpload() {
-        const modalData = <ModalDataModel>{
-            template_Type: 'upload',
-            model_State: false
-        }
-        this.explorerService.setModal(modalData)
+        if (this.modalRef != undefined)
+            setTimeout(() => this.modalRef.hide(), 2000);
     };
     private showCopyToast(isSuccess: boolean) {
-        let toastData: ToastModel = <ToastModel>{}
         if (isSuccess)
-            toastData = <ToastModel>{
+            this.toast = <ToastModel>{
                 toastBody: 'Copied Successfully',
                 toastIcon: 'icon-ok'
             }
         else
-            toastData = <ToastModel>{
+            this.toast = <ToastModel>{
                 toastBody: 'Unable to copy to clipboard',
                 toastIcon: 'icon-cancel-1'
             }
-        this.explorerService.setToast(toastData)
         const toasts: any[] = Array.from(document.querySelectorAll('.toast')).map(toastNode => new Toast(toastNode))
-        toasts.forEach((item) => { item.show(); })
+        toasts.forEach((item) => {
+            const componentName = Object.getPrototypeOf(this).constructor.name.toLowerCase();
+            if (item._element.id == componentName)
+                item.show();
+        })
     }
     public onTreeClick(node: TreeNode) {
         let items: number[] = []
@@ -499,7 +431,7 @@ export class BaseView implements OnDestroy {
         }
         return result
     }
-    private buildTree(node: INode): TreeNode {
+    public buildTree(node: INode): TreeNode {
         const treeNode = {
             id: node.id,
             parentId: node.parentId,
@@ -519,7 +451,7 @@ export class BaseView implements OnDestroy {
         const index = this.expandedIds.indexOf(id);
         this.expandedIds.splice(index, 1);
     }
-    private addExpandedNode(id: number) {
+    public addExpandedNode(id: number) {
         const index = this.expandedIds.indexOf(id);
         if (index === -1) {
             this.expandedIds.push(id);
@@ -527,15 +459,12 @@ export class BaseView implements OnDestroy {
     }
     public onSearchChange(e: KeyboardEvent, value: string) {
         if (e.key === 'Escape') {
-            this.searchInputElement.nativeElement.value = '';
             this.filterString.next('');
             return;
         }
         this.filterString.next(value.trim());
     }
     public clearSearchInput() {
-        if (!this.searchInputElement) { return; }
-        this.searchInputElement.nativeElement.value = '';
         this.filterString.next('');
     }
 }

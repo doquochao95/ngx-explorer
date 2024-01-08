@@ -22,3 +22,17 @@
     </div>
 </div>
 <nxe-context-menu *ngIf="visible"></nxe-context-menu>
+<ng-template #upload>
+    <div class="modal-body" *ngIf="progressValue == 0">
+        <label class="mb-0">Uploading</label>
+        <progressbar></progressbar>
+    </div>
+    <div class="modal-body"  *ngIf="progressValue > 0">
+        <label class="mb-0">{{progressStatus == 'success' ? 'Uploaded successfully' : progressStatus == 'failure' ? 'Upload failed' : 'Uploading' }}</label>
+        <progressbar
+            class="progress-striped"
+            [value]="progressValue"
+            [type]="progressStatus == 'success' ? 'success' : progressStatus == 'failure' ? 'danger' : 'info' ">
+        </progressbar>
+    </div>
+</ng-template>

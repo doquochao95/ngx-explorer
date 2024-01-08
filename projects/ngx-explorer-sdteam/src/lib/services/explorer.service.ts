@@ -1,7 +1,7 @@
-import { ElementRef, Injectable, TemplateRef } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, concat, defer, forkJoin, lastValueFrom, of, throwError } from 'rxjs';
-import { catchError, tap, toArray, filter } from 'rxjs/operators';
-import { INode, Dictionary, NodeContent, ContextMenuOption, ModalTemplateOption, ModalDataModel, ToastModel } from '../shared/types';
+import { catchError, tap, toArray } from 'rxjs/operators';
+import { INode, Dictionary, NodeContent, ContextMenuOption, ModalDataModel } from '../shared/types';
 import { Utils } from '../shared/utils';
 import { DataService } from './data.service';
 import { DefaultConfig } from '../shared/default-config';
@@ -23,9 +23,6 @@ export class ExplorerService {
     private readonly tree$ = new BehaviorSubject<INode>(this.internalTree);
     private readonly contextMenu$ = new BehaviorSubject<ContextMenuOption>(undefined);
     private readonly modalDataModel$ = new BehaviorSubject<ModalDataModel>(undefined);
-    private readonly toast$ = new BehaviorSubject<ToastModel>(undefined);
-    private readonly uploader$ = new BehaviorSubject<ElementRef>(undefined);
-    private readonly searchInput$ = new BehaviorSubject<ElementRef>(undefined);
 
     public readonly selectedNodes = this.selectedNodes$.asObservable();
     public readonly openedNode = this.openedNode$.asObservable();
@@ -33,9 +30,6 @@ export class ExplorerService {
     public readonly tree = this.tree$.asObservable();
     public readonly contextMenu = this.contextMenu$.asObservable();
     public readonly modalDataModel = this.modalDataModel$.asObservable();
-    public readonly toast = this.toast$.asObservable();
-    public readonly uploader = this.uploader$.asObservable();
-    public readonly searchInput = this.searchInput$.asObservable();
 
     private sub: Subscription;
 
@@ -252,7 +246,7 @@ export class ExplorerService {
         }
         const targets = selection.map(node => this.flatPointers[node.id]);
         const leafs = targets.filter(t => !t.isFolder).map(data => data.data);
-        this.dataService.download(leafs).subscribe(() => {});
+        this.dataService.download(leafs).subscribe(() => { });
     }
 
     private getNodeChildren(id: number, isFilter?: boolean): Observable<any> {
@@ -305,14 +299,5 @@ export class ExplorerService {
     }
     public setModal(modal: ModalDataModel) {
         this.modalDataModel$.next(modal)
-    }
-    public setToast(toast: ToastModel) {
-        this.toast$.next(toast)
-    }
-    public setUploader(element: ElementRef) {
-        this.uploader$.next(element)
-    }
-    public setSearchInput(element: ElementRef) {
-        this.searchInput$.next(element)
     }
 }

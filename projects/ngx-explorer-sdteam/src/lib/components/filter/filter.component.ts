@@ -1,6 +1,5 @@
-import { filter } from 'rxjs/operators';
 import { Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, } from 'rxjs';
 import { FILTER_STRING } from '../../injection-tokens/tokens';
 import { ExplorerService } from '../../services/explorer.service';
 import { DefaultConfig } from '../../shared/default-config';
@@ -20,11 +19,8 @@ export class FilterComponent extends BaseView implements OnDestroy {
         helperService: HelperService,
         modalService: BsModalService,
         config: DefaultConfig,
-        @Inject(FILTER_STRING) filter: BehaviorSubject<string>
+        @Inject(FILTER_STRING) filterString: BehaviorSubject<string>
     ) {
-        super(explorerService, helperService, modalService, config, filter);
-    }
-    ngDoCheck(): void {
-        this.explorerService.setSearchInput(this.input)
+        super(explorerService, helperService, modalService, config, filterString);
     }
 }

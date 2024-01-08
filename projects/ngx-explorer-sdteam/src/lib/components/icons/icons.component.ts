@@ -1,4 +1,4 @@
-import { Component, Inject, ViewEncapsulation, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { FILTER_STRING } from '../../injection-tokens/tokens';
 import { ExplorerService } from '../../services/explorer.service';
@@ -15,7 +15,7 @@ import { DefaultConfig } from '../../shared/default-config';
     styleUrls: ['./icons.component.scss'],
     encapsulation: ViewEncapsulation.None,
 })
-export class IconsComponent extends BaseView implements AfterViewInit {
+export class IconsComponent extends BaseView {
 
     icon = FileTypeIconClass.Folder
     constructor(
@@ -24,15 +24,11 @@ export class IconsComponent extends BaseView implements AfterViewInit {
         modalService: BsModalService,
         config: DefaultConfig,
         public _sanitizer: DomSanitizer,
-        private cd: ChangeDetectorRef,
-        @Inject(FILTER_STRING) filter: BehaviorSubject<string>
+        @Inject(FILTER_STRING) filterString: BehaviorSubject<string>
     ) {
-        super(explorerService, helperService, modalService, config, filter);
+        super(explorerService, helperService, modalService, config, filterString);
     }
     checkEmpty(str: string) {
         return !str || /^\s*$/.test(str);
-    }
-    ngAfterViewInit() {
-        this.cd.markForCheck()
     }
 }

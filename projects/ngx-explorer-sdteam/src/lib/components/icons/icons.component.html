@@ -17,3 +17,34 @@
         </div>
     </div>
 </div>
+<input style="display: none" type="file" multiple (change)="handleFiles($event)" data-max-size="500" #uploader>
+<ng-template #modify>
+    <div class="modal-header">
+        <h5 class="modal-title">{{modalTitle}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancel()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col">
+                <input class="form-control" type="text"  [(ngModel)]="name" (keydown)="onNameChange($event)">
+            </div>
+            <div class="col-auto align-self-end pl-0" *ngIf="selection.length > 0 && modifyType == 'Rename' && !selection[0].isFolder">
+                <label class="mb-0">{{format}}</label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancel()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="confirm()" [disabled]="!name">{{modifyType}}</button>
+    </div>
+</ng-template>
+<div class="position-fixed" [ngStyle]="{'z-index': 10, 'right': config.globalOptions.offSetRight + 10 + 'px', 'bottom': config.globalOptions.offSetBottom + 10 + 'px' }">
+    <div id="iconscomponent" class="toast hide text-center w-auto" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+        <div class="toast-body">
+            {{toast?.toastBody}}
+            <i  [ngClass]="toast?.toastIcon" aria-hidden="true"></i>
+        </div>
+    </div>
+</div>

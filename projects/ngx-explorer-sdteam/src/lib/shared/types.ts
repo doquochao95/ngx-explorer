@@ -84,13 +84,6 @@ export interface ModalDataModel {
     template: TemplateRef<any> | null
     progress_Bar_Value: number | null;
     upload_Status: string | null;
-
-    modal_Title : string | null;
-    modify_Type : string | null;
-    file_Name : string | null;
-    file_Format : string | null;
-
-    model_State: boolean
 }
 export interface ToastModel {
     toastBody: string;

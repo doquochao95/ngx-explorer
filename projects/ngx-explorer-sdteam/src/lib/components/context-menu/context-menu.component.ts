@@ -97,9 +97,9 @@ export class ContextMenuComponent extends BaseView {
         helperService: HelperService,
         modalService: BsModalService,
         config: DefaultConfig,
-        @Inject(FILTER_STRING) filter: BehaviorSubject<string>
+        @Inject(FILTER_STRING) filterString: BehaviorSubject<string>
     ) {
-        super(explorerService, helperService, modalService, config, filter);
+        super(explorerService, helperService, modalService, config, filterString);
     }
     hide(element: ContextMenu) {
         element.isVisibled = false;
