@@ -115,9 +115,6 @@ export class BaseView implements OnDestroy {
         protected config: DefaultConfig,
         @Inject(FILTER_STRING) protected filterString: BehaviorSubject<string>
     ) {
-        this.subs.add(this.helperService.emitter.subscribe((res) => {
-            res == null ? this.explorerService.refresh() : this.filterString.next(res)
-        }));
         this.subs.add(this.explorerService.openedNode.subscribe(nodes => {
             this.items = nodes ? nodes.children : [];
             this.tempItems = nodes ? nodes.children : [];
@@ -391,23 +388,20 @@ export class BaseView implements OnDestroy {
         })
     }
     public onTreeClick(node: TreeNode) {
-        let items: number[] = []
-        if (!node.expanded) {
-            items = this.getAllItem(this.treeNodes)
-            let sameLayerItems: INode[] = this.getSameLayerItem(node, this.treeNodes)
-            sameLayerItems.map(x => {
-                if (this.expandedIds.indexOf(x.id) != -1)
-                    this.removeExpandedNode(x.id)
-            })
-            this.expandedIds = this.expandedIds.filter(x => items.indexOf(x) != -1 || x == 1)
-        }
-        else {
-            items = this.getAllItem(node.children)
-            this.expandedIds = this.expandedIds.filter(x => items.indexOf(x) == -1 || x == 1)
-        }
-        this.addExpandedNode(node.id);
         this.explorerService.openNode(node.id);
-        this.explorerService.expandNode(node.id);
+    }
+    private getNodeTreeById(id: number, nodes: TreeNode[]): TreeNode {
+        for (let node of nodes) {
+            if (node.id == id)
+                return node
+            else {
+                if (node.children.length > 0) {
+                    let res = this.getNodeTreeById(id, node.children)
+                    if (res != undefined)
+                        return res
+                }
+            }
+        }
     }
     private getSameLayerItem(node: TreeNode, treeNodes: TreeNode[]): TreeNode[] {
         for (let item of treeNodes) {
@@ -452,9 +446,28 @@ export class BaseView implements OnDestroy {
         this.expandedIds.splice(index, 1);
     }
     public addExpandedNode(id: number) {
-        const index = this.expandedIds.indexOf(id);
-        if (index === -1) {
-            this.expandedIds.push(id);
+        if (id != undefined) {
+            if (id == 1)
+                this.expandedIds = [id]
+            else {
+                let node = this.getNodeTreeById(id, this.treeNodes)
+                let items: number[] = []
+                if (!node.expanded) {
+                    items = this.getAllItem(this.treeNodes)
+                    let sameLayerItems: INode[] = this.getSameLayerItem(node, this.treeNodes)
+                    sameLayerItems.map(x => {
+                        if (this.expandedIds.indexOf(x.id) != -1)
+                            this.removeExpandedNode(x.id)
+                    })
+                    this.expandedIds = this.expandedIds.filter(x => items.indexOf(x) != -1 || x == 1)
+                }
+                else {
+                    items = this.getAllItem(node.children)
+                    this.expandedIds = this.expandedIds.filter(x => items.indexOf(x) == -1 || x == 1)
+                }
+                if (this.expandedIds.indexOf(node.id) == -1)
+                    this.expandedIds.push(node.id)
+            }
         }
     }
     public onSearchChange(e: KeyboardEvent, value: string) {

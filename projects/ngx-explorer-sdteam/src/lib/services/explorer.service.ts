@@ -1,3 +1,4 @@
+import { TreeModel } from './../shared/types';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, concat, defer, forkJoin, lastValueFrom, of, throwError } from 'rxjs';
 import { catchError, tap, toArray } from 'rxjs/operators';
@@ -20,7 +21,7 @@ export class ExplorerService {
     private readonly selectedNodes$ = new BehaviorSubject<INode[]>([]);
     private readonly openedNode$ = new BehaviorSubject<INode>(undefined);
     private readonly breadcrumbs$ = new BehaviorSubject<INode[]>([]);
-    private readonly tree$ = new BehaviorSubject<INode>(this.internalTree);
+    private readonly tree$ = new BehaviorSubject<TreeModel>({ node: this.internalTree });
     private readonly contextMenu$ = new BehaviorSubject<ContextMenuOption>(undefined);
     private readonly modalDataModel$ = new BehaviorSubject<ModalDataModel>(undefined);
 
@@ -80,10 +81,6 @@ export class ExplorerService {
         )
     }
 
-    public expandNode(id: number) {
-        this.getNodeChildren(id).subscribe();
-    }
-
     public createNode(name: string) {
         const parent = this.openedNode$.value;
         this.dataService.createNode(parent.data, name).subscribe(() => {
@@ -102,7 +99,6 @@ export class ExplorerService {
             const folder = this.breadcrumbs$.value.map(x => x.data?.name ?? '').join('/');
             const file = this.selectedNodes$.value[0].data.name;
             const path = `${this.config.globalOptions.homeNodeName}${folder}/${file}`
-
             window.isSecureContext && navigator.clipboard ? navigator.clipboard.writeText(path) : this.clipboard.copy(path)
             return true
         }
@@ -129,6 +125,22 @@ export class ExplorerService {
         catch (err) {
             return false
         }
+    }
+    public getFilterStringFromSPA() {
+        return new Observable((observer: any) => {
+            this.dataService
+                .getFilterString()
+                .subscribe({
+                    next: (res) => {
+                        observer.next(res)
+                        observer.complete()
+                    },
+                    error: () => {
+                        observer.error({})
+                        observer.complete()
+                    }
+                })
+        })
     }
     public rename(name: string) {
         const nodes = this.selectedNodes$.value;
@@ -279,7 +291,7 @@ export class ExplorerService {
                         const leafChildren = parent.children.filter(c => !c.isFolder);
                         parent.children = nodeChildren.concat(leafChildren);
                         if (!isFilter)
-                            this.tree$.next(this.internalTree);
+                            this.tree$.next({ node: this.internalTree, node_Id: id });
 
                     }), toArray())
                 .subscribe({

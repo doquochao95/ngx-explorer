@@ -15,6 +15,7 @@ export abstract class DataService implements IDataService<any> {
     abstract uploadFiles(node: any, file: File): Observable<any>;
     abstract download(node: any[]): Observable<any>;
     abstract getBaseUrl(): Observable<any>;
+    abstract getFilterString(): Observable<any>;
     // move(from to) // TODO: on/off in settings
     // copyPaste(from to) // TODO: on/off in settings
     // cutPaste(from to) // TODO: on/off in settings

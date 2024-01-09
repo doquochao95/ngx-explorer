@@ -10,7 +10,7 @@ import { environment } from 'src/environments/environment';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements IDataService<ExampleNode>, AfterViewInit {
+export class AppComponent implements IDataService<ExampleNode> {
     title = 'explorer-app';
     isCollapsed = false;
     private id = 0;
@@ -25,11 +25,11 @@ export class AppComponent implements IDataService<ExampleNode>, AfterViewInit {
         this.MOCK_FILES = this.service.getDataFile()
         this.MOCK_FOLDERS = this.service.getDataFolder()
     }
+    getFilterString(): Observable<any> {
+        return of(`${this.filter}`);
+    }
     getBaseUrl(): Observable<any> {
         return of(`${this.baseUrl}#/admin/file-explorer?filter=`);
-    }
-    ngAfterViewInit(): void {
-        this.helperService.filterItem(this.filter)
     }
     download(nodes: ExampleNode[]): Observable<any> {
         const results = nodes.map(node => {

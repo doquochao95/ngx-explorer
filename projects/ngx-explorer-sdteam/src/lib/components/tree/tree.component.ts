@@ -25,9 +25,9 @@ export class TreeComponent extends BaseView {
         super(explorerService, helperService, modalService, config, filterString);
         this.subs.add(this.explorerService.tree
             .pipe(filter((x: any) => !!x))
-            .subscribe(node => {
-                this.addExpandedNode(node.id);
-                this.treeNodes = this.buildTree(node).children;
+            .subscribe(res => {
+                this.addExpandedNode(res.node_Id);
+                this.treeNodes = this.buildTree(res.node).children;
                 this.clearSearchInput();
             }));
     }

@@ -43,6 +43,7 @@ export interface IDataService<T> {
     uploadFiles(node: T, file: File): Observable<any>;
     download(node: T[]): Observable<any>;
     getBaseUrl(): Observable<any>;
+    getFilterString(): Observable<any>;
 }
 
 export interface IHelperService {
@@ -93,4 +94,8 @@ export interface ToastModel {
 export interface TreeNode extends INode {
     children: TreeNode[];
     expanded: boolean;
+}
+export interface TreeModel {
+    node : INode;
+    node_Id? : number
 }

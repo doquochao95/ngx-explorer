@@ -36,6 +36,10 @@ export class ExplorerComponent extends BaseView implements OnInit, OnDestroy, Af
         @Inject(FILTER_STRING) filterString: BehaviorSubject<string>
     ) {
         super(explorerService, helperService, modalService, config, filterString);
+        this.subs.add(this.helperService.emitter.subscribe((res) => {
+            if (res == 'refresh')
+                this.explorerService.refresh()
+        }));
         this.subs.add(this.explorerService.modalDataModel.subscribe(res => {
             if (res?.template_Type == 'upload' && res?.upload_Status) {
                 this.progressValue = res?.progress_Bar_Value ?? this.progressValue;
@@ -79,5 +83,9 @@ export class ExplorerComponent extends BaseView implements OnInit, OnDestroy, Af
     }
     ngAfterContentInit() {
         this.explorerService.refresh()
+        this.explorerService.getFilterStringFromSPA().subscribe((res: string) => {
+            if (!(res == null || res.match(/^\s*$/) !== null))
+                this.filterString.next(res)
+        })
     }
 }

@@ -10,10 +10,7 @@ export class HelperService implements IHelperService {
 
     constructor() { }
     refreshExplorer(): void {
-        this.emitter.next(null);
-    }
-    filterItem(filter: string): void {
-        this.emitter.next(filter);
+        this.emitter.next('refresh');
     }
     getFormat(data: any): string {
         let name: string = data?.name as string;
