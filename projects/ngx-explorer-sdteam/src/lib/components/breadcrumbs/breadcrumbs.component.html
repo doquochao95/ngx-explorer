@@ -1,6 +1,6 @@
 <div class="nxe-breadcrumbs">
     <span *ngFor="let crumb of breadcrumbs; last as last">
-        <button (click)="click(crumb)" class="nxe-breadcrumb-button">{{ crumb.name }}</button>
+        <button (click)="globalbase.openItem(crumb.node)" class="nxe-breadcrumb-button">{{ crumb.name }}</button>
         <span *ngIf="!last" class="nxe-breadcrumb-separator">
             <i class="icon-angle-right" aria-hidden="true"></i>
         </span>

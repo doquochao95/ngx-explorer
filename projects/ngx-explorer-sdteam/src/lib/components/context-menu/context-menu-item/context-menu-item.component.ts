@@ -11,20 +11,18 @@ export class ContextMenuItemComponent implements OnInit {
     public click(event: MouseEvent): void {
         event.preventDefault();
         event.stopPropagation();
-
         if (!this.element.action) return;
-
         this.element.action();
         this.clicked.emit();
     }
 
     @HostListener('mouseover', ['$event'])
-    public mouseover(event: MouseEvent): void {
+    public mouseover(): void {
         this.submenuOpen();
     }
 
     @HostListener('mouseleave', ['$event'])
-    public documentClick(event: MouseEvent): void {
+    public documentClick(): void {
         this.submenuClose();
     }
 

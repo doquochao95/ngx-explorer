@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { INode } from '../../shared/types';
 import { ExplorerService } from '../../services/explorer.service';
 import { DefaultConfig } from '../../shared/default-config';
+import { GlobalBase } from '../../common/global-base';
 
 interface Breadcrumb {
     node: INode;
@@ -20,18 +21,14 @@ export class BreadcrumbsComponent implements OnDestroy {
     public breadcrumbs: Breadcrumb[] = [];
     private sub = new Subscription();
 
-    constructor(private explorerService: ExplorerService, private config: DefaultConfig) {
-        this.sub.add(this.explorerService.breadcrumbs.subscribe(n => this.buildBreadcrumbs(n)));
+    constructor(public globalbase: GlobalBase) {
+        this.sub.add(this.globalbase.explorerService.breadcrumbs.subscribe(n => this.buildBreadcrumbs(n)));
     }
 
     private buildBreadcrumbs(nodes: INode[]) {
         this.breadcrumbs = nodes.map(n =>
-            ({ name: n.data?.name || this.config.globalOptions.homeNodeName, node: n })
+            ({ name: n.data?.name || this.globalbase.config.globalOptions.homeNodeName, node: n })
         );
-    }
-
-    public click(crumb: Breadcrumb) {
-        this.explorerService.openNode(crumb.node.id);
     }
 
     public ngOnDestroy() {

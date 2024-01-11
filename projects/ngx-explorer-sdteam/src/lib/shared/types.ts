@@ -72,17 +72,12 @@ export interface ExplorerOption {
     offSetBottom: number;
     offSetLeft: number;
 }
-export interface ContextMenuOption {
-    isVisibled: boolean;
-    elements: ContextMenu[];
-}
 export interface ModalTemplateOption {
     type: string;
     template: TemplateRef<any>
 }
-export interface ModalDataModel {
+export interface ProgressBarModel {
     template_Type: string;
-    template: TemplateRef<any> | null
     progress_Bar_Value: number | null;
     upload_Status: string | null;
 }

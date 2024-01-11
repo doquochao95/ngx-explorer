@@ -1,13 +1,7 @@
-import { FILTER_STRING } from './../../injection-tokens/tokens';
-import { Component, HostListener, ViewChild, ElementRef, Inject } from '@angular/core';
+import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ContextMenu } from '../../shared/context-menu';
 import { BaseView } from '../../directives/base-view.directive';
-import { ExplorerService } from '../../services/explorer.service';
-import { HelperService } from '../../services/helper.service';
-import { BehaviorSubject } from 'rxjs';
-import { ContextMenuOption } from '../../shared/types';
-import { BsModalService } from 'ngx-bootstrap/modal';
-import { DefaultConfig } from '../../shared/default-config';
+import { GlobalBase } from '../../common/global-base';
 
 @Component({
     selector: 'nxe-context-menu',
@@ -16,71 +10,63 @@ import { DefaultConfig } from '../../shared/default-config';
 })
 export class ContextMenuComponent extends BaseView {
     @HostListener('mouseover', ['$event'])
-    public mouseouver(event: MouseEvent): void {
-        this.setInactive(this.elements);
+    public mouseouver(): void {
+        this.setInactive(this.globalbase.elements);
     }
 
     @HostListener('document:keyup', ['$event'])
     public keyUp(event: KeyboardEvent): void {
-        if (!this.visible) return;
+        if (!this.globalbase.visible) return;
 
         event.preventDefault();
 
-        const activeItem = this.elements.findIndex(e => e.isActived);
+        const activeItem = this.globalbase.elements.findIndex(e => e.isActived);
         if (event.key === 'ArrowDown') {
-            if (activeItem < 0) this.elements[0].isActived = true;
-            this.elements[activeItem].isActived = false;
+            if (activeItem < 0) this.globalbase.elements[0].isActived = true;
+            this.globalbase.elements[activeItem].isActived = false;
 
-            const isLast = activeItem === this.elements.length - 1;
-            this.elements[isLast ? 0 : activeItem + 1].isActived = true;
+            const isLast = activeItem === this.globalbase.elements.length - 1;
+            this.globalbase.elements[isLast ? 0 : activeItem + 1].isActived = true;
         } else if (event.key === 'ArrowUp') {
-            if (activeItem < 0) this.elements[0].isActived = true;
-            this.elements[activeItem].isActived = false;
+            if (activeItem < 0) this.globalbase.elements[0].isActived = true;
+            this.globalbase.elements[activeItem].isActived = false;
 
             const isFirst = activeItem === 0;
-            this.elements[isFirst ? this.elements.length - 1 : activeItem - 1].isActived = true;
+            this.globalbase.elements[isFirst ? this.globalbase.elements.length - 1 : activeItem - 1].isActived = true;
         } else if (event.key === 'ArrowRight') {
             if (activeItem < 0) return;
-            this.elements[activeItem].isVisibled = true;
-            this.elements[activeItem].submenu[0].isActived = true;
+            this.globalbase.elements[activeItem].isVisibled = true;
+            this.globalbase.elements[activeItem].submenu[0].isActived = true;
         } else if (event.key === 'Enter') {
-            if (activeItem < 0 || !this.elements[activeItem].action) return;
-            this.elements[activeItem].action();
-            this.elements.forEach(e => this.hide(e))
+            if (activeItem < 0 || !this.globalbase.elements[activeItem].action) return;
+            this.globalbase.elements[activeItem].action();
+            this.globalbase.elements.forEach(e => this.hide(e))
         } else if (event.key === 'Escape') {
-            this.elements.forEach(e => this.hide(e))
+            this.globalbase.elements.forEach(e => this.hide(e))
         }
-
-        console.log(event.key)
-
-        // ArrowDown
-        // ArrowUp
-        // ArrowLeft
-        // ArrowRight
-        // Enter
     }
 
     @HostListener('document:click', ['$event'])
-    public documentClick(event: MouseEvent): void {
-        this.elements.forEach(e => this.hide(e))
+    public documentClick(): void {
+        this.globalbase.elements.forEach(e => this.hide(e))
     }
 
     @HostListener('document:contextmenu', ['$event'])
     public documentRClick(event: MouseEvent): void {
-        if (!this.elements || !this.navRef) return;
+        if (!this.globalbase.elements || !this.navRef) return;
         let isRight = true;
         let isTop = true;
         const contextMenu = this.navRef.nativeElement;
-        const x = event.clientX + this.config.globalOptions.offSetLeft;
-        const y = event.clientY - this.config.globalOptions.offSetTop;
-        this.top = `${y}px`;
-        this.right = `${window.innerWidth - contextMenu.offsetWidth - x}px`;
-        if (contextMenu.offsetWidth + x > window.innerWidth + this.config.globalOptions.offSetLeft - this.config.globalOptions.offSetRight) {
-            this.right = `${window.innerWidth - x}px`;
+        const x = event.clientX + this.globalbase.config.globalOptions.offSetLeft;
+        const y = event.clientY - this.globalbase.config.globalOptions.offSetTop;
+        this.globalbase.top = `${y}px`;
+        this.globalbase.right = `${window.innerWidth - contextMenu.offsetWidth - x}px`;
+        if (contextMenu.offsetWidth + x > window.innerWidth + this.globalbase.config.globalOptions.offSetLeft - this.globalbase.config.globalOptions.offSetRight) {
+            this.globalbase.right = `${window.innerWidth - x}px`;
             isRight = false;
         }
-        if (contextMenu.offsetHeight + y > window.innerHeight - this.config.globalOptions.offSetTop - this.config.globalOptions.offSetBottom) {
-            this.top = `${y - contextMenu.offsetHeight}px`;
+        if (contextMenu.offsetHeight + y > window.innerHeight - this.globalbase.config.globalOptions.offSetTop - this.globalbase.config.globalOptions.offSetBottom) {
+            this.globalbase.top = `${y - contextMenu.offsetHeight}px`;
             isTop = false;
         }
         //animation
@@ -93,24 +79,16 @@ export class ContextMenuComponent extends BaseView {
     @ViewChild('nav') navRef: ElementRef;
 
     constructor(
-        explorerService: ExplorerService,
-        helperService: HelperService,
-        modalService: BsModalService,
-        config: DefaultConfig,
-        @Inject(FILTER_STRING) filterString: BehaviorSubject<string>
+        public globalbase: GlobalBase
     ) {
-        super(explorerService, helperService, modalService, config, filterString);
+        super();
     }
     hide(element: ContextMenu) {
         element.isVisibled = false;
         if (element && element.submenu) {
             element.submenu.forEach(e => this.hide(e));
         }
-        const data: ContextMenuOption = <ContextMenuOption>{
-            isVisibled: false,
-            elements: this.elements
-        }
-        this.explorerService.setContextMenu(data)
+        this.globalbase._isVisibled = false
     }
 
     setInactive(elements: ContextMenu[]) {

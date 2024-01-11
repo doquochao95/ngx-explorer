@@ -1,4 +1,4 @@
 <div class="nxe-filter">
-    <input class="nxe-filter-input" type="text" #input (keyup)="onSearchChange($event, input.value)" [placeholder]="searchPlaceHolder" [ngModel]="filterString.value" >
-    <button class="nxe-filter-button" (click)="clearSearchInput()"><i class="icon-cancel" aria-hidden="true"></i></button>
+    <input class="nxe-filter-input" type="text" #input (keyup)="globalbase.onSearchChange($event, input.value)" [placeholder]="globalbase.searchPlaceHolder" [ngModel]="globalbase.filterString.value" >
+    <button class="nxe-filter-button" (click)="globalbase.clearSearchInput()"><i class="icon-cancel" aria-hidden="true"></i></button>
 </div>

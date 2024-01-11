@@ -1,6 +1,6 @@
 
-<nav #nav [ngStyle]="{ 'top': top, 'right': right }" *ngIf="elements.length > 0">
-    <div *ngFor="let element of elements" >
+<nav #nav [ngStyle]="{ 'top': this.globalbase.top, 'right': this.globalbase.right }" *ngIf="this.globalbase.elements.length > 0">
+    <div *ngFor="let element of this.globalbase.elements" >
         <nxe-context-menu-item [ngClass]="{'disabled':element.isDisabled}" *ngIf="!element.isSeperate && !element.isHided" [element]="element" (clicked)="hide(element)" [class.active]="element.isActived"></nxe-context-menu-item>
         <hr *ngIf="element.isSeperate && !element.isHided">
     </div>

@@ -1,13 +1,7 @@
-import { BsModalService } from 'ngx-bootstrap/modal';
-import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { ExplorerService } from '../../services/explorer.service';
-import { DefaultConfig } from '../../shared/default-config';
+import { Component, ViewEncapsulation } from '@angular/core';
 
-import { ModalDataModel } from '../../shared/types';
-import { HelperService } from '../../services/helper.service';
-import { FILTER_STRING } from '../../injection-tokens/tokens';
 import { BaseView } from '../../directives/base-view.directive';
+import { GlobalBase } from '../../common/global-base';
 
 @Component({
     selector: 'nxe-menu-bar',
@@ -15,14 +9,19 @@ import { BaseView } from '../../directives/base-view.directive';
     styleUrls: ['./menu-bar.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class MenuBarComponent extends BaseView implements OnDestroy {
+export class MenuBarComponent extends BaseView {
     constructor(
-        explorerService: ExplorerService,
-        helperService: HelperService,
-        modalService: BsModalService,
-        config: DefaultConfig,
-        @Inject(FILTER_STRING) filterString: BehaviorSubject<string>
+        public globalbase: GlobalBase
     ) {
-        super(explorerService, helperService, modalService, config, filterString);
+        super();
+    }
+    openUploader() {
+        this.globalbase.openUploader(this.upload, this.uploader)
+    }
+    openModalCreate() {
+        this.globalbase.openModalModify(this.modify)
+    }
+    openModalRename() {
+        this.globalbase.openModalModify(this.modify, true)
     }
 }

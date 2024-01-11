@@ -6,7 +6,7 @@ const defaultConfig: ExplorerOption = {
     homeNodeName: 'Files',
     autoRefresh: false,
     readOnly: false,
-    defaultViewType: 'Icon',
+    defaultViewType: 'Detail',
     autoRefreshInterval: 10000,
     offSetTop: 0,
     offSetRight: 0,

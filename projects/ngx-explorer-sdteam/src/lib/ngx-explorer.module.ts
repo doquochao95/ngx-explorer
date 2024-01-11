@@ -21,6 +21,7 @@ import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
 import { ContextMenuItemComponent } from './components/context-menu/context-menu-item/context-menu-item.component';
+import { GlobalBase } from './common/global-base';
 
 @NgModule({
     declarations: [
@@ -59,6 +60,7 @@ import { ContextMenuItemComponent } from './components/context-menu/context-menu
         TreeComponent,
         FilterComponent,
         ContextMenuComponent
-    ]
+    ],
+    providers: [ GlobalBase ],
 })
 export class NgxExplorerModule { }

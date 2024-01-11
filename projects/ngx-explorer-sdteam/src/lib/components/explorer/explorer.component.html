@@ -11,28 +11,22 @@
                 <nxe-second-menu-bar></nxe-second-menu-bar>
             </div>
             <div class="nxe-explorer-right-content">
-                <ng-container *ngIf="config.globalOptions.defaultViewType == 'Icon'">
+                <ng-container *ngIf="globalbase.config.globalOptions.defaultViewType == 'Icon'">
                     <nxe-icons></nxe-icons>
                 </ng-container>
-                <ng-container *ngIf="config.globalOptions.defaultViewType === 'Detail'">
+                <ng-container *ngIf="globalbase.config.globalOptions.defaultViewType === 'Detail'">
                     <nxe-list></nxe-list>
                 </ng-container>
             </div>
         </div>
     </div>
 </div>
-<nxe-context-menu *ngIf="visible"></nxe-context-menu>
-<ng-template #upload>
-    <div class="modal-body" *ngIf="progressValue == 0">
-        <label class="mb-0">Uploading</label>
-        <progressbar></progressbar>
+<nxe-context-menu *ngIf="globalbase.visible"></nxe-context-menu>
+<div class="position-fixed" [ngStyle]="{'z-index': 10, 'right': globalbase.config.globalOptions.offSetRight + 10 + 'px', 'bottom': globalbase.config.globalOptions.offSetBottom + 10 + 'px' }">
+    <div id="explorercomponent" class="toast hide text-center w-auto" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+        <div class="toast-body">
+            {{globalbase.toast?.toastBody}}
+            <i  [ngClass]="globalbase.toast?.toastIcon" aria-hidden="true"></i>
+        </div>
     </div>
-    <div class="modal-body"  *ngIf="progressValue > 0">
-        <label class="mb-0">{{progressStatus == 'success' ? 'Uploaded successfully' : progressStatus == 'failure' ? 'Upload failed' : 'Uploading' }}</label>
-        <progressbar
-            class="progress-striped"
-            [value]="progressValue"
-            [type]="progressStatus == 'success' ? 'success' : progressStatus == 'failure' ? 'danger' : 'info' ">
-        </progressbar>
-    </div>
-</ng-template>
+</div>

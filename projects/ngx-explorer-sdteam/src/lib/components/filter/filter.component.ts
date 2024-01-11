@@ -1,26 +1,17 @@
-import { Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
-import { BehaviorSubject, } from 'rxjs';
-import { FILTER_STRING } from '../../injection-tokens/tokens';
-import { ExplorerService } from '../../services/explorer.service';
-import { DefaultConfig } from '../../shared/default-config';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { BaseView } from '../../directives/base-view.directive';
-import { HelperService } from '../../services/helper.service';
-import { BsModalService } from 'ngx-bootstrap/modal';
+import { GlobalBase } from '../../common/global-base';
 
 @Component({
     selector: 'nxe-filter',
     templateUrl: './filter.component.html',
     styleUrls: ['./filter.component.scss']
 })
-export class FilterComponent extends BaseView implements OnDestroy {
+export class FilterComponent extends BaseView {
     @ViewChild('input') input: ElementRef<HTMLInputElement>;
     constructor(
-        explorerService: ExplorerService,
-        helperService: HelperService,
-        modalService: BsModalService,
-        config: DefaultConfig,
-        @Inject(FILTER_STRING) filterString: BehaviorSubject<string>
+        public globalbase: GlobalBase
     ) {
-        super(explorerService, helperService, modalService, config, filterString);
+        super();
     }
 }

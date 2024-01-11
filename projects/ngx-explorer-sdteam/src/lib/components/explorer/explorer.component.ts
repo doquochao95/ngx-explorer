@@ -1,11 +1,6 @@
-import { Component, Input, OnDestroy, OnInit, ViewEncapsulation, booleanAttribute, Inject, AfterContentInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { DefaultConfig } from '../../shared/default-config';
-import { ExplorerService } from '../../services/explorer.service';
-import { BsModalService } from 'ngx-bootstrap/modal';
-import { HelperService } from '../../services/helper.service';
+import { GlobalBase } from './../../common/global-base';
+import { Component, Input, OnInit, ViewEncapsulation, booleanAttribute, AfterContentInit } from '@angular/core';
 import { BaseView } from '../../directives/base-view.directive';
-import { FILTER_STRING } from '../../injection-tokens/tokens';
 
 function capitalizeString(input: string): string {
     return input ? input.charAt(0).toUpperCase() + input.slice(1) : input
@@ -16,7 +11,7 @@ function capitalizeString(input: string): string {
     styleUrls: ['./explorer.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class ExplorerComponent extends BaseView implements OnInit, OnDestroy, AfterContentInit {
+export class ExplorerComponent extends BaseView implements OnInit, AfterContentInit {
 
     @Input({ alias: 'read-only', transform: booleanAttribute }) readOnly: boolean
     @Input({ alias: 'auto-refresh', transform: booleanAttribute }) autoRefresh: boolean
@@ -29,63 +24,36 @@ export class ExplorerComponent extends BaseView implements OnInit, OnDestroy, Af
     @Input({ alias: 'view-type', transform: capitalizeString }) defaultViewType: string
 
     constructor(
-        explorerService: ExplorerService,
-        helperService: HelperService,
-        modalService: BsModalService,
-        config: DefaultConfig,
-        @Inject(FILTER_STRING) filterString: BehaviorSubject<string>
+        public globalbase: GlobalBase
     ) {
-        super(explorerService, helperService, modalService, config, filterString);
-        this.subs.add(this.helperService.emitter.subscribe((res) => {
-            if (res == 'refresh')
-                this.explorerService.refresh()
-        }));
-        this.subs.add(this.explorerService.modalDataModel.subscribe(res => {
-            if (res?.template_Type == 'upload' && res?.upload_Status) {
-                this.progressValue = res?.progress_Bar_Value ?? this.progressValue;
-                this.progressStatus = res?.upload_Status ?? this.progressStatus;
-                switch (res?.upload_Status) {
-                    case "upload":
-                        this.openModalUpload()
-                        break;
-                    case "success":
-                        this.closeModalUpload()
-                        break;
-                    case "failure":
-                        this.closeModalUpload()
-                        break;
-                    default:
-                }
-            }
-        }));
-
+        super()
     }
 
     ngOnInit() {
         if (this.readOnly != undefined)
-            this.config.globalOptions.readOnly = this.readOnly
+            this.globalbase.config.globalOptions.readOnly = this.readOnly
         if (this.autoRefresh != undefined)
-            this.config.globalOptions.autoRefresh = this.autoRefresh
+            this.globalbase.config.globalOptions.autoRefresh = this.autoRefresh
         if (this.homeNodeName != undefined)
-            this.config.globalOptions.homeNodeName = this.homeNodeName
+            this.globalbase.config.globalOptions.homeNodeName = this.homeNodeName
         if (this.autoRefreshInterval != undefined)
-            this.config.globalOptions.autoRefreshInterval = this.autoRefreshInterval
+            this.globalbase.config.globalOptions.autoRefreshInterval = this.autoRefreshInterval
         if (this.defaultViewType != undefined)
-            this.config.globalOptions.defaultViewType = this.defaultViewType
+            this.globalbase.config.globalOptions.defaultViewType = this.defaultViewType
         if (this.offSetTop != undefined)
-            this.config.globalOptions.offSetTop = this.offSetTop
+            this.globalbase.config.globalOptions.offSetTop = this.offSetTop
         if (this.offSetRight != undefined)
-            this.config.globalOptions.offSetRight = this.offSetRight
+            this.globalbase.config.globalOptions.offSetRight = this.offSetRight
         if (this.offSetBottom != undefined)
-            this.config.globalOptions.offSetBottom = this.offSetBottom
+            this.globalbase.config.globalOptions.offSetBottom = this.offSetBottom
         if (this.offSetLeft != undefined)
-            this.config.globalOptions.offSetLeft = this.offSetLeft
+            this.globalbase.config.globalOptions.offSetLeft = this.offSetLeft
     }
     ngAfterContentInit() {
-        this.explorerService.refresh()
-        this.explorerService.getFilterStringFromSPA().subscribe((res: string) => {
-            if (!(res == null || res.match(/^\s*$/) !== null))
-                this.filterString.next(res)
+        this.globalbase.explorerService.refresh()
+        this.globalbase.explorerService.getFilterStringFromSPA().subscribe((res: string) => {
+            if (!(res == null || res.match(/^\s*$/) !== null || res =='undefined'))
+                this.globalbase.filterString.next(res)
         })
     }
 }

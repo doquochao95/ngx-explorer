@@ -1,12 +1,7 @@
-import { AfterViewInit, ChangeDetectorRef, Component, Inject, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { FILTER_STRING } from '../../injection-tokens/tokens';
-import { ExplorerService } from '../../services/explorer.service';
-import { HelperService } from '../../services/helper.service';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { BaseView } from '../../directives/base-view.directive';
 import { FileTypeIconClass } from '../../shared/types';
-import { BsModalService } from 'ngx-bootstrap/modal';
-import { DefaultConfig } from '../../shared/default-config';
+import { GlobalBase } from '../../common/global-base';
 
 @Component({
     selector: 'nxe-list',
@@ -18,12 +13,13 @@ export class ListComponent extends BaseView {
 
     icon = FileTypeIconClass.Folder
     constructor(
-        explorerService: ExplorerService,
-        helperService: HelperService,
-        modalService: BsModalService,
-        config: DefaultConfig,
-        @Inject(FILTER_STRING) filterString: BehaviorSubject<string>
+        public globalbase: GlobalBase
     ) {
-        super(explorerService, helperService, modalService, config, filterString);
+        super();
+    }
+    openContextMenu(item?: any) {
+        item ?
+            this.globalbase.openContextMenu(this.modify, this.upload, this.uploader, item) :
+            this.globalbase.openContextMenu(this.modify, this.upload, this.uploader)
     }
 }

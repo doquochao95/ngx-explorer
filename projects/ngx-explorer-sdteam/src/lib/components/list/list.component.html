@@ -1,7 +1,7 @@
 <div class="nxe-list"
     nxeDragDrop
-    (dragging)="dragging = $event">
-    <div class="nxe-list-drag" [ngClass]="{ dragging: dragging}" (click)="emptySpaceClick()" (contextmenu)="openContextMenu()"></div>
+    (dragging)="globalbase.dragging = $event">
+    <div class="nxe-list-drag" [ngClass]="{ dragging: globalbase.dragging}" (click)="globalbase.emptySpaceClick()" (contextmenu)="openContextMenu()"></div>
     <div class="nxe-list-backpad" ></div>
     <div class="nxe-list-container">
         <div class="nxe-list-wrapper ">
@@ -15,14 +15,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let item of filteredItems"
-                        (dblclick)="open($event, item)"
-                        (click)="select($event, item)"
+                    <tr *ngFor="let item of globalbase.filteredItems"
+                        (dblclick)="globalbase.openItem(item, $event)"
+                        (click)="globalbase.selectItem($event, item)"
                         (contextmenu)="openContextMenu(item)"
-                        [ngClass]="{'nxe-list-row-selected':isSelected(item)}">
+                        [ngClass]="{'nxe-list-row-selected':globalbase.isSelected(item)}">
                         <td>
                             <span class="nxe-list-icon">
-                                <i [className]="!item.isFolder ? getIconClass(item.data)  : icon"></i>
+                                <i [className]="!item.isFolder ? globalbase.getIconClass(item.data)  : icon"></i>
                             </span>
                             {{ item.data?.name }}
                         </td>
@@ -42,34 +42,40 @@
         </div>
     </div>
 </div>
-<input style="display: none" type="file" multiple (change)="handleFiles($event)" data-max-size="500" #uploader>
+<input style="display: none" type="file" multiple (change)="globalbase.handleFiles($event)" data-max-size="500" #uploader>
 <ng-template #modify>
     <div class="modal-header">
-        <h5 class="modal-title">{{modalTitle}}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancel()">
+        <h5 class="modal-title">{{globalbase.modalTitle}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="globalbase.cancel()">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
     <div class="modal-body">
         <div class="row">
             <div class="col">
-                <input class="form-control" type="text"  [(ngModel)]="name" (keydown)="onNameChange($event)">
+                <input class="form-control" type="text"  [(ngModel)]="globalbase.name" (keydown)="globalbase.onNameChange($event)">
             </div>
-            <div class="col-auto align-self-end pl-0" *ngIf="selection.length > 0 && modifyType == 'Rename' && !selection[0].isFolder">
-                <label class="mb-0">{{format}}</label>
+            <div class="col-auto align-self-end pl-0" *ngIf="globalbase.selection.length > 0 && globalbase.modifyType == 'Rename' && !globalbase.selection[0].isFolder">
+                <label class="mb-0">{{globalbase.format}}</label>
             </div>
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancel()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="confirm()" [disabled]="!name">{{modifyType}}</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="globalbase.cancel()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="globalbase.confirm()" [disabled]="!globalbase.name">{{globalbase.modifyType}}</button>
     </div>
 </ng-template>
-<div class="position-fixed" [ngStyle]="{'z-index': 10, 'right': config.globalOptions.offSetRight + 10 + 'px', 'bottom': config.globalOptions.offSetBottom + 10 + 'px' }">
-    <div id="listcomponent" class="toast hide text-center w-auto" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
-        <div class="toast-body">
-            {{toast?.toastBody}}
-            <i  [ngClass]="toast?.toastIcon" aria-hidden="true"></i>
-        </div>
+<ng-template #upload>
+    <div class="modal-body" *ngIf="globalbase.progressValue == 0">
+        <label class="mb-0">Uploading</label>
+        <progressbar></progressbar>
     </div>
-</div>
+    <div class="modal-body"  *ngIf="globalbase.progressValue > 0">
+        <label class="mb-0">{{globalbase.progressStatus == 'success' ? 'Uploaded successfully' : globalbase.progressStatus == 'failure' ? 'Upload failed' : 'Uploading' }}</label>
+        <progressbar
+            class="progress-striped"
+            [value]="globalbase.progressValue"
+            [type]="globalbase.progressStatus == 'success' ? 'success' : globalbase.progressStatus == 'failure' ? 'danger' : 'info' ">
+        </progressbar>
+    </div>
+</ng-template>

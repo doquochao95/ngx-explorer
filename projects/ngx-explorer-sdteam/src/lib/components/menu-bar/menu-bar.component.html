@@ -1,50 +1,56 @@
 <div class="nxe-menu-bar">
     <div class="d-flex">
-        <button class="nxe-menu-bar-home-button" type="button" [delay]="1000" tooltip="Home" placement="bottom" (click)="explorerService.openNode(1)" ><i class="icon-home" aria-hidden="true"></i></button>
+        <button class="nxe-menu-bar-home-button" type="button" [delay]="1000" tooltip="Home" placement="bottom" (click)="globalbase.openHome()" ><i class="icon-home" aria-hidden="true"></i></button>
         <div >
             <div class="vertical-divider"></div>
         </div>
-        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="New Folder" placement="bottom" [hidden]="!canCreate" (click)="openModalModify()"><i class="icon-folder-empty" aria-hidden="true"></i></button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="New Folder" placement="bottom" [hidden]="!globalbase.canCreate" (click)="openModalCreate()"><i class="icon-folder-empty" aria-hidden="true"></i></button>
         <!-- <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Refresh" placement="bottom" (click)="refresh()"><i class="icon-arrows-cw" aria-hidden="true"></i> </button> -->
-        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Upload" placement="bottom" [hidden]="!canUpload" (click)="openUploader()"><i class="icon-upload" aria-hidden="true"></i></button>
-        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Download" placement="bottom" [hidden]="!canDownload" (click)="download()"><i class="icon-download" aria-hidden="true"></i> </button>
-        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Rename" placement="bottom" [hidden]="!canRename" (click)="openModalModify(true)"><i class="icon-edit" aria-hidden="true"></i> </button>
-        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Delete" placement="bottom" [hidden]="!canDelete" (click)="openConfirmDialog()"><i class="icon-trash-empty" aria-hidden="true"></i> </button>
-        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Path" placement="bottom" [hidden]="!canCopyPath" (click)="path()"><i class="icon-share" aria-hidden="true"></i> </button>
-        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Link" placement="bottom" [hidden]="!canShare" (click)="link()"><i class="icon-link" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Upload" placement="bottom" [hidden]="!globalbase.canUpload" (click)="openUploader()"><i class="icon-upload" aria-hidden="true"></i></button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Download" placement="bottom" [hidden]="!globalbase.canDownload" (click)="globalbase.download()"><i class="icon-download" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Rename" placement="bottom" [hidden]="!globalbase.canRename" (click)="openModalRename()"><i class="icon-edit" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Delete" placement="bottom" [hidden]="!globalbase.canDelete" (click)="globalbase.openConfirmDialog()"><i class="icon-trash-empty" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Path" placement="bottom" [hidden]="!globalbase.canCopyPath" (click)="globalbase.path()"><i class="icon-share" aria-hidden="true"></i> </button>
+        <button class="nxe-menu-bar-button" type="button" [delay]="1000" tooltip="Link" placement="bottom" [hidden]="!globalbase.canShare" (click)="globalbase.link()"><i class="icon-link" aria-hidden="true"></i> </button>
         <div class="flex-fill">
             <nxe-view-switcher ></nxe-view-switcher>
         </div>
     </div>
 </div>
-<input style="display: none" type="file" multiple (change)="handleFiles($event)" data-max-size="500" #uploader>
+<input style="display: none" type="file" multiple (change)="globalbase.handleFiles($event)" data-max-size="500" #uploader>
 <ng-template #modify>
     <div class="modal-header">
-        <h5 class="modal-title">{{modalTitle}}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancel()">
+        <h5 class="modal-title">{{globalbase.modalTitle}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="globalbase.cancel()">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
     <div class="modal-body">
         <div class="row">
             <div class="col">
-                <input class="form-control" type="text"  [(ngModel)]="name" (keydown)="onNameChange($event)">
+                <input class="form-control" type="text"  [(ngModel)]="globalbase.name" (keydown)="globalbase.onNameChange($event)">
             </div>
-            <div class="col-auto align-self-end pl-0" *ngIf="selection.length > 0 && modifyType == 'Rename' && !selection[0].isFolder">
-                <label class="mb-0">{{format}}</label>
+            <div class="col-auto align-self-end pl-0" *ngIf="globalbase.selection.length > 0 && globalbase.modifyType == 'Rename' && !globalbase.selection[0].isFolder">
+                <label class="mb-0">{{globalbase.format}}</label>
             </div>
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancel()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="confirm()" [disabled]="!name">{{modifyType}}</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="globalbase.cancel()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="globalbase.confirm()" [disabled]="!globalbase.name">{{globalbase.modifyType}}</button>
     </div>
 </ng-template>
-<div class="position-fixed" [ngStyle]="{'z-index': 10, 'right': config.globalOptions.offSetRight + 10 + 'px', 'bottom': config.globalOptions.offSetBottom + 10 + 'px' }">
-    <div id="menubarcomponent" class="toast hide text-center w-auto" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
-        <div class="toast-body">
-            {{toast?.toastBody}}
-            <i  [ngClass]="toast?.toastIcon" aria-hidden="true"></i>
-        </div>
+<ng-template #upload>
+    <div class="modal-body" *ngIf="globalbase.progressValue == 0">
+        <label class="mb-0">Uploading</label>
+        <progressbar></progressbar>
     </div>
-</div>
+    <div class="modal-body"  *ngIf="globalbase.progressValue > 0">
+        <label class="mb-0">{{globalbase.progressStatus == 'success' ? 'Uploaded successfully' : globalbase.progressStatus == 'failure' ? 'Upload failed' : 'Uploading' }}</label>
+        <progressbar
+            class="progress-striped"
+            [value]="globalbase.progressValue"
+            [type]="globalbase.progressStatus == 'success' ? 'success' : globalbase.progressStatus == 'failure' ? 'danger' : 'info' ">
+        </progressbar>
+    </div>
+</ng-template>

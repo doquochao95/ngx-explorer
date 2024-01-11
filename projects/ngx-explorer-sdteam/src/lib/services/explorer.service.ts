@@ -2,7 +2,7 @@ import { TreeModel } from './../shared/types';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, concat, defer, forkJoin, lastValueFrom, of, throwError } from 'rxjs';
 import { catchError, tap, toArray } from 'rxjs/operators';
-import { INode, Dictionary, NodeContent, ContextMenuOption, ModalDataModel } from '../shared/types';
+import { INode, Dictionary, NodeContent, ProgressBarModel } from '../shared/types';
 import { Utils } from '../shared/utils';
 import { DataService } from './data.service';
 import { DefaultConfig } from '../shared/default-config';
@@ -21,16 +21,14 @@ export class ExplorerService {
     private readonly selectedNodes$ = new BehaviorSubject<INode[]>([]);
     private readonly openedNode$ = new BehaviorSubject<INode>(undefined);
     private readonly breadcrumbs$ = new BehaviorSubject<INode[]>([]);
-    private readonly tree$ = new BehaviorSubject<TreeModel>({ node: this.internalTree });
-    private readonly contextMenu$ = new BehaviorSubject<ContextMenuOption>(undefined);
-    private readonly modalDataModel$ = new BehaviorSubject<ModalDataModel>(undefined);
+    private readonly treeView$ = new BehaviorSubject<TreeModel>({ node: this.internalTree });
+    private readonly uploadProgressBar$ = new BehaviorSubject<ProgressBarModel>(undefined);
 
     public readonly selectedNodes = this.selectedNodes$.asObservable();
     public readonly openedNode = this.openedNode$.asObservable();
     public readonly breadcrumbs = this.breadcrumbs$.asObservable();
-    public readonly tree = this.tree$.asObservable();
-    public readonly contextMenu = this.contextMenu$.asObservable();
-    public readonly modalDataModel = this.modalDataModel$.asObservable();
+    public readonly treeView = this.treeView$.asObservable();
+    public readonly uploadProgressBar = this.uploadProgressBar$.asObservable();
 
     private sub: Subscription;
 
@@ -49,7 +47,7 @@ export class ExplorerService {
         return defer(async () => {
             if (pathArray.length == 0)
                 return
-            await this.openNode(1, true)
+            await this.openNode(1)
             let path = ''
             for (let val of pathArray) {
                 path = path ? `${path}/${val}` : val
@@ -58,7 +56,7 @@ export class ExplorerService {
                 if (flatModel == undefined)
                     break
                 let flatInx = flatModel.id
-                await this.openNode(flatInx, true)
+                await this.openNode(flatInx)
             }
             return;
         })
@@ -66,9 +64,9 @@ export class ExplorerService {
     public selectNodes(nodes: INode[]) {
         this.selectedNodes$.next(nodes);
     }
-    public async openNode(id: number, isFilter?: boolean) {
+    public async openNode(id: number) {
         return await lastValueFrom(
-            this.getNodeChildren(id, isFilter)
+            this.getNodeChildren(id)
                 .pipe(tap(response => {
                     if (response) {
                         const parent = this.flatPointers[id];
@@ -222,7 +220,7 @@ export class ExplorerService {
     }
     private updateModalUpload(status: string, isFinished: boolean, isSuccess?: boolean,) {
         if (isFinished) {
-            const modalData = <ModalDataModel>{
+            const modalData = <ProgressBarModel>{
                 template_Type: 'upload',
                 upload_Status: status
             }
@@ -240,7 +238,7 @@ export class ExplorerService {
             }
             else
                 this.percent = 100
-            const modalData = <ModalDataModel>{
+            const modalData = <ProgressBarModel>{
                 template_Type: 'upload',
                 progress_Bar_Value: this.percent,
                 upload_Status: status
@@ -261,12 +259,11 @@ export class ExplorerService {
         this.dataService.download(leafs).subscribe(() => { });
     }
 
-    private getNodeChildren(id: number, isFilter?: boolean): Observable<any> {
+    private getNodeChildren(id: number): Observable<any> {
         const parent = this.flatPointers[id];
         if (!parent.isFolder) {
             throw new Error('Cannot open leaf node');
         }
-
         return new Observable((observer: any) => {
             this.dataService
                 .getNodeChildren(parent.data)
@@ -290,9 +287,7 @@ export class ExplorerService {
                         const nodeChildren = parent.children.filter(c => c.isFolder);
                         const leafChildren = parent.children.filter(c => !c.isFolder);
                         parent.children = nodeChildren.concat(leafChildren);
-                        if (!isFilter)
-                            this.tree$.next({ node: this.internalTree, node_Id: id });
-
+                        this.treeView$.next({ node: this.internalTree, node_Id: id });
                     }), toArray())
                 .subscribe({
                     next: async (res) => {
@@ -306,10 +301,7 @@ export class ExplorerService {
                 });
         })
     }
-    public setContextMenu(menu: ContextMenuOption) {
-        this.contextMenu$.next(menu)
-    }
-    public setModal(modal: ModalDataModel) {
-        this.modalDataModel$.next(modal)
+    public setModal(modal: ProgressBarModel) {
+        this.uploadProgressBar$.next(modal)
     }
 }
