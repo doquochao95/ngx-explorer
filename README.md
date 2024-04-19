@@ -1,16 +1,22 @@
-# ngx-explorer
+# ngx-explorer-sdteam
+A version inherits from [ngx-explorer](https://github.com/artemnih/ngx-explorer).
+
 Lightweight and easy-to-use Angular File Explorer module.
 This is a front-end implementation only. There are no services at this point.
 
 [DEMO](https://artemnih.github.io/ngx-explorer/)
 
 ## How to use
-- Install package
+
+-   Install package
+
 ```
 npm i ngx-explorer-sdteam # install
 npm start # run demo
 ```
-- Implement `IDataService` provider interface
+
+-   Implement `IDataService` provider interface
+
 ```Typescript
 import { IDataService } from 'ngx-explorer-sdteam';
 
@@ -18,7 +24,9 @@ export class MyDataService implements IDataService<MyNodeType> {
     ...
 }
 ```
-- Add `NgxExplorerModule` and data provider to `NgModule`
+
+-   Add `NgxExplorerModule` and data provider to `NgModule`
+
 ```Typescript
 import { NgxExplorerModule, DataService } from 'ngx-explorer-sdteam';
 
@@ -28,18 +36,22 @@ import { NgxExplorerModule, DataService } from 'ngx-explorer-sdteam';
         NgxExplorerModule
     ],
     providers: [
-        { provide: DataService, useClass: MyDataService },
         {
-        provide: ConfigProvider, useValue: new ConfigProvider({
-            homeNodeName: 'Home',
-            autoRefresh: false,
-            autoRefreshInterval: 10000,
-        } as NgeExplorerConfig)
+            provide: DataService, useClass: MyDataService
+        },
+        {
+            provide: ConfigProvider, useValue: new ConfigProvider({
+                homeNodeName: 'Home',
+                autoRefresh: false,
+                autoRefreshInterval: 10000,
+            } as NgeExplorerConfig)
+        }
     ]
 })
 export class AppModule { }
 ```
-- Add `<nxe-explorer></nxe-explorer>` to the template
-- Add css import `@import '~ngx-explorer-sdteam/src/assets/icons/css/nxe.css'`
+
+-   Add `<nxe-explorer></nxe-explorer>` to the template
+-   Add css import `@import '~ngx-explorer-sdteam/src/assets/icons/css/nxe.css'`
 
 ![explorer](docs/ss.png)
